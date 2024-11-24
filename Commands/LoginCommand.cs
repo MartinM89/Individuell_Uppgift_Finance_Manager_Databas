@@ -2,7 +2,7 @@ using Npgsql;
 
 public class LoginCommand : Command
 {
-    private NpgsqlConnection connection;
+    private NpgsqlConnection? connection;
 
     public LoginCommand()
         : base("Login") { }
@@ -20,6 +20,7 @@ public class LoginCommand : Command
 
         Console.Write("Enter username: ");
         string username = Console.ReadLine()!;
+        username = username[..1].ToUpper() + username[1..].ToLower();
 
         Console.Write("Enter password: ");
         enteredPassword = HidePassword.Execute(enteredPassword);
@@ -42,7 +43,7 @@ public class LoginCommand : Command
         if (!reader.Read())
         {
             Console.Clear();
-            Console.WriteLine("User not found.");
+            ChangeColor.TextColorRed("User not found.\n");
             PressKeyToContinue.Execute();
             return;
         }
@@ -53,22 +54,18 @@ public class LoginCommand : Command
         byte[] storedPasswordHash = Convert.FromBase64String(passwordHashString);
         byte[] storedPasswordSalt = Convert.FromBase64String(saltString);
 
-        bool isPasswordCorrect = PasswordHasher.VerifyPasswordHash(
-            enteredPassword,
-            storedPasswordHash,
-            storedPasswordSalt
-        );
+        bool isPasswordCorrect = PasswordHasher.VerifyPasswordHash(enteredPassword, storedPasswordHash, storedPasswordSalt);
 
         if (!isPasswordCorrect)
         {
             Console.Clear();
-            Console.WriteLine("Invalid password.");
+            ChangeColor.TextColorRed("Invalid password.\n");
             PressKeyToContinue.Execute();
             return;
         }
 
         Console.Clear();
-        Console.WriteLine($"Login successful as {username}.");
+        ChangeColor.TextColorGreen($"Login successful as {username}.\n");
         PressKeyToContinue.Execute();
 
         connection.Close();

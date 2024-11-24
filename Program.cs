@@ -1,6 +1,4 @@
-﻿using System.Transactions;
-
-namespace Individuell_Uppgift;
+﻿namespace Individuell_Uppgift;
 
 class Program
 {
@@ -11,22 +9,15 @@ class Program
         // LoadCommand.Execute();
         // RunFirstTime.Execute();
 
-        var manager = new PostgresTransactionManager();
-        var createAccountCommand = new CreateAccountCommand();
-        var loginCommand = new LoginCommand();
+        // var manager = new PostgresTransactionManager();
+        // var createAccountCommand = new CreateAccountCommand();
+        // var loginCommand = new LoginCommand();
 
         while (run)
         {
-            Console.Clear();
-
-            Console.WriteLine("[C]reate");
-            Console.WriteLine("[L]ogin");
-
-            Console.Write("\nEnter Choice: ");
-
-            string userChoice = Console.ReadLine()!;
-
-            CommandCenter.ExecuteLogin(userChoice);
+            AccountMenu.Execute();
+            string userChoice = Console.ReadLine()!.ToUpper();
+            CommandManagerAccount.Execute(userChoice);
         }
     }
 }

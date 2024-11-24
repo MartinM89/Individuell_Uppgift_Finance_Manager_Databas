@@ -2,6 +2,7 @@ public class HidePassword
 {
     public static string Execute(string password)
     {
+        Console.CursorVisible = false;
         ConsoleKey key;
 
         do
@@ -17,7 +18,7 @@ public class HidePassword
             else if (!char.IsControl(keyInfo.KeyChar))
             {
                 password += keyInfo.KeyChar;
-                Console.Write("*");
+                Console.Write(" ");
             }
         } while (key != ConsoleKey.Enter);
 
