@@ -11,15 +11,15 @@ public class Transaction
         this.Amount = amount;
     }
 
-    public override string ToString()
-    {
-        // int longestName = TransactionManager.LongestNameLength();
-        // int longestAmount = TransactionManager.LongestAmountLength();
+    // public override string ToString()
+    // {
+    //     int longestName = TransactionManager.LongestNameLength();
+    //     int longestAmount = TransactionManager.LongestAmountLength();
 
-        // string transactionName = Name!.PadRight(longestName);
-        // string transactionAmount = Math.Round(Amount, 2).ToString("F2") + ":-";
-        // transactionAmount = transactionAmount.PadLeft(longestAmount);
+    //     string transactionName = Name!.PadRight(longestName);
+    //     string transactionAmount = Math.Round(Amount, 2).ToString("F2") + ":-";
+    //     transactionAmount = transactionAmount.PadLeft(longestAmount);
 
-        return $"| {Date:yyyy MMM dd} | {Name} | {Amount} |";
-    }
+    //     return $"| {Date:yyyy MMM dd} | {Name} | {Amount} |";
+    // }
 }

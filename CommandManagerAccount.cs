@@ -4,8 +4,10 @@ public class CommandManagerAccount
 {
     public static UserAccount userAccount = new UserAccount();
 
-    public static void Execute(string userChoice)
+    public static void Execute()
     {
+        string userChoice = Console.ReadLine()!.ToUpper();
+
         switch (userChoice)
         {
             case "C"
@@ -16,6 +18,7 @@ public class CommandManagerAccount
             case "L"
             or "LOGIN":
                 userAccount.Login();
+                CommandManagerTransaction.Execute();
                 break;
 
             case "G"

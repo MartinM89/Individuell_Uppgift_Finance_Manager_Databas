@@ -16,8 +16,7 @@ class Program
         while (run)
         {
             AccountMenu.Execute();
-            string userChoice = Console.ReadLine()!.ToUpper();
-            CommandManagerAccount.Execute(userChoice);
+            CommandManagerAccount.Execute();
         }
     }
 }
