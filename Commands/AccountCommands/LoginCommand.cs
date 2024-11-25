@@ -1,7 +1,10 @@
+using System.Dynamic;
 using Npgsql;
 
 public class LoginCommand : Command
 {
+    public static Guid id = Guid.Empty;
+
     private NpgsqlConnection? connection;
 
     public LoginCommand()
@@ -14,21 +17,42 @@ public class LoginCommand : Command
 
     public override void RunCommand()
     {
+        string connectionString = DatabaseConnection.GetConnectionString();
+
+        this.connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+
         string enteredPassword = string.Empty;
 
         Console.Clear();
 
         Console.Write("Enter username: ");
         string username = Console.ReadLine()!;
+
+        if (string.IsNullOrEmpty(username))
+        {
+            return;
+        }
+
         username = username[..1].ToUpper() + username[1..].ToLower();
+
+        bool usernameExists = UserNameUnavailable.Execute(username, connection);
+
+        if (!usernameExists)
+        {
+            Console.Clear();
+            ChangeColor.TextColorRed("That username doesn't exist.\n");
+            PressKeyToContinue.Execute();
+            return;
+        }
 
         Console.Write("Enter password: ");
         enteredPassword = HidePassword.Execute(enteredPassword);
 
-        string connectionString = DatabaseConnection.GetConnectionString();
-
-        this.connection = new NpgsqlConnection(connectionString);
-        connection.Open();
+        if (string.IsNullOrEmpty(enteredPassword))
+        {
+            return;
+        }
 
         var loginSql = """
             SELECT password_hash, password_salt
@@ -63,6 +87,22 @@ public class LoginCommand : Command
             PressKeyToContinue.Execute();
             return;
         }
+
+        reader.Close();
+
+        CommandManagerTransaction.loggedIn = true;
+
+        var getIdSql = """
+            SELECT id
+            FROM users
+            WHERE username = @username
+            """;
+
+        command = new NpgsqlCommand(getIdSql, connection);
+        command.Parameters.AddWithValue("username", username);
+        command.Parameters.AddWithValue("id", id);
+
+        id = (Guid)command.ExecuteScalar();
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");

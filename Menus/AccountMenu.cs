@@ -12,7 +12,5 @@ public class AccountMenu
         Console.WriteLine("uest Account");
         ChangeColor.TextColorGreen("[E]");
         Console.WriteLine("xit");
-
-        Console.Write("\nEnter choice: ");
     }
 }

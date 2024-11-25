@@ -1,6 +1,6 @@
 public class CommandManagerTransaction
 {
-    public static bool loggedIn = true;
+    public static bool loggedIn = false;
 
     public static void Execute()
     {
@@ -13,51 +13,43 @@ public class CommandManagerTransaction
 
             switch (hideUserChoice)
             {
-                case "A"
-                or "ADD":
-                    Console.Clear();
-                    Console.WriteLine("Add transaction");
-                    PressKeyToContinue.Execute();
+                case "A":
+                    var addTransaction = new AddTransactionCommand();
+                    addTransaction.RunCommand();
                     break;
 
-                case "D"
-                or "DELETE":
+                case "D":
                     Console.Clear();
                     Console.WriteLine("Delete transaction");
                     PressKeyToContinue.Execute();
                     break;
 
-                case "B"
-                or "BALANCE":
+                case "B":
                     Console.Clear();
                     Console.WriteLine("Balance");
                     PressKeyToContinue.Execute();
                     break;
 
-                case "I"
-                or "INCOME":
+                case "I":
                     Console.Clear();
                     Console.WriteLine("Income Summary");
                     PressKeyToContinue.Execute();
                     break;
 
-                case "E"
-                or "EXPENSE":
+                case "E":
                     Console.Clear();
                     Console.WriteLine("Expense Summary");
                     PressKeyToContinue.Execute();
                     break;
 
-                case "L"
-                or "Log Out":
+                case "L":
                     loggedIn = false;
                     Console.Clear();
                     Console.WriteLine("Thank you for using your personal finance app.");
                     PressKeyToContinue.Execute();
                     break;
 
-                case "H"
-                or "HELP":
+                case "H":
                     Console.Clear();
                     Console.WriteLine("Help menu");
                     PressKeyToContinue.Execute();

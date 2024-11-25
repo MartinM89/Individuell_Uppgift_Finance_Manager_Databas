@@ -6,31 +6,28 @@ public class CommandManagerAccount
 
     public static void Execute()
     {
-        string userChoice = Console.ReadLine()!.ToUpper();
+        string userChoice = string.Empty;
+        string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
 
-        switch (userChoice)
+        switch (hideUserChoice)
         {
-            case "C"
-            or "CREATE":
+            case "C":
                 userAccount.Create();
                 break;
 
-            case "L"
-            or "LOGIN":
+            case "L":
                 userAccount.Login();
                 CommandManagerTransaction.Execute();
                 break;
 
-            case "G"
-            or "GUEST":
+            case "G":
                 // userAccount.GuestLogin();
                 Console.Clear();
                 Console.WriteLine("Guest Account");
                 PressKeyToContinue.Execute();
                 break;
 
-            case "E"
-            or "EXIT":
+            case "E":
                 Program.run = false;
                 break;
 

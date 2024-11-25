@@ -1,7 +1,7 @@
 public interface ITransactionManager
 {
-    void AddTransaction();
-    void SaveTransaction(string name, decimal amount, Guid userId);
+    // void AddTransaction();
+    void SaveTransaction(Transaction transaction);
     void DeleteTransaction(int id);
     void GetBalance();
     List<Transaction> GetTransactions();

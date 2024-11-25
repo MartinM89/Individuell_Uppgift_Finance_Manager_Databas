@@ -26,19 +26,15 @@ public class CreateAccountCommand : Command
 
         Console.Write("Enter username: ");
         string username = Console.ReadLine()!;
+
+        if (string.IsNullOrEmpty(username))
+        {
+            return;
+        }
+
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        var checkUsernameSql = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM users
-                WHERE username = @username
-            )
-            """;
-
-        var command = new NpgsqlCommand(checkUsernameSql, connection);
-        command.Parameters.AddWithValue("username", username);
-        bool usernameExists = (bool)command.ExecuteScalar();
+        bool usernameExists = UserNameUnavailable.Execute(username, connection);
 
         if (usernameExists)
         {
@@ -50,8 +46,19 @@ public class CreateAccountCommand : Command
 
         Console.Write("Enter password: ");
         password = HidePassword.Execute(password);
+
+        if (string.IsNullOrEmpty(password))
+        {
+            return;
+        }
+
         Console.Write("\nRetype password: ");
         confirmPassword = HidePassword.Execute(confirmPassword);
+
+        if (string.IsNullOrEmpty(confirmPassword))
+        {
+            return;
+        }
 
         if (!password.Equals(confirmPassword))
         {
@@ -68,7 +75,7 @@ public class CreateAccountCommand : Command
             VALUES (@username, @password_hash, @password_salt)
             """;
 
-        command = new NpgsqlCommand(createAccountSql, connection);
+        var command = new NpgsqlCommand(createAccountSql, connection);
         command.Parameters.AddWithValue("username", username);
         command.Parameters.AddWithValue("password_hash", Convert.ToBase64String(passwordHash));
         command.Parameters.AddWithValue("password_salt", Convert.ToBase64String(passwordSalt));

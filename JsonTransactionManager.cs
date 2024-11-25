@@ -30,7 +30,7 @@ public class JsonTransactionManager : ITransactionManager
         throw new NotImplementedException();
     }
 
-    public void SaveTransaction(string name, decimal amount, Guid userId)
+    public void SaveTransaction(Transaction transaction)
     {
         throw new NotImplementedException();
     }

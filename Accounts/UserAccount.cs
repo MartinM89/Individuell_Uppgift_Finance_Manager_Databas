@@ -8,6 +8,11 @@ public class UserAccount : IAccount
         create.RunCommand();
     }
 
+    public Guid GetUserId(Guid id)
+    {
+        return id;
+    }
+
     public void Login()
     {
         login.RunCommand();
