@@ -1,5 +1,8 @@
+using System.Data.Common;
+
 public class Transaction
 {
+    public int Id { get; private set; }
     public DateTime Date { get; private set; }
     public string? Name { get; private set; }
     public decimal Amount { get; private set; }

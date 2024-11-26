@@ -6,12 +6,7 @@ class Program
 
     static void Main(string[] args)
     {
-        // LoadCommand.Execute();
-        // RunFirstTime.Execute();
-
-        // var manager = new PostgresTransactionManager();
-        // var createAccountCommand = new CreateAccountCommand();
-        // var loginCommand = new LoginCommand();
+        // var manager = new PostgresTransactionManager(); // Creates tables
 
         while (run)
         {

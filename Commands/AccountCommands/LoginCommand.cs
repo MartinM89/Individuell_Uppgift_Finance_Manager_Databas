@@ -1,9 +1,8 @@
-using System.Dynamic;
 using Npgsql;
 
 public class LoginCommand : Command
 {
-    public static Guid id = Guid.Empty;
+    public static Guid Id { get; private set; }
 
     private NpgsqlConnection? connection;
 
@@ -100,9 +99,9 @@ public class LoginCommand : Command
 
         command = new NpgsqlCommand(getIdSql, connection);
         command.Parameters.AddWithValue("username", username);
-        command.Parameters.AddWithValue("id", id);
+        command.Parameters.AddWithValue("id", Id);
 
-        id = (Guid)command.ExecuteScalar();
+        Id = (Guid)command.ExecuteScalar()!;
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");

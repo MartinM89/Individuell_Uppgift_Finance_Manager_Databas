@@ -8,7 +8,7 @@ public class UserAccount : IAccount
         create.RunCommand();
     }
 
-    public Guid GetUserId(Guid id)
+    public int GetUserId(int id)
     {
         return id;
     }
