@@ -18,8 +18,8 @@ public class HidePassword
             else if (!char.IsControl(keyInfo.KeyChar))
             {
                 password += keyInfo.KeyChar;
-                char random = RandomCharGenerator.Execute();
-                Console.Write(random);
+                // char random = RandomCharGenerator.Execute();
+                Console.Write(" ");
             }
         } while (key != ConsoleKey.Enter);
 
