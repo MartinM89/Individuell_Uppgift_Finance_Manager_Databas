@@ -5,7 +5,7 @@ public class JsonTransactionManager : ITransactionManager
         throw new NotImplementedException();
     }
 
-    public void DeleteTransaction(int id)
+    public void DeleteTransaction(Transaction transaction, int deleteTransaction)
     {
         throw new NotImplementedException();
     }

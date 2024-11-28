@@ -81,7 +81,6 @@ public class PostgresTransactionManager : ITransactionManager
                 CREATE OR REPLACE FUNCTION reorder_user_transaction_ids()
                 RETURNS TRIGGER AS $$
                 BEGIN
-                    -- Reorder IDs for the specific user
                     WITH reordered AS (
                         SELECT id, ROW_NUMBER() OVER (ORDER BY date) AS new_id
                         FROM transactions
@@ -128,9 +127,16 @@ public class PostgresTransactionManager : ITransactionManager
         insertTransactionCmd.ExecuteNonQuery();
     }
 
-    public void DeleteTransaction(int id)
+    public void DeleteTransaction(Transaction transaction, int deleteTransaction)
     {
-        throw new NotImplementedException();
+        Guid id = LoginCommand.GetUserId(); // ??
+
+        var insertTransactionSql = "DELETE FROM transations WHERE user_id = @user_id AND id = @id";
+        using var insertTransactionCmd = new NpgsqlCommand(insertTransactionSql, connection);
+        insertTransactionCmd.Parameters.AddWithValue("@user_id", id);
+        insertTransactionCmd.Parameters.AddWithValue("@id", deleteTransaction);
+
+        insertTransactionCmd.ExecuteNonQuery();
     }
 
     public void GetBalance()

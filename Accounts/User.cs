@@ -5,9 +5,11 @@ public class User
     public byte[]? PasswordHash { get; private set; }
     public byte[]? PasswordSalt { get; private set; }
 
-    public User(string username)
+    public User(string username, byte[] passwordHash, byte[] passwordSalt)
     {
-        Id = Guid.NewGuid();
+        // Id = Guid.NewGuid();
         Username = username;
+        PasswordHash = passwordHash;
+        PasswordSalt = passwordSalt;
     }
 }

@@ -14,14 +14,14 @@ public class CommandManagerTransaction
             switch (hideUserChoice)
             {
                 case "A":
-                    var addTransaction = new AddTransactionCommand();
+                    AddTransactionCommand addTransaction = new();
                     addTransaction.RunCommand();
                     break;
 
                 case "D":
                     Console.Clear();
-                    Console.WriteLine("Delete transaction");
-                    PressKeyToContinue.Execute();
+                    DeleteTransactionCommand deleteTransaction = new();
+                    deleteTransaction.RunCommand();
                     break;
 
                 case "B":

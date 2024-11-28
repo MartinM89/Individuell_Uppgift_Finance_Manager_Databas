@@ -10,6 +10,9 @@ public class DeleteTransactionCommand : Command
 
     public override void RunCommand()
     {
+        Console.Clear();
 
+        Console.Write("What transaction do you wish to delete? ");
+        int transactionToDelete = int.Parse(Console.ReadLine()!);
     }
 }

@@ -1,14 +1,14 @@
 public class UserAccount : IAccount
 {
-    CreateAccountCommand create = new CreateAccountCommand();
-    LoginCommand login = new LoginCommand();
+    readonly CreateAccountCommand create = new();
+    readonly LoginCommand login = new();
 
     public void Create()
     {
         create.RunCommand();
     }
 
-    public int GetUserId(int id)
+    public Guid GetUserId(Guid id)
     {
         return id;
     }

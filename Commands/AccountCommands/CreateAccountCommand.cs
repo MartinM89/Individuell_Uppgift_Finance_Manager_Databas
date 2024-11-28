@@ -70,6 +70,10 @@ public class CreateAccountCommand : Command
 
         PasswordHasher.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
 
+        User user = new User(username, passwordHash, passwordSalt);
+
+        // Create a method to use the user object to create an account
+
         var createAccountSql = """
             INSERT INTO users (username, password_hash, password_salt)
             VALUES (@username, @password_hash, @password_salt)

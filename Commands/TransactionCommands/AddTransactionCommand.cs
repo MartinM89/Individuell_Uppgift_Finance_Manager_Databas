@@ -1,3 +1,5 @@
+using System.Text;
+
 public class AddTransactionCommand : Command
 {
     public AddTransactionCommand()
@@ -55,7 +57,7 @@ public class AddTransactionCommand : Command
                 continue;
             }
 
-            capitalizedTransactionName = char.ToUpper(transactionName[0]) + transactionName.Substring(1);
+            capitalizedTransactionName = char.ToUpper(transactionName[0]) + transactionName[1..];
             break;
         }
 
@@ -71,6 +73,8 @@ public class AddTransactionCommand : Command
             {
                 return;
             }
+
+            transactionValueString = transactionValueString.Replace('.', ',');
 
             if (transactionValueString.Length > 10 || !decimal.TryParse(transactionValueString, out transactionValue))
             {
@@ -96,10 +100,9 @@ public class AddTransactionCommand : Command
         var transactionManager = new PostgresTransactionManager();
 
         transactionManager.SaveTransaction(transaction);
-        // TransactionManager.GetTransactions.Sort((a, b) => b.Date.CompareTo(a.Date));
 
         Console.Clear();
-        Console.WriteLine($"The following transaction has been added:\n| {transaction.Date:yyyy MMM dd} | {transaction.Name} | {transaction.Amount:F2} |"); // ToString method name unnecessary, added for reference count.
+        Console.WriteLine($"The following transaction has been added:\n| {transaction.Date:yyyy MMM dd} | {transaction.Name} | {transaction.Amount:F2} |");
         PressKeyToContinue.Execute();
     }
 }

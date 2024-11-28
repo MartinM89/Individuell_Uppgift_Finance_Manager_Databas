@@ -15,16 +15,4 @@ public class Transaction
         this.Amount = amount;
         this.UserId = userId;
     }
-
-    // public override string ToString()
-    // {
-    //     int longestName = TransactionManager.LongestNameLength();
-    //     int longestAmount = TransactionManager.LongestAmountLength();
-
-    //     string transactionName = Name!.PadRight(longestName);
-    //     string transactionAmount = Math.Round(Amount, 2).ToString("F2") + ":-";
-    //     transactionAmount = transactionAmount.PadLeft(longestAmount);
-
-    //     return $"| {Date:yyyy MMM dd} | {Name} | {Amount} |";
-    // }
 }

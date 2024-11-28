@@ -14,6 +14,11 @@ public class LoginCommand : Command
         return "Use to login in";
     }
 
+    public static Guid GetUserId() // ??
+    {
+        return Id;
+    }
+
     public override void RunCommand()
     {
         string connectionString = DatabaseConnection.GetConnectionString();
@@ -98,8 +103,8 @@ public class LoginCommand : Command
             """;
 
         command = new NpgsqlCommand(getIdSql, connection);
-        command.Parameters.AddWithValue("username", username);
         command.Parameters.AddWithValue("id", Id);
+        command.Parameters.AddWithValue("username", username);
 
         Id = (Guid)command.ExecuteScalar()!;
 
