@@ -26,10 +26,8 @@ public class CommandManagerTransaction
 
                 case "B":
                     Console.Clear();
-                    PostgresTransactionManager getTransactions = new();
-                    getTransactions.GetTransactions();
-                    Console.WriteLine("Balance");
-                    PressKeyToContinue.Execute();
+                    PostgresTransactionManager getBalance = new();
+                    getBalance.GetBalance();
                     break;
 
                 case "I":
@@ -55,6 +53,12 @@ public class CommandManagerTransaction
                     Console.Clear();
                     Console.WriteLine("Help menu");
                     PressKeyToContinue.Execute();
+                    break;
+
+                case "P":
+                    Console.Clear();
+                    PostgresTransactionManager getAllTransactions = new();
+                    getAllTransactions.GetAllTransactions();
                     break;
 
                 default:

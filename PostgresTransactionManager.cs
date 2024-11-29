@@ -1,4 +1,5 @@
 using Npgsql;
+using NpgsqlTypes;
 
 public class PostgresTransactionManager : ITransactionManager
 {
@@ -100,7 +101,7 @@ public class PostgresTransactionManager : ITransactionManager
     public void SaveTransaction(Transaction transaction)
     {
         string insertTransactionSql = "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)";
-        using var insertTransactionCmd = new NpgsqlCommand(insertTransactionSql, connection);
+        using NpgsqlCommand insertTransactionCmd = new(insertTransactionSql, connection);
         insertTransactionCmd.Parameters.AddWithValue("@name", transaction.Name!);
         insertTransactionCmd.Parameters.AddWithValue("@amount", transaction.Amount);
         insertTransactionCmd.Parameters.AddWithValue("@user_id", transaction.UserId);
@@ -111,7 +112,7 @@ public class PostgresTransactionManager : ITransactionManager
     public void DeleteTransaction(int deleteTransaction)
     {
         string deleteTransactionSql = "DELETE FROM transactions WHERE user_id = @user_id AND id = @id";
-        using var deleteTransactionCmd = new NpgsqlCommand(deleteTransactionSql, connection);
+        using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, connection);
         deleteTransactionCmd.Parameters.AddWithValue("@user_id", userId);
         deleteTransactionCmd.Parameters.AddWithValue("@id", deleteTransaction);
 
@@ -120,16 +121,30 @@ public class PostgresTransactionManager : ITransactionManager
 
     public void GetBalance()
     {
-        throw new NotImplementedException();
+        string getBalance = "SELECT * FROM transactions WHERE user_id = @user_id";
+        using NpgsqlCommand getBalanceCmd = new(getBalance, connection);
+        getBalanceCmd.Parameters.AddWithValue("@user_id", userId);
+
+        NpgsqlDataReader reader = getBalanceCmd.ExecuteReader();
+
+        decimal totalBalance = 0;
+
+        while (reader.Read())
+        {
+            totalBalance += reader.GetDecimal(2);
+        }
+
+        Console.WriteLine($"Your total balance is {totalBalance}"); // Need to remove and return instead
+        PressKeyToContinue.Execute();
     }
 
-    public void GetTransactions()
+    public void GetAllTransactions()
     {
-        string getTransactionsSql = "SELECT * FROM transactions WHERE user_id = @user_id";
-        using var getTransactionsCmd = new NpgsqlCommand(getTransactionsSql, connection);
-        getTransactionsCmd.Parameters.AddWithValue("@user_id", userId);
+        string getAllTransactions = "SELECT * FROM transactions WHERE user_id = @user_id";
+        using NpgsqlCommand getAllTransactionsCmd = new(getAllTransactions, connection);
+        getAllTransactionsCmd.Parameters.AddWithValue("@user_id", userId);
 
-        NpgsqlDataReader reader = getTransactionsCmd.ExecuteReader();
+        NpgsqlDataReader reader = getAllTransactionsCmd.ExecuteReader();
 
         while (reader.Read())
         {
@@ -138,18 +153,8 @@ public class PostgresTransactionManager : ITransactionManager
             decimal amount = reader.GetDecimal(2);
             DateTime date = reader.GetDateTime(3);
 
-            Console.WriteLine($"{userId} {name} {amount} {date}");
+            Console.WriteLine($"{userId} {name} {amount} {date}"); // Remove and return transactions object instead
         }
         PressKeyToContinue.Execute();
-    }
-
-    public void LoadTransactions(List<Transaction> loadTransactions)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void PrintTransactions()
-    {
-        throw new NotImplementedException();
     }
 }
