@@ -6,11 +6,11 @@ public class Transaction
     public decimal Amount { get; private set; }
     public Guid UserId { get; private set; }
 
-    public Transaction(DateTime date, string name, decimal amount, Guid userId)
+    public Transaction(string name, decimal amount, DateTime date, Guid userId)
     {
-        this.Date = date;
         this.Name = name;
         this.Amount = amount;
+        this.Date = date;
         this.UserId = userId;
     }
 }

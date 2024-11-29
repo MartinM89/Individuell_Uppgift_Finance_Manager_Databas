@@ -32,6 +32,11 @@ public class CommandManagerTransaction
 
                 case "I":
                     Console.Clear();
+                    PostgresTransactionManager getDayTransactions = new();
+                    Console.WriteLine("Enter a day");
+                    int day = int.Parse(Console.ReadLine()!);
+                    getDayTransactions.GetTransactionsByDay(day);
+                    PressKeyToContinue.Execute();
                     Console.WriteLine("Income Summary");
                     PressKeyToContinue.Execute();
                     break;

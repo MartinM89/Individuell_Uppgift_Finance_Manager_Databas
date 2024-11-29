@@ -4,4 +4,5 @@ public interface ITransactionManager
     void DeleteTransaction(int deleteTransaction);
     void GetBalance();
     void GetAllTransactions();
+    Transaction GetTransactionsByDay(int day);
 }

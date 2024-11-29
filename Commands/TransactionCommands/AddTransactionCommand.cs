@@ -95,7 +95,7 @@ public class AddTransactionCommand : Command
             break;
         }
 
-        Transaction transaction = new Transaction(transactionDate, capitalizedTransactionName, transactionValue, LoginCommand.Id) { };
+        Transaction transaction = new Transaction(capitalizedTransactionName, transactionValue, transactionDate, LoginCommand.Id) { };
 
         var transactionManager = new PostgresTransactionManager();
 

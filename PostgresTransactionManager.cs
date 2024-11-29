@@ -157,4 +157,36 @@ public class PostgresTransactionManager : ITransactionManager
         }
         PressKeyToContinue.Execute();
     }
+
+    public Transaction GetTransactionsByDay(int day)
+    {
+        string getTransactionsByDay = """
+            SELECT * FROM transactions
+            WHERE user_id = @user_id
+            AND @day IS NOT NULL AND EXTRACT(DAY FROM date) = @day
+            """;
+        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDay, connection);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@day", day);
+
+        NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+
+        string name = string.Empty;
+        decimal amount = 0;
+        DateTime date = DateTime.Now;
+
+        while (reader.Read())
+        {
+            int id = reader.GetInt32(0);
+            name = reader.GetString(1);
+            amount = reader.GetDecimal(2);
+            date = reader.GetDateTime(3);
+
+            Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
+        }
+
+        Transaction transaction = new(name, amount, date, userId);
+
+        return transaction;
+    }
 }
