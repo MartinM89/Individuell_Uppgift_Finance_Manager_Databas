@@ -1,5 +1,3 @@
-using System.Data.Common;
-
 public class Transaction
 {
     public int Id { get; private set; }

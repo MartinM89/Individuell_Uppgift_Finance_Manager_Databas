@@ -26,6 +26,8 @@ public class CommandManagerTransaction
 
                 case "B":
                     Console.Clear();
+                    PostgresTransactionManager getTransactions = new();
+                    getTransactions.GetTransactions();
                     Console.WriteLine("Balance");
                     PressKeyToContinue.Execute();
                     break;

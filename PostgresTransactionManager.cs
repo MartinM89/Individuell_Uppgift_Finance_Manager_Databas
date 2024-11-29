@@ -3,6 +3,7 @@ using Npgsql;
 public class PostgresTransactionManager : ITransactionManager
 {
     private NpgsqlConnection connection;
+    Guid userId = LoginCommand.GetUserId();
 
     public PostgresTransactionManager()
     {
@@ -10,26 +11,6 @@ public class PostgresTransactionManager : ITransactionManager
 
         this.connection = new NpgsqlConnection(connectionString);
         connection.Open();
-
-        // """
-        //         CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-        //         CREATE TABLE IF NOT EXISTS users (
-        //         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        //         username VARCHAR(25) UNIQUE NOT NULL,
-        //         password_hash VARCHAR(100) NOT NULL,
-        //         password_salt VARCHAR NOT NULL
-        //     );
-
-        //         CREATE TABLE IF NOT EXISTS transactions (
-        //         id SERIAL PRIMARY KEY,
-        //         name VARCHAR NOT NULL,
-        //         amount DECIMAL(10, 2) NOT NULL,
-        //         date DATE DEFAULT NOW() NOT NULL,
-        //         user_id UUID NOT NULL,
-        //         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-        //     );
-        //     """;
 
         var createTablesSql = """
                 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -118,7 +99,7 @@ public class PostgresTransactionManager : ITransactionManager
 
     public void SaveTransaction(Transaction transaction)
     {
-        var insertTransactionSql = "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)";
+        string insertTransactionSql = "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)";
         using var insertTransactionCmd = new NpgsqlCommand(insertTransactionSql, connection);
         insertTransactionCmd.Parameters.AddWithValue("@name", transaction.Name!);
         insertTransactionCmd.Parameters.AddWithValue("@amount", transaction.Amount);
@@ -127,16 +108,14 @@ public class PostgresTransactionManager : ITransactionManager
         insertTransactionCmd.ExecuteNonQuery();
     }
 
-    public void DeleteTransaction(Transaction transaction, int deleteTransaction)
+    public void DeleteTransaction(int deleteTransaction)
     {
-        Guid id = LoginCommand.GetUserId(); // ??
+        string deleteTransactionSql = "DELETE FROM transactions WHERE user_id = @user_id AND id = @id";
+        using var deleteTransactionCmd = new NpgsqlCommand(deleteTransactionSql, connection);
+        deleteTransactionCmd.Parameters.AddWithValue("@user_id", userId);
+        deleteTransactionCmd.Parameters.AddWithValue("@id", deleteTransaction);
 
-        var insertTransactionSql = "DELETE FROM transations WHERE user_id = @user_id AND id = @id";
-        using var insertTransactionCmd = new NpgsqlCommand(insertTransactionSql, connection);
-        insertTransactionCmd.Parameters.AddWithValue("@user_id", id);
-        insertTransactionCmd.Parameters.AddWithValue("@id", deleteTransaction);
-
-        insertTransactionCmd.ExecuteNonQuery();
+        deleteTransactionCmd.ExecuteNonQuery();
     }
 
     public void GetBalance()
@@ -144,9 +123,24 @@ public class PostgresTransactionManager : ITransactionManager
         throw new NotImplementedException();
     }
 
-    public List<Transaction> GetTransactions()
+    public void GetTransactions()
     {
-        throw new NotImplementedException();
+        string getTransactionsSql = "SELECT * FROM transactions WHERE user_id = @user_id";
+        using var getTransactionsCmd = new NpgsqlCommand(getTransactionsSql, connection);
+        getTransactionsCmd.Parameters.AddWithValue("@user_id", userId);
+
+        NpgsqlDataReader reader = getTransactionsCmd.ExecuteReader();
+
+        while (reader.Read())
+        {
+            int userId = reader.GetInt32(0);
+            string name = reader.GetString(1);
+            decimal amount = reader.GetDecimal(2);
+            DateTime date = reader.GetDateTime(3);
+
+            Console.WriteLine($"{userId} {name} {amount} {date}");
+        }
+        PressKeyToContinue.Execute();
     }
 
     public void LoadTransactions(List<Transaction> loadTransactions)

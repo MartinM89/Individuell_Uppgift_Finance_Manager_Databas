@@ -14,5 +14,12 @@ public class DeleteTransactionCommand : Command
 
         Console.Write("What transaction do you wish to delete? ");
         int transactionToDelete = int.Parse(Console.ReadLine()!);
+
+        PostgresTransactionManager manager = new();
+
+        manager.DeleteTransaction(transactionToDelete);
+
+        Console.WriteLine($"Transaction {transactionToDelete} deleted.");
+        PressKeyToContinue.Execute();
     }
 }

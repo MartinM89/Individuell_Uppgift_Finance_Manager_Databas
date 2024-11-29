@@ -14,7 +14,7 @@ public class LoginCommand : Command
         return "Use to login in";
     }
 
-    public static Guid GetUserId() // ??
+    public static Guid GetUserId()
     {
         return Id;
     }
