@@ -29,9 +29,12 @@ public class LoginCommand : Command
         string enteredPassword = string.Empty;
 
         Console.Clear();
+        Console.CursorVisible = true;
 
         Console.Write("Enter username: ");
         string username = Console.ReadLine()!;
+
+        Console.CursorVisible = false;
 
         if (string.IsNullOrEmpty(username))
         {

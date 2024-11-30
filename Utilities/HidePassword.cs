@@ -19,7 +19,7 @@ public class HidePassword
             {
                 password += keyInfo.KeyChar;
                 // char random = RandomCharGenerator.Execute();
-                Console.Write(" ");
+                Console.Write("●");
             }
         } while (key != ConsoleKey.Enter);
 
@@ -27,7 +27,7 @@ public class HidePassword
     }
 }
 
-public class RandomCharGenerator
+public class RandomCharGenerator // Not used
 {
     public static char Execute()
     {

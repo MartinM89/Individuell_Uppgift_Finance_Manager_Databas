@@ -153,21 +153,122 @@ public class PostgresTransactionManager : ITransactionManager
             decimal amount = reader.GetDecimal(2);
             DateTime date = reader.GetDateTime(3);
 
-            Console.WriteLine($"{userId} {name} {amount} {date}"); // Remove and return transactions object instead
+            Console.WriteLine($"{userId} {name} {amount} {date:dd MMM}"); // Remove and return transactions object instead
         }
         PressKeyToContinue.Execute();
     }
 
-    public Transaction GetTransactionsByDay(int day)
+    public Transaction GetTransactionsByDay(int dayOfMonth, char transactionType)
     {
-        string getTransactionsByDay = """
+        string getTransactionsByDay = $"""
             SELECT * FROM transactions
             WHERE user_id = @user_id
-            AND @day IS NOT NULL AND EXTRACT(DAY FROM date) = @day
+            AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+            AND amount {transactionType} 0
             """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDay, connection);
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@day", day);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@dayOfMonth", dayOfMonth);
+        // getTransactionsByDayCmd.Parameters.AddWithValue("@transactionType", transactionType); // Doesn't work?
+
+        NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+
+        string name = string.Empty;
+        decimal amount = 0;
+        DateTime date = DateTime.Now;
+
+        while (reader.Read())
+        {
+            int id = reader.GetInt32(0);
+            name = reader.GetString(1);
+            amount = reader.GetDecimal(2);
+            date = reader.GetDateTime(3);
+
+            Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
+        }
+
+        Transaction transaction = new(name, amount, date, userId);
+
+        return transaction;
+    }
+
+    public Transaction GetTransactionsByWeek(int weekNumber, char transactionType)
+    {
+        string getTransactionsByDay = $"""
+            SELECT * FROM transactions
+            WHERE user_id = @user_id
+            AND @weekNumber IS NOT NULL AND EXTRACT(WEEK FROM date) = @weekNumber
+            AND amount {transactionType} 0
+            """;
+        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDay, connection);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@weekNumber", weekNumber);
+
+        NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+
+        string name = string.Empty;
+        decimal amount = 0;
+        DateTime date = DateTime.Now;
+
+        while (reader.Read())
+        {
+            int id = reader.GetInt32(0);
+            name = reader.GetString(1);
+            amount = reader.GetDecimal(2);
+            date = reader.GetDateTime(3);
+
+            Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
+        }
+
+        Transaction transaction = new(name, amount, date, userId);
+
+        return transaction;
+    }
+
+    public Transaction GetTransactionsByMonth(int month, char transactionType)
+    {
+        string getTransactionsByDay = $"""
+            SELECT * FROM transactions
+            WHERE user_id = @user_id
+            AND @month IS NOT NULL AND EXTRACT(MONTH FROM date) = @month
+            AND amount {transactionType} 0
+            """;
+        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDay, connection);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@month", month);
+
+        NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+
+        string name = string.Empty;
+        decimal amount = 0;
+        DateTime date = DateTime.Now;
+
+        while (reader.Read())
+        {
+            int id = reader.GetInt32(0);
+            name = reader.GetString(1);
+            amount = reader.GetDecimal(2);
+            date = reader.GetDateTime(3);
+
+            Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
+        }
+
+        Transaction transaction = new(name, amount, date, userId);
+
+        return transaction;
+    }
+
+    public Transaction GetTransactionsByYear(int year, char transactionType)
+    {
+        string getTransactionsByDay = $"""
+            SELECT * FROM transactions
+            WHERE user_id = @user_id
+            AND @year IS NOT NULL AND EXTRACT(YEAR FROM date) = @year
+            AND amount {transactionType} 0
+            """;
+        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDay, connection);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@year", year);
 
         NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
 
