@@ -1,6 +1,8 @@
+using Npgsql;
+
 public interface IAccount
 {
-    void Create();
-    void Login();
+    void Create(NpgsqlConnection connection);
+    void Login(NpgsqlConnection connection);
     Guid GetUserId(Guid id);
 }

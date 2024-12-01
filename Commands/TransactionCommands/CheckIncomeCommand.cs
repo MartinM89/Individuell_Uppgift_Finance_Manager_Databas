@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
+using Npgsql;
 
 public class CheckIncomeCommand : Command
 {
@@ -11,13 +12,13 @@ public class CheckIncomeCommand : Command
         return "Check your income";
     }
 
-    public override void RunCommand()
+    public override void RunCommand(NpgsqlConnection connection)
     {
         while (true)
         {
             Console.Clear();
 
-            PostgresTransactionManager getTransaction = new();
+            PostgresTransactionManager getTransaction = new(connection);
 
             // int transactionCount = TransactionManager.GetTransactionCount();
 
@@ -40,7 +41,6 @@ public class CheckIncomeCommand : Command
 
             string userChoice = string.Empty;
             string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
-            // string userChoice = Console.ReadLine()!.ToUpper();
 
             if (string.IsNullOrEmpty(hideUserChoice))
             {

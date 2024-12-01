@@ -4,8 +4,6 @@ public class LoginCommand : Command
 {
     public static Guid Id { get; private set; }
 
-    private NpgsqlConnection? connection;
-
     public LoginCommand()
         : base("Login") { }
 
@@ -19,16 +17,11 @@ public class LoginCommand : Command
         return Id;
     }
 
-    public override void RunCommand()
+    public override void RunCommand(NpgsqlConnection connection)
     {
-        string connectionString = DatabaseConnection.GetConnectionString();
-
-        this.connection = new NpgsqlConnection(connectionString);
-        connection.Open();
+        Console.Clear();
 
         string enteredPassword = string.Empty;
-
-        Console.Clear();
         Console.CursorVisible = true;
 
         Console.Write("Enter username: ");
@@ -70,32 +63,32 @@ public class LoginCommand : Command
         var command = new NpgsqlCommand(loginSql, connection);
         command.Parameters.AddWithValue("username", username);
 
-        var reader = command.ExecuteReader();
-        if (!reader.Read())
+        using (var reader = command.ExecuteReader()) // Double check if using is needed
         {
-            Console.Clear();
-            ChangeColor.TextColorRed("User not found.\n");
-            PressKeyToContinue.Execute();
-            return;
+            if (!reader.Read())
+            {
+                Console.Clear();
+                ChangeColor.TextColorRed("User not found.\n");
+                PressKeyToContinue.Execute();
+                return;
+            }
+
+            string passwordHashString = reader.GetString(0);
+            string saltString = reader.GetString(1);
+
+            byte[] storedPasswordHash = Convert.FromBase64String(passwordHashString);
+            byte[] storedPasswordSalt = Convert.FromBase64String(saltString);
+
+            bool isPasswordCorrect = PasswordHasher.VerifyPasswordHash(enteredPassword, storedPasswordHash, storedPasswordSalt);
+
+            if (!isPasswordCorrect)
+            {
+                Console.Clear();
+                ChangeColor.TextColorRed("Invalid password.\n");
+                PressKeyToContinue.Execute();
+                return;
+            }
         }
-
-        string passwordHashString = reader.GetString(0);
-        string saltString = reader.GetString(1);
-
-        byte[] storedPasswordHash = Convert.FromBase64String(passwordHashString);
-        byte[] storedPasswordSalt = Convert.FromBase64String(saltString);
-
-        bool isPasswordCorrect = PasswordHasher.VerifyPasswordHash(enteredPassword, storedPasswordHash, storedPasswordSalt);
-
-        if (!isPasswordCorrect)
-        {
-            Console.Clear();
-            ChangeColor.TextColorRed("Invalid password.\n");
-            PressKeyToContinue.Execute();
-            return;
-        }
-
-        reader.Close();
 
         CommandManagerTransaction.loggedIn = true;
 
@@ -114,7 +107,5 @@ public class LoginCommand : Command
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");
         PressKeyToContinue.Execute();
-
-        connection.Close();
     }
 }

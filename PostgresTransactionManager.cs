@@ -1,17 +1,15 @@
 using Npgsql;
-using NpgsqlTypes;
 
 public class PostgresTransactionManager : ITransactionManager
 {
-    private NpgsqlConnection connection;
+    private readonly NpgsqlConnection Connection;
     Guid userId = LoginCommand.GetUserId();
 
-    public PostgresTransactionManager()
+    public PostgresTransactionManager(NpgsqlConnection connection)
     {
-        string connectionString = DatabaseConnection.GetConnectionString();
+        Connection = connection;
 
-        this.connection = new NpgsqlConnection(connectionString);
-        connection.Open();
+        #region CreateTableFunctionTriggersQuery
 
         var createTablesSql = """
                 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -94,14 +92,16 @@ public class PostgresTransactionManager : ITransactionManager
                 $$;
             """;
 
-        using var createTablesCmd = new NpgsqlCommand(createTablesSql, connection);
+        #endregion
+
+        using NpgsqlCommand createTablesCmd = new(createTablesSql, Connection);
         createTablesCmd.ExecuteNonQuery();
     }
 
     public void SaveTransaction(Transaction transaction)
     {
         string insertTransactionSql = "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)";
-        using NpgsqlCommand insertTransactionCmd = new(insertTransactionSql, connection);
+        using NpgsqlCommand insertTransactionCmd = new(insertTransactionSql, Connection);
         insertTransactionCmd.Parameters.AddWithValue("@name", transaction.Name!);
         insertTransactionCmd.Parameters.AddWithValue("@amount", transaction.Amount);
         insertTransactionCmd.Parameters.AddWithValue("@user_id", transaction.UserId);
@@ -112,7 +112,7 @@ public class PostgresTransactionManager : ITransactionManager
     public void DeleteTransaction(int deleteTransaction)
     {
         string deleteTransactionSql = "DELETE FROM transactions WHERE user_id = @user_id AND id = @id";
-        using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, connection);
+        using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, Connection);
         deleteTransactionCmd.Parameters.AddWithValue("@user_id", userId);
         deleteTransactionCmd.Parameters.AddWithValue("@id", deleteTransaction);
 
@@ -121,11 +121,11 @@ public class PostgresTransactionManager : ITransactionManager
 
     public void GetBalance()
     {
-        string getBalance = "SELECT * FROM transactions WHERE user_id = @user_id";
-        using NpgsqlCommand getBalanceCmd = new(getBalance, connection);
+        string getBalanceSql = "SELECT * FROM transactions WHERE user_id = @user_id";
+        using NpgsqlCommand getBalanceCmd = new(getBalanceSql, Connection);
         getBalanceCmd.Parameters.AddWithValue("@user_id", userId);
 
-        NpgsqlDataReader reader = getBalanceCmd.ExecuteReader();
+        using NpgsqlDataReader reader = getBalanceCmd.ExecuteReader();
 
         decimal totalBalance = 0;
 
@@ -140,11 +140,11 @@ public class PostgresTransactionManager : ITransactionManager
 
     public void GetAllTransactions()
     {
-        string getAllTransactions = "SELECT * FROM transactions WHERE user_id = @user_id";
-        using NpgsqlCommand getAllTransactionsCmd = new(getAllTransactions, connection);
+        string getAllTransactionsSql = "SELECT * FROM transactions WHERE user_id = @user_id";
+        using NpgsqlCommand getAllTransactionsCmd = new(getAllTransactionsSql, Connection);
         getAllTransactionsCmd.Parameters.AddWithValue("@user_id", userId);
 
-        NpgsqlDataReader reader = getAllTransactionsCmd.ExecuteReader();
+        using NpgsqlDataReader reader = getAllTransactionsCmd.ExecuteReader();
 
         while (reader.Read())
         {
@@ -160,18 +160,18 @@ public class PostgresTransactionManager : ITransactionManager
 
     public Transaction GetTransactionsByDay(int dayOfMonth, char transactionType)
     {
-        string getTransactionsByDay = $"""
+        string getTransactionsByDaySql = $"""
             SELECT * FROM transactions
             WHERE user_id = @user_id
             AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
             AND amount {transactionType} 0
             """;
-        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDay, connection);
+        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDaySql, Connection);
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@dayOfMonth", dayOfMonth);
         // getTransactionsByDayCmd.Parameters.AddWithValue("@transactionType", transactionType); // Doesn't work?
 
-        NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+        using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
 
         string name = string.Empty;
         decimal amount = 0;
@@ -194,17 +194,17 @@ public class PostgresTransactionManager : ITransactionManager
 
     public Transaction GetTransactionsByWeek(int weekNumber, char transactionType)
     {
-        string getTransactionsByDay = $"""
+        string getTransactionsByWeekSql = $"""
             SELECT * FROM transactions
             WHERE user_id = @user_id
             AND @weekNumber IS NOT NULL AND EXTRACT(WEEK FROM date) = @weekNumber
             AND amount {transactionType} 0
             """;
-        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDay, connection);
+        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByWeekSql, Connection);
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@weekNumber", weekNumber);
 
-        NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+        using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
 
         string name = string.Empty;
         decimal amount = 0;
@@ -227,17 +227,17 @@ public class PostgresTransactionManager : ITransactionManager
 
     public Transaction GetTransactionsByMonth(int month, char transactionType)
     {
-        string getTransactionsByDay = $"""
+        string getTransactionsByMonthSql = $"""
             SELECT * FROM transactions
             WHERE user_id = @user_id
             AND @month IS NOT NULL AND EXTRACT(MONTH FROM date) = @month
             AND amount {transactionType} 0
             """;
-        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDay, connection);
+        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByMonthSql, Connection);
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@month", month);
 
-        NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+        using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
 
         string name = string.Empty;
         decimal amount = 0;
@@ -260,17 +260,17 @@ public class PostgresTransactionManager : ITransactionManager
 
     public Transaction GetTransactionsByYear(int year, char transactionType)
     {
-        string getTransactionsByDay = $"""
+        string getTransactionsByYearSql = $"""
             SELECT * FROM transactions
             WHERE user_id = @user_id
             AND @year IS NOT NULL AND EXTRACT(YEAR FROM date) = @year
             AND amount {transactionType} 0
             """;
-        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDay, connection);
+        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByYearSql, Connection);
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@year", year);
 
-        NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+        using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
 
         string name = string.Empty;
         decimal amount = 0;

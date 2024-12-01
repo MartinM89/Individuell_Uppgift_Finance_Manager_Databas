@@ -2,8 +2,6 @@ using Npgsql;
 
 public class CreateAccountCommand : Command
 {
-    private NpgsqlConnection? connection;
-
     public CreateAccountCommand()
         : base("Create Account") { }
 
@@ -12,14 +10,9 @@ public class CreateAccountCommand : Command
         return "Create a new account";
     }
 
-    public override void RunCommand()
+    public override void RunCommand(NpgsqlConnection connection)
     {
         Console.Clear();
-
-        string connectionString = DatabaseConnection.GetConnectionString();
-
-        this.connection = new NpgsqlConnection(connectionString);
-        connection.Open();
 
         string password = string.Empty;
         string confirmPassword = string.Empty;
@@ -89,7 +82,5 @@ public class CreateAccountCommand : Command
         Console.Clear();
         ChangeColor.TextColorGreen($"Account {username} registered successfully.\n");
         PressKeyToContinue.Execute();
-
-        connection.Close();
     }
 }

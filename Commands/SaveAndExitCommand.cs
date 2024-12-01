@@ -1,3 +1,5 @@
+using Npgsql;
+
 public class SaveAndExitCommand : Command
 {
     public SaveAndExitCommand()
@@ -8,7 +10,7 @@ public class SaveAndExitCommand : Command
         return "Save and exit the program";
     }
 
-    public override void RunCommand()
+    public override void RunCommand(NpgsqlConnection connection)
     {
         throw new NotImplementedException();
     }

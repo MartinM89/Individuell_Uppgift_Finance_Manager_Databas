@@ -1,3 +1,5 @@
+using Npgsql;
+
 public class HelpCommand : Command
 {
     public HelpCommand()
@@ -8,7 +10,7 @@ public class HelpCommand : Command
         return "Check help commands";
     }
 
-    public override void RunCommand()
+    public override void RunCommand(NpgsqlConnection connection)
     {
         throw new NotImplementedException();
     }

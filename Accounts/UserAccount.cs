@@ -1,11 +1,13 @@
+using Npgsql;
+
 public class UserAccount : IAccount
 {
     readonly CreateAccountCommand create = new();
     readonly LoginCommand login = new();
 
-    public void Create()
+    public void Create(NpgsqlConnection connection)
     {
-        create.RunCommand();
+        create.RunCommand(connection);
     }
 
     public Guid GetUserId(Guid id)
@@ -13,8 +15,8 @@ public class UserAccount : IAccount
         return id;
     }
 
-    public void Login()
+    public void Login(NpgsqlConnection connection)
     {
-        login.RunCommand();
+        login.RunCommand(connection);
     }
 }

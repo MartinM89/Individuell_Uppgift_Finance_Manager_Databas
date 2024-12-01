@@ -1,3 +1,5 @@
+using Npgsql;
+
 public class LoadCommand : Command
 {
     public LoadCommand()
@@ -8,7 +10,7 @@ public class LoadCommand : Command
         return "Load your transactions";
     }
 
-    public override void RunCommand()
+    public override void RunCommand(NpgsqlConnection connection)
     {
         throw new NotImplementedException();
     }

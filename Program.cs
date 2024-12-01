@@ -1,4 +1,6 @@
-﻿namespace Individuell_Uppgift;
+﻿using Npgsql;
+
+namespace Individuell_Uppgift;
 
 class Program
 {
@@ -8,10 +10,19 @@ class Program
     {
         // var manager = new PostgresTransactionManager(); // Creates tables
 
+        string connectionString = DatabaseConnection.GetConnectionString();
+
+        NpgsqlConnection connection = new(connectionString);
+        connection.Open();
+
+        CommandManagerAccount commandManager = new(connection);
+
         while (run)
         {
             AccountMenu.Execute();
-            CommandManagerAccount.Execute();
+            commandManager.Execute(connection);
         }
+
+        connection.Close();
     }
 }

@@ -1,8 +1,10 @@
+using Npgsql;
+
 public class CommandManagerTransaction
 {
     public static bool loggedIn = false;
 
-    public static void Execute()
+    public static void Execute(NpgsqlConnection connection)
     {
         while (loggedIn)
         {
@@ -15,25 +17,25 @@ public class CommandManagerTransaction
             {
                 case "A":
                     AddTransactionCommand addTransaction = new();
-                    addTransaction.RunCommand();
+                    addTransaction.RunCommand(connection);
                     break;
 
                 case "D":
                     Console.Clear();
                     DeleteTransactionCommand deleteTransaction = new();
-                    deleteTransaction.RunCommand();
+                    deleteTransaction.RunCommand(connection);
                     break;
 
                 case "B":
                     Console.Clear();
-                    PostgresTransactionManager getBalance = new();
+                    PostgresTransactionManager getBalance = new(connection);
                     getBalance.GetBalance();
                     break;
 
                 case "I":
                     Console.Clear();
                     CheckIncomeCommand checkIncome = new();
-                    checkIncome.RunCommand();
+                    checkIncome.RunCommand(connection);
                     PressKeyToContinue.Execute();
                     break;
 
@@ -58,7 +60,7 @@ public class CommandManagerTransaction
 
                 case "P":
                     Console.Clear();
-                    PostgresTransactionManager getAllTransactions = new();
+                    PostgresTransactionManager getAllTransactions = new(connection);
                     getAllTransactions.GetAllTransactions();
                     break;
 

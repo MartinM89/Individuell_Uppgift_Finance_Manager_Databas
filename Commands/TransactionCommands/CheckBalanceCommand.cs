@@ -1,3 +1,5 @@
+using Npgsql;
+
 public class CheckBalanceCommand : Command
 {
     public CheckBalanceCommand()
@@ -8,7 +10,7 @@ public class CheckBalanceCommand : Command
         return "Check your current balance";
     }
 
-    public override void RunCommand()
+    public override void RunCommand(NpgsqlConnection connection)
     {
         throw new NotImplementedException();
     }

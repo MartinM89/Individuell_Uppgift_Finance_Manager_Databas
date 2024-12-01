@@ -1,4 +1,4 @@
-using System.Text;
+using Npgsql;
 
 public class AddTransactionCommand : Command
 {
@@ -10,7 +10,7 @@ public class AddTransactionCommand : Command
         return "Adds a transaction";
     }
 
-    public override void RunCommand()
+    public override void RunCommand(NpgsqlConnection connection)
     {
         Console.Clear();
 
@@ -40,7 +40,7 @@ public class AddTransactionCommand : Command
                 }
             }
 
-            // bool onlyLettersOrWhiteSpace = transactionName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c));
+            // bool onlyLettersOrWhiteSpace = transactionName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)); // Worse than foreach loop
 
             if (!onlyLettersOrWhiteSpace)
             {
@@ -97,7 +97,7 @@ public class AddTransactionCommand : Command
 
         Transaction transaction = new Transaction(capitalizedTransactionName, transactionValue, transactionDate, LoginCommand.Id) { };
 
-        var transactionManager = new PostgresTransactionManager();
+        var transactionManager = new PostgresTransactionManager(connection);
 
         transactionManager.SaveTransaction(transaction);
 

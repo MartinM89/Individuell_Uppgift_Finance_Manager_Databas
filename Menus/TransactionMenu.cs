@@ -22,7 +22,5 @@ public class TransactionMenu
         Console.WriteLine("og Out");
         ChangeColor.TextColorGreen("[H]");
         Console.WriteLine("elp Page");
-
-        // Console.Write("\nEnter choice: ");
     }
 }

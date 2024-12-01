@@ -8,6 +8,7 @@ public class Transaction
 
     public Transaction(string name, decimal amount, DateTime date, Guid userId)
     {
+        // this.Id = id;
         this.Name = name;
         this.Amount = amount;
         this.Date = date;

@@ -1,3 +1,5 @@
+using Npgsql;
+
 public class DeleteTransactionCommand : Command
 {
     public DeleteTransactionCommand()
@@ -8,14 +10,14 @@ public class DeleteTransactionCommand : Command
         return "Delete a transaction";
     }
 
-    public override void RunCommand()
+    public override void RunCommand(NpgsqlConnection connection)
     {
         Console.Clear();
 
         Console.Write("What transaction do you wish to delete? ");
         int transactionToDelete = int.Parse(Console.ReadLine()!);
 
-        PostgresTransactionManager manager = new();
+        PostgresTransactionManager manager = new(connection);
 
         manager.DeleteTransaction(transactionToDelete);
 

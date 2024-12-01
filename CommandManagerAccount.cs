@@ -1,23 +1,31 @@
 using Individuell_Uppgift;
+using Npgsql;
 
 public class CommandManagerAccount
 {
-    public static UserAccount userAccount = new UserAccount();
+    private readonly NpgsqlConnection Connection;
 
-    public static void Execute()
+    public CommandManagerAccount(NpgsqlConnection connection)
     {
+        Connection = connection;
+    }
+
+    public void Execute(NpgsqlConnection connection)
+    {
+        UserAccount userAccount = new();
+
         string userChoice = string.Empty;
         string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
 
         switch (hideUserChoice)
         {
             case "C":
-                userAccount.Create();
+                userAccount.Create(connection);
                 break;
 
             case "L":
-                userAccount.Login();
-                CommandManagerTransaction.Execute();
+                userAccount.Login(connection);
+                CommandManagerTransaction.Execute(connection);
                 break;
 
             case "G":

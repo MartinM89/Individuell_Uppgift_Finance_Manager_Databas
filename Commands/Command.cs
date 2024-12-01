@@ -1,3 +1,5 @@
+using Npgsql;
+
 public abstract class Command
 {
     public string Name { get; init; }
@@ -7,7 +9,7 @@ public abstract class Command
         this.Name = name;
     }
 
-    public abstract void RunCommand();
+    public abstract void RunCommand(NpgsqlConnection connection);
 
     public abstract string GetDescription();
 }

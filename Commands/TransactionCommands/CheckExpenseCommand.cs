@@ -1,3 +1,5 @@
+using Npgsql;
+
 public class CheckExpenseCommand : Command
 {
     public CheckExpenseCommand()
@@ -8,7 +10,7 @@ public class CheckExpenseCommand : Command
         return "Check your expenses";
     }
 
-    public override void RunCommand()
+    public override void RunCommand(NpgsqlConnection connection)
     {
         throw new NotImplementedException();
     }
