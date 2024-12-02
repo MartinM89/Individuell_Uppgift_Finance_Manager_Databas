@@ -10,7 +10,7 @@ public class DeleteTransactionCommand : Command
         return "Delete a transaction";
     }
 
-    public override void RunCommand(NpgsqlConnection connection)
+    public override void Execute(NpgsqlConnection connection)
     {
         Console.Clear();
 

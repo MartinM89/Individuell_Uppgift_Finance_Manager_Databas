@@ -3,7 +3,6 @@ using Npgsql;
 public class PostgresTransactionManager : ITransactionManager
 {
     private readonly NpgsqlConnection Connection;
-    Guid userId = LoginCommand.GetUserId();
 
     public PostgresTransactionManager(NpgsqlConnection connection)
     {
@@ -113,7 +112,7 @@ public class PostgresTransactionManager : ITransactionManager
     {
         string deleteTransactionSql = "DELETE FROM transactions WHERE user_id = @user_id AND id = @id";
         using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, Connection);
-        deleteTransactionCmd.Parameters.AddWithValue("@user_id", userId);
+        deleteTransactionCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         deleteTransactionCmd.Parameters.AddWithValue("@id", deleteTransaction);
 
         deleteTransactionCmd.ExecuteNonQuery();
@@ -123,7 +122,7 @@ public class PostgresTransactionManager : ITransactionManager
     {
         string getBalanceSql = "SELECT * FROM transactions WHERE user_id = @user_id";
         using NpgsqlCommand getBalanceCmd = new(getBalanceSql, Connection);
-        getBalanceCmd.Parameters.AddWithValue("@user_id", userId);
+        getBalanceCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
 
         using NpgsqlDataReader reader = getBalanceCmd.ExecuteReader();
 
@@ -134,7 +133,7 @@ public class PostgresTransactionManager : ITransactionManager
             totalBalance += reader.GetDecimal(2);
         }
 
-        Console.WriteLine($"Your total balance is {totalBalance}"); // Need to remove and return instead
+        Console.WriteLine($"Your total balance is {totalBalance}"); // Remove and return balance as decimal instead
         PressKeyToContinue.Execute();
     }
 
@@ -142,7 +141,7 @@ public class PostgresTransactionManager : ITransactionManager
     {
         string getAllTransactionsSql = "SELECT * FROM transactions WHERE user_id = @user_id";
         using NpgsqlCommand getAllTransactionsCmd = new(getAllTransactionsSql, Connection);
-        getAllTransactionsCmd.Parameters.AddWithValue("@user_id", userId);
+        getAllTransactionsCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
 
         using NpgsqlDataReader reader = getAllTransactionsCmd.ExecuteReader();
 
@@ -167,7 +166,7 @@ public class PostgresTransactionManager : ITransactionManager
             AND amount {transactionType} 0
             """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDaySql, Connection);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@dayOfMonth", dayOfMonth);
         // getTransactionsByDayCmd.Parameters.AddWithValue("@transactionType", transactionType); // Doesn't work?
 
@@ -179,7 +178,6 @@ public class PostgresTransactionManager : ITransactionManager
 
         while (reader.Read())
         {
-            int id = reader.GetInt32(0);
             name = reader.GetString(1);
             amount = reader.GetDecimal(2);
             date = reader.GetDateTime(3);
@@ -187,7 +185,7 @@ public class PostgresTransactionManager : ITransactionManager
             Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
         }
 
-        Transaction transaction = new(name, amount, date, userId);
+        Transaction transaction = new(name, amount, date, PostgresAccountManager.LoggedInUserId);
 
         return transaction;
     }
@@ -201,7 +199,7 @@ public class PostgresTransactionManager : ITransactionManager
             AND amount {transactionType} 0
             """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByWeekSql, Connection);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@weekNumber", weekNumber);
 
         using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
@@ -212,7 +210,6 @@ public class PostgresTransactionManager : ITransactionManager
 
         while (reader.Read())
         {
-            int id = reader.GetInt32(0);
             name = reader.GetString(1);
             amount = reader.GetDecimal(2);
             date = reader.GetDateTime(3);
@@ -220,7 +217,7 @@ public class PostgresTransactionManager : ITransactionManager
             Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
         }
 
-        Transaction transaction = new(name, amount, date, userId);
+        Transaction transaction = new(name, amount, date, PostgresAccountManager.LoggedInUserId);
 
         return transaction;
     }
@@ -234,7 +231,7 @@ public class PostgresTransactionManager : ITransactionManager
             AND amount {transactionType} 0
             """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByMonthSql, Connection);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@month", month);
 
         using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
@@ -245,7 +242,6 @@ public class PostgresTransactionManager : ITransactionManager
 
         while (reader.Read())
         {
-            int id = reader.GetInt32(0);
             name = reader.GetString(1);
             amount = reader.GetDecimal(2);
             date = reader.GetDateTime(3);
@@ -253,7 +249,7 @@ public class PostgresTransactionManager : ITransactionManager
             Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
         }
 
-        Transaction transaction = new(name, amount, date, userId);
+        Transaction transaction = new(name, amount, date, PostgresAccountManager.LoggedInUserId);
 
         return transaction;
     }
@@ -267,7 +263,7 @@ public class PostgresTransactionManager : ITransactionManager
             AND amount {transactionType} 0
             """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByYearSql, Connection);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userId);
+        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@year", year);
 
         using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
@@ -278,7 +274,6 @@ public class PostgresTransactionManager : ITransactionManager
 
         while (reader.Read())
         {
-            int id = reader.GetInt32(0);
             name = reader.GetString(1);
             amount = reader.GetDecimal(2);
             date = reader.GetDateTime(3);
@@ -286,7 +281,7 @@ public class PostgresTransactionManager : ITransactionManager
             Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
         }
 
-        Transaction transaction = new(name, amount, date, userId);
+        Transaction transaction = new(name, amount, date, PostgresAccountManager.LoggedInUserId);
 
         return transaction;
     }

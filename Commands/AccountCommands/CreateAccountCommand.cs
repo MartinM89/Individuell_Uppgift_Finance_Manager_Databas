@@ -10,8 +10,10 @@ public class CreateAccountCommand : Command
         return "Create a new account";
     }
 
-    public override void RunCommand(NpgsqlConnection connection)
+    public override void Execute(NpgsqlConnection connection)
     {
+        PostgresAccountManager postgresAccountManager = new();
+
         Console.Clear();
 
         string password = string.Empty;
@@ -27,12 +29,12 @@ public class CreateAccountCommand : Command
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = UserNameUnavailable.Execute(username, connection);
+        bool usernameExists = UserNameUnavailable.Execute(connection, username);
 
         if (usernameExists)
         {
             Console.Clear();
-            ChangeColor.TextColorRed("That username is unavailable.\n");
+            ChangeColor.TextColorRed("Username unavailable.\n");
             PressKeyToContinue.Execute();
             return;
         }
@@ -65,19 +67,7 @@ public class CreateAccountCommand : Command
 
         User user = new User(username, passwordHash, passwordSalt);
 
-        // Create a method to use the user object to create an account
-
-        var createAccountSql = """
-            INSERT INTO users (username, password_hash, password_salt)
-            VALUES (@username, @password_hash, @password_salt)
-            """;
-
-        var command = new NpgsqlCommand(createAccountSql, connection);
-        command.Parameters.AddWithValue("username", username);
-        command.Parameters.AddWithValue("password_hash", Convert.ToBase64String(passwordHash));
-        command.Parameters.AddWithValue("password_salt", Convert.ToBase64String(passwordSalt));
-
-        command.ExecuteNonQuery();
+        postgresAccountManager.Create(connection, user);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Account {username} registered successfully.\n");

@@ -3,16 +3,18 @@ using Npgsql;
 
 public class CommandManagerAccount
 {
-    private readonly NpgsqlConnection Connection;
+    // private readonly NpgsqlConnection Connection;
 
-    public CommandManagerAccount(NpgsqlConnection connection)
-    {
-        Connection = connection;
-    }
+    // public CommandManagerAccount(NpgsqlConnection connection)
+    // {
+    //     Connection = connection;
+    // }
 
     public void Execute(NpgsqlConnection connection)
     {
-        UserAccount userAccount = new();
+        PostgresAccountManager userAccount = new();
+        CreateAccountCommand createAccount = new();
+        LoginCommand loginAccount = new();
 
         string userChoice = string.Empty;
         string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
@@ -20,11 +22,13 @@ public class CommandManagerAccount
         switch (hideUserChoice)
         {
             case "C":
-                userAccount.Create(connection);
+                createAccount.Execute(connection);
+                // userAccount.Create(connection);
                 break;
 
             case "L":
-                userAccount.Login(connection);
+                loginAccount.Execute(connection);
+                // userAccount.Login(connection);
                 CommandManagerTransaction.Execute(connection);
                 break;
 

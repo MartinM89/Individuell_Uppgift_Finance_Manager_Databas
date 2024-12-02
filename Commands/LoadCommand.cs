@@ -10,7 +10,7 @@ public class LoadCommand : Command
         return "Load your transactions";
     }
 
-    public override void RunCommand(NpgsqlConnection connection)
+    public override void Execute(NpgsqlConnection connection)
     {
         throw new NotImplementedException();
     }

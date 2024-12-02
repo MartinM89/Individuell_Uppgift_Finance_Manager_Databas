@@ -12,22 +12,15 @@ public class LoginCommand : Command
         return "Use to login in";
     }
 
-    public static Guid GetUserId()
+    public override void Execute(NpgsqlConnection connection)
     {
-        return Id;
-    }
-
-    public override void RunCommand(NpgsqlConnection connection)
-    {
+        PostgresAccountManager postgresAccountManager = new();
         Console.Clear();
 
         string enteredPassword = string.Empty;
-        Console.CursorVisible = true;
 
         Console.Write("Enter username: ");
         string username = Console.ReadLine()!;
-
-        Console.CursorVisible = false;
 
         if (string.IsNullOrEmpty(username))
         {
@@ -36,12 +29,12 @@ public class LoginCommand : Command
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = UserNameUnavailable.Execute(username, connection);
+        bool usernameExists = UserNameUnavailable.Execute(connection, username); // Unnecessary?
 
         if (!usernameExists)
         {
             Console.Clear();
-            ChangeColor.TextColorRed("That username doesn't exist.\n");
+            ChangeColor.TextColorRed("Could not find account.\n");
             PressKeyToContinue.Execute();
             return;
         }
@@ -54,55 +47,17 @@ public class LoginCommand : Command
             return;
         }
 
-        var loginSql = """
-            SELECT password_hash, password_salt
-            FROM users
-            WHERE username = @username
-            """;
+        bool isPasswordCorrect = postgresAccountManager.VerifyPasswordHash(connection, username, enteredPassword);
 
-        var command = new NpgsqlCommand(loginSql, connection);
-        command.Parameters.AddWithValue("username", username);
-
-        using (var reader = command.ExecuteReader()) // Double check if using is needed
+        if (!isPasswordCorrect)
         {
-            if (!reader.Read())
-            {
-                Console.Clear();
-                ChangeColor.TextColorRed("User not found.\n");
-                PressKeyToContinue.Execute();
-                return;
-            }
-
-            string passwordHashString = reader.GetString(0);
-            string saltString = reader.GetString(1);
-
-            byte[] storedPasswordHash = Convert.FromBase64String(passwordHashString);
-            byte[] storedPasswordSalt = Convert.FromBase64String(saltString);
-
-            bool isPasswordCorrect = PasswordHasher.VerifyPasswordHash(enteredPassword, storedPasswordHash, storedPasswordSalt);
-
-            if (!isPasswordCorrect)
-            {
-                Console.Clear();
-                ChangeColor.TextColorRed("Invalid password.\n");
-                PressKeyToContinue.Execute();
-                return;
-            }
+            Console.Clear();
+            ChangeColor.TextColorRed("Password does not match.\n");
+            PressKeyToContinue.Execute();
+            return;
         }
 
-        CommandManagerTransaction.loggedIn = true;
-
-        var getIdSql = """
-            SELECT id
-            FROM users
-            WHERE username = @username
-            """;
-
-        command = new NpgsqlCommand(getIdSql, connection);
-        command.Parameters.AddWithValue("id", Id);
-        command.Parameters.AddWithValue("username", username);
-
-        Id = (Guid)command.ExecuteScalar()!;
+        postgresAccountManager.Login(connection, username);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");

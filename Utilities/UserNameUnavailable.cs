@@ -2,7 +2,7 @@ using Npgsql;
 
 public class UserNameUnavailable
 {
-    public static bool Execute(string username, NpgsqlConnection connection)
+    public static bool Execute(NpgsqlConnection connection, string username)
     {
         var checkUsernameSql = """
             SELECT EXISTS (

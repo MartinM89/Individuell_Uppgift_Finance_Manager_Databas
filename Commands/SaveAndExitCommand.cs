@@ -10,7 +10,7 @@ public class SaveAndExitCommand : Command
         return "Save and exit the program";
     }
 
-    public override void RunCommand(NpgsqlConnection connection)
+    public override void Execute(NpgsqlConnection connection)
     {
         throw new NotImplementedException();
     }

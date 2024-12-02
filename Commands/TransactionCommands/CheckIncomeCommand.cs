@@ -12,7 +12,7 @@ public class CheckIncomeCommand : Command
         return "Check your income";
     }
 
-    public override void RunCommand(NpgsqlConnection connection)
+    public override void Execute(NpgsqlConnection connection)
     {
         while (true)
         {

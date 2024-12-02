@@ -2,11 +2,9 @@ using Npgsql;
 
 public class CommandManagerTransaction
 {
-    public static bool loggedIn = false;
-
     public static void Execute(NpgsqlConnection connection)
     {
-        while (loggedIn)
+        while (PostgresAccountManager.loggedIn)
         {
             TransactionMenu.Execute();
 
@@ -17,13 +15,13 @@ public class CommandManagerTransaction
             {
                 case "A":
                     AddTransactionCommand addTransaction = new();
-                    addTransaction.RunCommand(connection);
+                    addTransaction.Execute(connection);
                     break;
 
                 case "D":
                     Console.Clear();
                     DeleteTransactionCommand deleteTransaction = new();
-                    deleteTransaction.RunCommand(connection);
+                    deleteTransaction.Execute(connection);
                     break;
 
                 case "B":
@@ -35,7 +33,7 @@ public class CommandManagerTransaction
                 case "I":
                     Console.Clear();
                     CheckIncomeCommand checkIncome = new();
-                    checkIncome.RunCommand(connection);
+                    checkIncome.Execute(connection);
                     PressKeyToContinue.Execute();
                     break;
 
@@ -46,7 +44,7 @@ public class CommandManagerTransaction
                     break;
 
                 case "L":
-                    loggedIn = false;
+                    PostgresAccountManager.loggedIn = false;
                     Console.Clear();
                     Console.WriteLine("Thank you for using your personal finance app.");
                     PressKeyToContinue.Execute();

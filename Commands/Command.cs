@@ -9,7 +9,7 @@ public abstract class Command
         this.Name = name;
     }
 
-    public abstract void RunCommand(NpgsqlConnection connection);
+    public abstract void Execute(NpgsqlConnection connection);
 
     public abstract string GetDescription();
 }

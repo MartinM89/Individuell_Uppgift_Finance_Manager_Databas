@@ -22,6 +22,7 @@ public class HideCursor
             }
         } while (input.Length.Equals(0));
 
+        Console.CursorVisible = true;
         return input;
     }
 }

@@ -10,7 +10,7 @@ public class CheckBalanceCommand : Command
         return "Check your current balance";
     }
 
-    public override void RunCommand(NpgsqlConnection connection)
+    public override void Execute(NpgsqlConnection connection)
     {
         throw new NotImplementedException();
     }

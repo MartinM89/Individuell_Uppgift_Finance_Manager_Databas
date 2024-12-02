@@ -10,7 +10,7 @@ public class AddTransactionCommand : Command
         return "Adds a transaction";
     }
 
-    public override void RunCommand(NpgsqlConnection connection)
+    public override void Execute(NpgsqlConnection connection)
     {
         Console.Clear();
 

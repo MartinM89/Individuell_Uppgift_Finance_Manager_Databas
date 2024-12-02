@@ -15,12 +15,12 @@ class Program
         NpgsqlConnection connection = new(connectionString);
         connection.Open();
 
-        CommandManagerAccount commandManager = new(connection);
+        CommandManagerAccount commandManagerAccount = new();
 
         while (run)
         {
             AccountMenu.Execute();
-            commandManager.Execute(connection);
+            commandManagerAccount.Execute(connection);
         }
 
         connection.Close();
