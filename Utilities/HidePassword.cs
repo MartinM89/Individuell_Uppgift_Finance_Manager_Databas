@@ -1,3 +1,5 @@
+namespace Individuell_Uppgift.Utilities;
+
 public class HidePassword
 {
     public static string Execute(string password)

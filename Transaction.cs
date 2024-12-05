@@ -14,4 +14,9 @@ public class Transaction
         this.Date = date;
         this.UserId = userId; //PostgresAccountManager.GetLoggedInUserId();
     }
+
+    public override string ToString()
+    {
+        return $"| {Date:yyyy MMM dd} | {Name, -31} | {Amount, 11:N2} | ";
+    }
 }

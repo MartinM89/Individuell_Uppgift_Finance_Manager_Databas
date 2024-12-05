@@ -1,3 +1,5 @@
+namespace Individuell_Uppgift.Utilities;
+
 public class HideCursor
 {
     public static string Execute(string input)

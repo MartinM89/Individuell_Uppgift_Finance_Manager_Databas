@@ -10,7 +10,7 @@ public class AddTransactionCommand : Command
         return "Adds a transaction";
     }
 
-    public override void Execute(NpgsqlConnection connection)
+    public override async Task Execute(NpgsqlConnection connection)
     {
         Console.Clear();
 
@@ -23,11 +23,8 @@ public class AddTransactionCommand : Command
             Console.Clear();
             Console.Write("Enter name: ");
             string transactionName = Console.ReadLine()!;
-
-            if (string.IsNullOrEmpty(transactionName))
-            {
-                return;
-            }
+            // csharpier-ignore
+            if (string.IsNullOrEmpty(transactionName)) { return; }
 
             bool onlyLettersOrWhiteSpace = true;
 
@@ -68,11 +65,8 @@ public class AddTransactionCommand : Command
             Console.Clear();
             Console.Write("Enter amount: ");
             string transactionValueString = Console.ReadLine()!;
-
-            if (string.IsNullOrEmpty(transactionValueString))
-            {
-                return;
-            }
+            // csharpier-ignore
+            if (string.IsNullOrEmpty(transactionValueString)) { return; }
 
             transactionValueString = transactionValueString.Replace('.', ',');
 
@@ -95,14 +89,21 @@ public class AddTransactionCommand : Command
             break;
         }
 
-        Transaction transaction = new(0, capitalizedTransactionName, transactionValue, transactionDate, PostgresAccountManager.LoggedInUserId) { };
+        Transaction transaction = new(0, capitalizedTransactionName, transactionValue, transactionDate, PostgresAccountManager.LoggedInUserId);
 
-        var transactionManager = new PostgresTransactionManager(connection);
+        PostgresTransactionManager postgresTransactionManager = new(connection);
 
-        transactionManager.AddTransaction(transaction);
+        await postgresTransactionManager.AddTransaction(transaction);
 
         Console.Clear();
-        Console.WriteLine($"The following transaction has been added:\n| {transaction.Date:yyyy MMM dd} | {transaction.Name} | {transaction.Amount:F2} |");
+        Console.WriteLine("The following transaction has been added:");
+        Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
+        Console.WriteLine("| Date        | Transaction Name                |      Amount |");
+        Console.WriteLine("|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|");
+
+        Console.WriteLine(transaction);
+
+        Console.WriteLine("|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|");
         PressKeyToContinue.Execute();
     }
 }

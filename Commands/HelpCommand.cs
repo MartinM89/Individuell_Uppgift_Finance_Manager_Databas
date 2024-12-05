@@ -10,7 +10,7 @@ public class HelpCommand : Command
         return "Check help commands";
     }
 
-    public override void Execute(NpgsqlConnection connection)
+    public override Task Execute(NpgsqlConnection connection)
     {
         throw new NotImplementedException();
     }

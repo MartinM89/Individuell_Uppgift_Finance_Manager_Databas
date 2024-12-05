@@ -1,8 +1,10 @@
+using Individuell_Uppgift.Menus;
+using Individuell_Uppgift.Utilities;
 using Npgsql;
 
 public class CommandManagerTransaction
 {
-    public static void Execute(NpgsqlConnection connection)
+    public static async Task Execute(NpgsqlConnection connection)
     {
         while (PostgresAccountManager.loggedIn)
         {
@@ -15,26 +17,26 @@ public class CommandManagerTransaction
             {
                 case "A":
                     AddTransactionCommand addTransaction = new();
-                    addTransaction.Execute(connection);
+                    await addTransaction.Execute(connection);
                     break;
 
                 case "D":
                     Console.Clear();
                     DeleteTransactionCommand deleteTransaction = new();
-                    deleteTransaction.Execute(connection);
+                    await deleteTransaction.Execute(connection);
                     break;
 
                 case "B":
                     Console.Clear();
-                    PostgresTransactionManager getBalance = new(connection);
-                    getBalance.GetBalance();
+                    CheckBalanceCommand checkBalance = new();
+                    await checkBalance.Execute(connection);
                     break;
 
                 case "I":
                     Console.Clear();
                     CheckIncomeCommand checkIncome = new();
-                    checkIncome.Execute(connection);
-                    PressKeyToContinue.Execute();
+                    await checkIncome.Execute(connection);
+                    // PressKeyToContinue.Execute();
                     break;
 
                 case "E":
@@ -58,8 +60,8 @@ public class CommandManagerTransaction
 
                 case "P":
                     Console.Clear();
-                    PostgresTransactionManager getAllTransactions = new(connection);
-                    getAllTransactions.GetAllTransactions();
+                    CheckAllTransactionsCommand checkAllTransactions = new();
+                    await checkAllTransactions.Execute(connection);
                     break;
 
                 default:

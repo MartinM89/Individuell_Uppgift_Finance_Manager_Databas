@@ -1,4 +1,5 @@
 using Individuell_Uppgift;
+using Individuell_Uppgift.Utilities;
 using Npgsql;
 
 public class CommandManagerAccount
@@ -10,7 +11,7 @@ public class CommandManagerAccount
     //     Connection = connection;
     // }
 
-    public void Execute(NpgsqlConnection connection)
+    public static async Task Execute(NpgsqlConnection connection)
     {
         PostgresAccountManager userAccount = new();
         CreateAccountCommand createAccount = new();
@@ -22,14 +23,14 @@ public class CommandManagerAccount
         switch (hideUserChoice)
         {
             case "C":
-                createAccount.Execute(connection);
+                await createAccount.Execute(connection);
                 // userAccount.Create(connection);
                 break;
 
             case "L":
-                loginAccount.Execute(connection);
+                await loginAccount.Execute(connection);
                 // userAccount.Login(connection);
-                CommandManagerTransaction.Execute(connection);
+                await CommandManagerTransaction.Execute(connection);
                 break;
 
             case "G":

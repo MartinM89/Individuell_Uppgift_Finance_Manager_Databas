@@ -1,8 +1,12 @@
+using Individuell_Uppgift.Utilities;
+
+namespace Individuell_Uppgift.Menus;
+
 public class CheckIncomeExpenseMenu
 {
     public static void Execute()
     {
-        Console.WriteLine("Do you wish to see:\n");
+        Console.WriteLine("What do you wish to see:\n");
         ChangeColor.TextColorGreen("[D]");
         Console.WriteLine("aily");
         ChangeColor.TextColorGreen("[W]");

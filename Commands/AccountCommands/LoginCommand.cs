@@ -1,3 +1,4 @@
+using Individuell_Uppgift.Utilities;
 using Npgsql;
 
 public class LoginCommand : Command
@@ -10,7 +11,7 @@ public class LoginCommand : Command
         return "Use to login in";
     }
 
-    public override void Execute(NpgsqlConnection connection)
+    public override Task Execute(NpgsqlConnection connection)
     {
         PostgresAccountManager postgresAccountManager = new();
         Console.Clear();
@@ -22,7 +23,7 @@ public class LoginCommand : Command
 
         if (string.IsNullOrEmpty(username))
         {
-            return;
+            return Task.CompletedTask;
         }
 
         username = username[..1].ToUpper() + username[1..].ToLower();
@@ -34,7 +35,7 @@ public class LoginCommand : Command
             Console.Clear();
             ChangeColor.TextColorRed("Could not find account.\n");
             PressKeyToContinue.Execute();
-            return;
+            return Task.CompletedTask;
         }
 
         Console.Write("Enter password: ");
@@ -42,7 +43,7 @@ public class LoginCommand : Command
 
         if (string.IsNullOrEmpty(enteredPassword))
         {
-            return;
+            return Task.CompletedTask;
         }
 
         bool isPasswordCorrect = PostgresAccountManager.CheckLoginDetailsIsCorrect(connection, username, enteredPassword);
@@ -52,7 +53,7 @@ public class LoginCommand : Command
             Console.Clear();
             ChangeColor.TextColorRed("Password does not match.\n");
             PressKeyToContinue.Execute();
-            return;
+            return Task.CompletedTask;
         }
 
         postgresAccountManager.Login(connection, username);
@@ -60,5 +61,7 @@ public class LoginCommand : Command
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");
         PressKeyToContinue.Execute();
+
+        return Task.CompletedTask;
     }
 }

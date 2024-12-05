@@ -1,3 +1,5 @@
+namespace Individuell_Uppgift.Utilities;
+
 public class ChangeColor
 {
     public static void TextColorRed(string message)

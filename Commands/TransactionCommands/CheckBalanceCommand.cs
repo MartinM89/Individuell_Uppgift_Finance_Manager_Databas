@@ -10,8 +10,10 @@ public class CheckBalanceCommand : Command
         return "Check your current balance";
     }
 
-    public override void Execute(NpgsqlConnection connection)
+    public override async Task Execute(NpgsqlConnection connection)
     {
-        throw new NotImplementedException();
+        PostgresTransactionManager postgresTransactionManager = new(connection);
+
+        await postgresTransactionManager.GetBalance();
     }
 }

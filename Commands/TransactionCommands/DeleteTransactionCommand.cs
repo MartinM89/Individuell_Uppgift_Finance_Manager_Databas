@@ -10,17 +10,18 @@ public class DeleteTransactionCommand : Command
         return "Delete a transaction";
     }
 
-    public override void Execute(NpgsqlConnection connection)
+    public override async Task Execute(NpgsqlConnection connection)
     {
         Console.Clear();
 
         Console.Write("What transaction do you wish to delete? ");
         int transactionToDelete = int.Parse(Console.ReadLine()!);
 
-        PostgresTransactionManager manager = new(connection);
+        PostgresTransactionManager postgresTransactionManager = new(connection);
 
-        manager.DeleteTransaction(transactionToDelete);
+        await postgresTransactionManager.DeleteTransaction(transactionToDelete);
 
+        Console.Clear();
         Console.WriteLine($"Transaction {transactionToDelete} deleted.");
         PressKeyToContinue.Execute();
     }

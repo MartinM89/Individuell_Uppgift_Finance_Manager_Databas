@@ -1,3 +1,4 @@
+using Individuell_Uppgift.Utilities;
 using Npgsql;
 
 public class CreateAccountCommand : Command
@@ -10,7 +11,7 @@ public class CreateAccountCommand : Command
         return "Create a new account";
     }
 
-    public override void Execute(NpgsqlConnection connection)
+    public override Task Execute(NpgsqlConnection connection)
     {
         PostgresAccountManager postgresAccountManager = new();
 
@@ -24,7 +25,7 @@ public class CreateAccountCommand : Command
 
         if (string.IsNullOrEmpty(username))
         {
-            return;
+            return Task.CompletedTask;
         }
 
         username = username[..1].ToUpper() + username[1..].ToLower();
@@ -36,7 +37,7 @@ public class CreateAccountCommand : Command
             Console.Clear();
             ChangeColor.TextColorRed("Username unavailable.\n");
             PressKeyToContinue.Execute();
-            return;
+            return Task.CompletedTask;
         }
 
         Console.Write("Enter password: ");
@@ -44,7 +45,7 @@ public class CreateAccountCommand : Command
 
         if (string.IsNullOrEmpty(password))
         {
-            return;
+            return Task.CompletedTask;
         }
 
         Console.Write("\nRetype password: ");
@@ -52,7 +53,7 @@ public class CreateAccountCommand : Command
 
         if (string.IsNullOrEmpty(confirmPassword))
         {
-            return;
+            return Task.CompletedTask;
         }
 
         if (!password.Equals(confirmPassword))
@@ -60,7 +61,7 @@ public class CreateAccountCommand : Command
             Console.Clear();
             ChangeColor.TextColorRed("Passwords do not match.\n");
             PressKeyToContinue.Execute();
-            return;
+            return Task.CompletedTask;
         }
 
         PasswordHasher.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -72,5 +73,6 @@ public class CreateAccountCommand : Command
         Console.Clear();
         ChangeColor.TextColorGreen($"Account {username} registered successfully.\n");
         PressKeyToContinue.Execute();
+        return Task.CompletedTask;
     }
 }

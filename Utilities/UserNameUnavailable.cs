@@ -1,5 +1,7 @@
 using Npgsql;
 
+namespace Individuell_Uppgift.Utilities;
+
 public class UserNameUnavailable
 {
     public static bool Execute(NpgsqlConnection connection, string username)

@@ -1,4 +1,6 @@
-﻿using Npgsql;
+﻿using Individuell_Uppgift.Menus;
+using Individuell_Uppgift.Utilities;
+using Npgsql;
 
 namespace Individuell_Uppgift;
 
@@ -6,22 +8,19 @@ class Program
 {
     public static bool run = true;
 
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         string connectionString = DatabaseConnection.GetConnectionString();
-
-        NpgsqlConnection connection = new(connectionString);
+        using NpgsqlConnection connection = new(connectionString);
         connection.Open();
 
-        _ = new PostgresTransactionManager(connection); // Creates tables
-        CommandManagerAccount commandManagerAccount = new();
+        // Creates tables, functions and triggers
+        _ = new PostgresTransactionManager(connection);
 
         while (run)
         {
             AccountMenu.Execute();
-            commandManagerAccount.Execute(connection);
+            await CommandManagerAccount.Execute(connection);
         }
-
-        connection.Close();
     }
 }

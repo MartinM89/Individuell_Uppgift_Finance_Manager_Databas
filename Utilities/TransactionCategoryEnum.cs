@@ -1,3 +1,5 @@
+namespace Individuell_Uppgift.Utilities;
+
 public enum TransactionCategory
 {
     Day,

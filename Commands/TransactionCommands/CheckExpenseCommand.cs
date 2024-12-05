@@ -10,7 +10,7 @@ public class CheckExpenseCommand : Command
         return "Check your expenses";
     }
 
-    public override void Execute(NpgsqlConnection connection)
+    public override Task Execute(NpgsqlConnection connection)
     {
         throw new NotImplementedException();
     }
