@@ -95,11 +95,11 @@ public class AddTransactionCommand : Command
             break;
         }
 
-        Transaction transaction = new Transaction(capitalizedTransactionName, transactionValue, transactionDate, LoginCommand.Id) { };
+        Transaction transaction = new(0, capitalizedTransactionName, transactionValue, transactionDate, PostgresAccountManager.LoggedInUserId) { };
 
         var transactionManager = new PostgresTransactionManager(connection);
 
-        transactionManager.SaveTransaction(transaction);
+        transactionManager.AddTransaction(transaction);
 
         Console.Clear();
         Console.WriteLine($"The following transaction has been added:\n| {transaction.Date:yyyy MMM dd} | {transaction.Name} | {transaction.Amount:F2} |");

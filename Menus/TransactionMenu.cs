@@ -4,18 +4,14 @@ public class TransactionMenu
     {
         Console.Clear();
 
-        Console.WriteLine("What do you wish to do?\n");
         ChangeColor.TextColorGreen("[A]");
         Console.WriteLine("dd Transaction");
         ChangeColor.TextColorGreen("[D]");
         Console.WriteLine("elete Transaction");
-        Console.Write("Check ");
         ChangeColor.TextColorGreen("[B]");
         Console.WriteLine("alance");
-        Console.Write("Check ");
         ChangeColor.TextColorGreen("[I]");
         Console.WriteLine("ncome Summary");
-        Console.Write("Check ");
         ChangeColor.TextColorGreen("[E]");
         Console.WriteLine("xpense Summary");
         ChangeColor.TextColorGreen("[L]");

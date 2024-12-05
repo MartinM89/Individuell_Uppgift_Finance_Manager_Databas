@@ -6,12 +6,12 @@ public class Transaction
     public decimal Amount { get; private set; }
     public Guid UserId { get; private set; }
 
-    public Transaction(string name, decimal amount, DateTime date, Guid userId)
+    public Transaction(int id, string name, decimal amount, DateTime date, Guid userId)
     {
-        // this.Id = id;
+        this.Id = id;
         this.Name = name;
         this.Amount = amount;
         this.Date = date;
-        this.UserId = userId;
+        this.UserId = userId; //PostgresAccountManager.GetLoggedInUserId();
     }
 }

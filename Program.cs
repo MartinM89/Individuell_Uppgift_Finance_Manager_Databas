@@ -8,13 +8,12 @@ class Program
 
     static void Main(string[] args)
     {
-        // var manager = new PostgresTransactionManager(); // Creates tables
-
         string connectionString = DatabaseConnection.GetConnectionString();
 
         NpgsqlConnection connection = new(connectionString);
         connection.Open();
 
+        _ = new PostgresTransactionManager(connection); // Creates tables
         CommandManagerAccount commandManagerAccount = new();
 
         while (run)

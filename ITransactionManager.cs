@@ -1,11 +1,11 @@
 public interface ITransactionManager
 {
-    void SaveTransaction(Transaction transaction);
+    void AddTransaction(Transaction transaction);
     void DeleteTransaction(int transactionToDelete);
-    void GetBalance();
-    void GetAllTransactions();
-    Transaction GetTransactionsByDay(int dayOfMonth, char transactionType);
-    Transaction GetTransactionsByWeek(int weekNumber, char transactionType);
-    Transaction GetTransactionsByMonth(int monthNumber, char transactionType);
-    Transaction GetTransactionsByYear(int yearNumber, char transactionType);
+    decimal GetBalance();
+    List<Transaction> GetAllTransactions();
+    List<Transaction> GetTransactionsByDay(int dayOfMonth, char transactionType);
+    List<Transaction> GetTransactionsByWeek(int weekNumber, char transactionType);
+    List<Transaction> GetTransactionsByMonth(int monthNumber, char transactionType);
+    List<Transaction> GetTransactionsByYear(int yearNumber, char transactionType);
 }

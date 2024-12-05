@@ -89,6 +89,36 @@ public class PostgresTransactionManager : ITransactionManager
                     END IF;
                 END;
                 $$;
+
+                CREATE OR REPLACE FUNCTION reorder_all_user_transactions()
+                RETURNS VOID AS $$
+                DECLARE
+                    temp_table_name TEXT;
+                BEGIN
+                    temp_table_name := 'temp_reordered_transactions_' || pg_backend_pid();
+
+                    EXECUTE format('
+                        CREATE TEMPORARY TABLE %I AS
+                        SELECT
+                            ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY date) AS new_id,
+                            name, amount, date, user_id
+                        FROM transactions
+                    ', temp_table_name);
+
+                    DELETE FROM transactions;
+
+                    EXECUTE format('
+                        INSERT INTO transactions (id, name, amount, date, user_id)
+                        SELECT
+                            new_id, name, amount, date, user_id
+                        FROM %I
+                    ', temp_table_name);
+
+                    EXECUTE format('DROP TABLE %I', temp_table_name);
+                END;
+                $$ LANGUAGE plpgsql;
+
+                SELECT reorder_all_user_transactions();
             """;
 
         #endregion
@@ -97,7 +127,7 @@ public class PostgresTransactionManager : ITransactionManager
         createTablesCmd.ExecuteNonQuery();
     }
 
-    public void SaveTransaction(Transaction transaction)
+    public void AddTransaction(Transaction transaction)
     {
         string insertTransactionSql = "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)";
         using NpgsqlCommand insertTransactionCmd = new(insertTransactionSql, Connection);
@@ -108,17 +138,17 @@ public class PostgresTransactionManager : ITransactionManager
         insertTransactionCmd.ExecuteNonQuery();
     }
 
-    public void DeleteTransaction(int deleteTransaction)
+    public void DeleteTransaction(int transactionToDelete)
     {
         string deleteTransactionSql = "DELETE FROM transactions WHERE user_id = @user_id AND id = @id";
         using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, Connection);
         deleteTransactionCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
-        deleteTransactionCmd.Parameters.AddWithValue("@id", deleteTransaction);
+        deleteTransactionCmd.Parameters.AddWithValue("@id", transactionToDelete);
 
         deleteTransactionCmd.ExecuteNonQuery();
     }
 
-    public void GetBalance()
+    public decimal GetBalance()
     {
         string getBalanceSql = "SELECT * FROM transactions WHERE user_id = @user_id";
         using NpgsqlCommand getBalanceCmd = new(getBalanceSql, Connection);
@@ -135,9 +165,11 @@ public class PostgresTransactionManager : ITransactionManager
 
         Console.WriteLine($"Your total balance is {totalBalance}"); // Remove and return balance as decimal instead
         PressKeyToContinue.Execute();
+
+        return totalBalance;
     }
 
-    public void GetAllTransactions()
+    public List<Transaction> GetAllTransactions()
     {
         string getAllTransactionsSql = "SELECT * FROM transactions WHERE user_id = @user_id";
         using NpgsqlCommand getAllTransactionsCmd = new(getAllTransactionsSql, Connection);
@@ -145,52 +177,58 @@ public class PostgresTransactionManager : ITransactionManager
 
         using NpgsqlDataReader reader = getAllTransactionsCmd.ExecuteReader();
 
+        List<Transaction> transactions = [];
+
         while (reader.Read())
         {
-            int userId = reader.GetInt32(0);
+            int id = reader.GetInt32(0);
             string name = reader.GetString(1);
             decimal amount = reader.GetDecimal(2);
             DateTime date = reader.GetDateTime(3);
+            // Guid userId = reader.GetGuid(4); // Better to get this or use static LoggedInUserId?
 
-            Console.WriteLine($"{userId} {name} {amount} {date:dd MMM}"); // Remove and return transactions object instead
+            Transaction transaction = new(id, name, amount, date, PostgresAccountManager.LoggedInUserId);
+
+            Console.WriteLine($"{id} {name} {amount} {date:dd MMM}"); // Remove and return transactions object instead
         }
+
         PressKeyToContinue.Execute();
+
+        return transactions;
     }
 
-    public Transaction GetTransactionsByDay(int dayOfMonth, char transactionType)
+    public List<Transaction> GetTransactionsByDay(int dayOfMonth, char transactionType) // Send bool instead of char to trigger tenerary interator
     {
         string getTransactionsByDaySql = $"""
             SELECT * FROM transactions
             WHERE user_id = @user_id
             AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
             AND amount {transactionType} 0
-            """;
+            """; // Use tenerary iterator here for '>' / '<'
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDaySql, Connection);
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@dayOfMonth", dayOfMonth);
-        // getTransactionsByDayCmd.Parameters.AddWithValue("@transactionType", transactionType); // Doesn't work?
 
         using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
 
-        string name = string.Empty;
-        decimal amount = 0;
-        DateTime date = DateTime.Now;
+        List<Transaction> transactions = [];
 
         while (reader.Read())
         {
-            name = reader.GetString(1);
-            amount = reader.GetDecimal(2);
-            date = reader.GetDateTime(3);
+            int id = reader.GetInt32(0);
+            string name = reader.GetString(1);
+            decimal amount = reader.GetDecimal(2);
+            DateTime date = reader.GetDateTime(3);
 
-            Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
+            Transaction transaction = new(id, name, amount, date, PostgresAccountManager.LoggedInUserId);
+
+            Console.WriteLine($"{date:dd MMM yyyy} {name} {amount}"); // Remove and return transactions list instead
         }
 
-        Transaction transaction = new(name, amount, date, PostgresAccountManager.LoggedInUserId);
-
-        return transaction;
+        return transactions;
     }
 
-    public Transaction GetTransactionsByWeek(int weekNumber, char transactionType)
+    public List<Transaction> GetTransactionsByWeek(int weekNumber, char transactionType)
     {
         string getTransactionsByWeekSql = $"""
             SELECT * FROM transactions
@@ -204,25 +242,24 @@ public class PostgresTransactionManager : ITransactionManager
 
         using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
 
-        string name = string.Empty;
-        decimal amount = 0;
-        DateTime date = DateTime.Now;
+        List<Transaction> transactions = [];
 
         while (reader.Read())
         {
-            name = reader.GetString(1);
-            amount = reader.GetDecimal(2);
-            date = reader.GetDateTime(3);
+            int id = reader.GetInt32(0);
+            string name = reader.GetString(1);
+            decimal amount = reader.GetDecimal(2);
+            DateTime date = reader.GetDateTime(3);
 
-            Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
+            Transaction transaction = new(id, name, amount, date, PostgresAccountManager.LoggedInUserId);
+
+            Console.WriteLine($"{date:dd MMM yyyy} {name} {amount}"); // Remove and return transactions list instead
         }
 
-        Transaction transaction = new(name, amount, date, PostgresAccountManager.LoggedInUserId);
-
-        return transaction;
+        return transactions;
     }
 
-    public Transaction GetTransactionsByMonth(int month, char transactionType)
+    public List<Transaction> GetTransactionsByMonth(int month, char transactionType)
     {
         string getTransactionsByMonthSql = $"""
             SELECT * FROM transactions
@@ -236,25 +273,24 @@ public class PostgresTransactionManager : ITransactionManager
 
         using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
 
-        string name = string.Empty;
-        decimal amount = 0;
-        DateTime date = DateTime.Now;
+        List<Transaction> transactions = [];
 
         while (reader.Read())
         {
-            name = reader.GetString(1);
-            amount = reader.GetDecimal(2);
-            date = reader.GetDateTime(3);
+            int id = reader.GetInt32(0);
+            string name = reader.GetString(1);
+            decimal amount = reader.GetDecimal(2);
+            DateTime date = reader.GetDateTime(3);
 
-            Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
+            Transaction transaction = new(id, name, amount, date, PostgresAccountManager.LoggedInUserId);
+
+            Console.WriteLine($"{date:dd MMM yyyy} {name} {amount}"); // Remove and return transactions list instead
         }
 
-        Transaction transaction = new(name, amount, date, PostgresAccountManager.LoggedInUserId);
-
-        return transaction;
+        return transactions;
     }
 
-    public Transaction GetTransactionsByYear(int year, char transactionType)
+    public List<Transaction> GetTransactionsByYear(int year, char transactionType)
     {
         string getTransactionsByYearSql = $"""
             SELECT * FROM transactions
@@ -268,21 +304,20 @@ public class PostgresTransactionManager : ITransactionManager
 
         using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
 
-        string name = string.Empty;
-        decimal amount = 0;
-        DateTime date = DateTime.Now;
+        List<Transaction> transactions = [];
 
         while (reader.Read())
         {
-            name = reader.GetString(1);
-            amount = reader.GetDecimal(2);
-            date = reader.GetDateTime(3);
+            int id = reader.GetInt32(0);
+            string name = reader.GetString(1);
+            decimal amount = reader.GetDecimal(2);
+            DateTime date = reader.GetDateTime(3);
 
-            Console.WriteLine($"{date:dd MMM} {name} {amount}"); // Remove and return transactions object instead
+            Transaction transaction = new(id, name, amount, date, PostgresAccountManager.LoggedInUserId);
+
+            Console.WriteLine($"{date:dd MMM yyyy} {name} {amount}"); // Remove and return transactions list instead
         }
 
-        Transaction transaction = new(name, amount, date, PostgresAccountManager.LoggedInUserId);
-
-        return transaction;
+        return transactions;
     }
 }

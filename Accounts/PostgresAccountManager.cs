@@ -37,7 +37,7 @@ public class PostgresAccountManager : IAccount
         loggedIn = true;
     }
 
-    public bool VerifyPasswordHash(NpgsqlConnection connection, string username, string enteredPassword) // Static? Should I include a try-catch here. For example if swapping to GUI or Database is down due to connection issues.
+    public static bool CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword) // Should I include a try-catch here. For example if database is down due to connection issues.
     {
         string loginSql = """
             SELECT password_hash, password_salt
@@ -66,7 +66,7 @@ public class PostgresAccountManager : IAccount
         return isPasswordCorrect;
     }
 
-    public Guid GetLoggedInUserId()
+    public static Guid GetLoggedInUserId()
     {
         return LoggedInUserId;
     }

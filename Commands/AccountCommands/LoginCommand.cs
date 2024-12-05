@@ -2,8 +2,6 @@ using Npgsql;
 
 public class LoginCommand : Command
 {
-    public static Guid Id { get; private set; }
-
     public LoginCommand()
         : base("Login") { }
 
@@ -47,7 +45,7 @@ public class LoginCommand : Command
             return;
         }
 
-        bool isPasswordCorrect = postgresAccountManager.VerifyPasswordHash(connection, username, enteredPassword);
+        bool isPasswordCorrect = PostgresAccountManager.CheckLoginDetailsIsCorrect(connection, username, enteredPassword);
 
         if (!isPasswordCorrect)
         {

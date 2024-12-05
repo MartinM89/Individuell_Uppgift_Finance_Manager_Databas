@@ -1,5 +1,3 @@
-using System.Drawing;
-using System.Runtime.InteropServices;
 using Npgsql;
 
 public class CheckIncomeCommand : Command
@@ -29,15 +27,7 @@ public class CheckIncomeCommand : Command
             //     break;
             // }
 
-            Console.WriteLine("Do you wish to see:\n");
-            ChangeColor.TextColorGreen("[D]");
-            Console.WriteLine("aily");
-            ChangeColor.TextColorGreen("[W]");
-            Console.WriteLine("eekly");
-            ChangeColor.TextColorGreen("[M]");
-            Console.WriteLine("onthly");
-            ChangeColor.TextColorGreen("[Y]");
-            Console.WriteLine("early");
+            CheckIncomeExpenseMenu.Execute();
 
             string userChoice = string.Empty;
             string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
