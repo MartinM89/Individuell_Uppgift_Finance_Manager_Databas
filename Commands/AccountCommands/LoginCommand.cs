@@ -28,7 +28,7 @@ public class LoginCommand : Command
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = UserNameUnavailable.Execute(connection, username); // Unnecessary?
+        bool usernameExists = UserNameUnavailable.Execute(connection, username);
 
         if (!usernameExists)
         {

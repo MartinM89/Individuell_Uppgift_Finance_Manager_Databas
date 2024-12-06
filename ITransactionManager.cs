@@ -8,4 +8,5 @@ public interface ITransactionManager
     Task<List<Transaction>> GetTransactionsByWeek(int weekNumber, char transactionType);
     Task<List<Transaction>> GetTransactionsByMonth(int monthNumber, char transactionType);
     Task<List<Transaction>> GetTransactionsByYear(int yearNumber, char transactionType);
+    Task<int> GetTransactionsCount();
 }

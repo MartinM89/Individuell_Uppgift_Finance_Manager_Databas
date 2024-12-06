@@ -38,7 +38,7 @@ public class PostgresAccountManager : IAccount
         loggedIn = true;
     }
 
-    public static bool CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword) // Should I include a try-catch here. For example if database is down due to connection issues.
+    public static bool CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
     {
         string loginSql = """
             SELECT password_hash, password_salt
@@ -53,7 +53,7 @@ public class PostgresAccountManager : IAccount
         byte[] storedPasswordSalt = [];
 
         using NpgsqlDataReader reader = command.ExecuteReader();
-        if (reader.Read()) // Confused
+        if (reader.Read())
         {
             string passwordHashString = reader.GetString(0);
             string saltString = reader.GetString(1);

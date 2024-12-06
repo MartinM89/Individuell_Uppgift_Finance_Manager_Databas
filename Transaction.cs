@@ -12,11 +12,18 @@ public class Transaction
         this.Name = name;
         this.Amount = amount;
         this.Date = date;
-        this.UserId = userId; //PostgresAccountManager.GetLoggedInUserId();
+        this.UserId = userId;
     }
 
     public override string ToString()
     {
-        return $"| {Date:yyyy MMM dd} | {Name, -31} | {Amount, 11:N2} | ";
+        string transactionTable = " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n"
+                                + "| Id  | Date        | Transaction Name                |      Amount |\n"
+                                + "|‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|\n"
+
+                                + $"| {Id,-3} | {Date:yyyy MMM dd} | {Name,-31} | {Amount,11:N2} |\n"
+
+                                + "|_ _ _|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|";
+        return transactionTable;
     }
 }

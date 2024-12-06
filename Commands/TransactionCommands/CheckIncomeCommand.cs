@@ -18,7 +18,7 @@ public class CheckIncomeCommand : Command
 
         PostgresTransactionManager getTransaction = new(connection);
 
-        // int transactionCount = TransactionManager.GetTransactionCount();
+        // int transactionCount = TransactionManager.GetTransactionCount();  // Implement if table is empty for Guid
 
         // if (transactionCount == 0)
         // {
@@ -31,8 +31,9 @@ public class CheckIncomeCommand : Command
 
         string userChoice = string.Empty;
         string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
+
         // csharpier-ignore
-            if (string.IsNullOrEmpty(hideUserChoice)) { return; }
+        if (string.IsNullOrEmpty(hideUserChoice)) { return; }
 
         if (!hideUserChoice.All(Char.IsLetter) && !hideUserChoice.Length.Equals(1))
         {
@@ -72,11 +73,12 @@ public class CheckIncomeCommand : Command
             "Y" => transactions = await getTransaction.GetTransactionsByYear(transactionDate, transactionType),
             _ => transactions = null!,
         };
+
         // csharpier-ignore
-            if (hideUserChoice.Equals("D")) { transactionCategory = TransactionCategory.Day; }
-            else if (hideUserChoice.Equals("W")) { transactionCategory = TransactionCategory.Week; }
-            else if (hideUserChoice.Equals("M")) { transactionCategory = TransactionCategory.Month; }
-            else if (hideUserChoice.Equals("Y")) { transactionCategory = TransactionCategory.Year; }
+        if (hideUserChoice.Equals("D")) { transactionCategory = TransactionCategory.Day; }
+        else if (hideUserChoice.Equals("W")) { transactionCategory = TransactionCategory.Week; }
+        else if (hideUserChoice.Equals("M")) { transactionCategory = TransactionCategory.Month; }
+        else if (hideUserChoice.Equals("Y")) { transactionCategory = TransactionCategory.Year; }
 
         Console.WriteLine($"{transactionCategory}:");
         Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");

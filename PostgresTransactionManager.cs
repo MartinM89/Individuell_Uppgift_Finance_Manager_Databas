@@ -150,7 +150,7 @@ public class PostgresTransactionManager : ITransactionManager
 
     public async Task<decimal> GetBalance()
     {
-        string getBalanceSql = "SELECT * FROM transactions WHERE user_id = @user_id";
+        string getBalanceSql = "SELECT amount FROM transactions WHERE user_id = @user_id";
         using NpgsqlCommand getBalanceCmd = new(getBalanceSql, Connection);
         getBalanceCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
 
@@ -160,11 +160,8 @@ public class PostgresTransactionManager : ITransactionManager
 
         while (await reader.ReadAsync())
         {
-            totalBalance += reader.GetDecimal(2);
+            totalBalance += reader.GetDecimal(0);
         }
-
-        Console.WriteLine($"Your total balance is {totalBalance}"); // Remove and return balance as decimal instead
-        PressKeyToContinue.Execute();
 
         return totalBalance;
     }
@@ -181,18 +178,35 @@ public class PostgresTransactionManager : ITransactionManager
 
         while (await reader.ReadAsync())
         {
-            int id = reader.GetInt32(0);
-            string name = reader.GetString(1);
-            decimal amount = reader.GetDecimal(2);
-            DateTime date = reader.GetDateTime(3);
-            // Guid userId = reader.GetGuid(4); // Better to get this or use static LoggedInUserId?
-
-            Transaction transaction = new(id, name, amount, date, PostgresAccountManager.LoggedInUserId);
+            Transaction transaction = new(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetDecimal(2),
+                reader.GetDateTime(3),
+                PostgresAccountManager.LoggedInUserId);
 
             transactions.Add(transaction);
         }
 
         return transactions;
+    }
+
+    public async Task<int> GetTransactionsCount()
+    {
+        string getTransactionsCountSql = "SELECT COUNT(*) FROM transactions WHERE user_id = @user_id";
+        using NpgsqlCommand getTransactionsCountCmd = new(getTransactionsCountSql, Connection);
+        getTransactionsCountCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
+
+        object? queryResult = await getTransactionsCountCmd.ExecuteScalarAsync();
+
+        if (queryResult == null)
+        {
+            return 0;
+        }
+
+        int rowCount = Convert.ToInt32(queryResult);
+
+        return rowCount;
     }
 
     public async Task<List<Transaction>> GetTransactionsByDay(int dayOfMonth, char transactionType) // Send bool instead of char to trigger tenerary interator
@@ -213,12 +227,13 @@ public class PostgresTransactionManager : ITransactionManager
 
         while (await reader.ReadAsync())
         {
-            int id = reader.GetInt32(0);
-            string name = reader.GetString(1);
-            decimal amount = reader.GetDecimal(2);
-            DateTime date = reader.GetDateTime(3);
-
-            Transaction transaction = new(id, name, amount, date, PostgresAccountManager.LoggedInUserId);
+            Transaction transaction = new(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetDecimal(2),
+                reader.GetDateTime(3),
+                PostgresAccountManager.LoggedInUserId
+                );
 
             transactions.Add(transaction);
         }
@@ -244,12 +259,13 @@ public class PostgresTransactionManager : ITransactionManager
 
         while (await reader.ReadAsync())
         {
-            int id = reader.GetInt32(0);
-            string name = reader.GetString(1);
-            decimal amount = reader.GetDecimal(2);
-            DateTime date = reader.GetDateTime(3);
-
-            Transaction transaction = new(id, name, amount, date, PostgresAccountManager.LoggedInUserId);
+            Transaction transaction = new(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetDecimal(2),
+                reader.GetDateTime(3),
+                PostgresAccountManager.LoggedInUserId
+                );
 
             transactions.Add(transaction);
         }
@@ -275,12 +291,13 @@ public class PostgresTransactionManager : ITransactionManager
 
         while (await reader.ReadAsync())
         {
-            int id = reader.GetInt32(0);
-            string name = reader.GetString(1);
-            decimal amount = reader.GetDecimal(2);
-            DateTime date = reader.GetDateTime(3);
-
-            Transaction transaction = new(id, name, amount, date, PostgresAccountManager.LoggedInUserId);
+            Transaction transaction = new(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetDecimal(2),
+                reader.GetDateTime(3),
+                PostgresAccountManager.LoggedInUserId
+                );
 
             transactions.Add(transaction);
         }
@@ -306,14 +323,13 @@ public class PostgresTransactionManager : ITransactionManager
 
         while (await reader.ReadAsync())
         {
-            // int id = reader.GetInt32(0);
-            // string name = reader.GetString(1);
-            // decimal amount = reader.GetDecimal(2);
-            // DateTime date = reader.GetDateTime(3);
-
-            // Transaction transaction = new(id, name, amount, date, PostgresAccountManager.LoggedInUserId);
-
-            Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), reader.GetGuid(4));
+            Transaction transaction = new(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetDecimal(2),
+                reader.GetDateTime(3),
+                PostgresAccountManager.LoggedInUserId
+                );
 
             transactions.Add(transaction);
         }

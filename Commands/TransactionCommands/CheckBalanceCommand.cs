@@ -14,6 +14,9 @@ public class CheckBalanceCommand : Command
     {
         PostgresTransactionManager postgresTransactionManager = new(connection);
 
-        await postgresTransactionManager.GetBalance();
+        decimal totalAmount = await postgresTransactionManager.GetBalance();
+
+        Console.WriteLine($"Your total balance is {totalAmount}.");
+        PressKeyToContinue.Execute();
     }
 }
