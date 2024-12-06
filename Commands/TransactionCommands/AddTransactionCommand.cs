@@ -97,13 +97,14 @@ public class AddTransactionCommand : Command
 
         Console.Clear();
         Console.WriteLine("The following transaction has been added:");
-        Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
-        Console.WriteLine("| Date        | Transaction Name                |      Amount |");
-        Console.WriteLine("|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|");
+        Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
+        Console.WriteLine("| Id  | Date        | Transaction Name                |      Amount |");
+        Console.WriteLine("|‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|");
 
         Console.WriteLine(transaction);
 
-        Console.WriteLine("|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|");
+        Console.WriteLine("|_ _ _|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|");
+
         PressKeyToContinue.Execute();
     }
 }

@@ -17,16 +17,16 @@ public class CheckAllTransactionsCommand : Command
         PostgresTransactionManager postgresTransactionManager = new(connection);
         List<Transaction> transactions = await postgresTransactionManager.GetAllTransactions();
 
-        Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
-        Console.WriteLine("| Date        | Transaction Name                |      Amount |");
-        Console.WriteLine("|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|");
+        Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
+        Console.WriteLine("| Id  | Date        | Transaction Name                |      Amount |");
+        Console.WriteLine("|‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|");
 
         foreach (Transaction transaction in transactions)
         {
             Console.WriteLine(transaction);
         }
 
-        Console.WriteLine("|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|");
+        Console.WriteLine("|_ _ _|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|");
 
         PressKeyToContinue.Execute();
     }

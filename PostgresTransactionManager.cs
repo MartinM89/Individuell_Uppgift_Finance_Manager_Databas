@@ -191,24 +191,6 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    // public async Task<int> GetTransactionsCount()
-    // {
-    //     string getTransactionsCountSql = "SELECT COUNT(*) FROM transactions WHERE user_id = @user_id";
-    //     using NpgsqlCommand getTransactionsCountCmd = new(getTransactionsCountSql, Connection);
-    //     getTransactionsCountCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
-
-    //     object? queryResult = await getTransactionsCountCmd.ExecuteScalarAsync();
-
-    //     if (queryResult == null)
-    //     {
-    //         return 0;
-    //     }
-
-    //     int rowCount = Convert.ToInt32(queryResult);
-
-    //     return rowCount;
-    // }
-
     public async Task<List<Transaction>> GetTransactionsByDay(int dayOfMonth, char transactionType) // Send bool instead of char to trigger tenerary interator
     {
         string getTransactionsByDaySql = $"""

@@ -27,11 +27,10 @@ public class CheckIncomeCommand : Command
         //     break;
         // }
 
-        CheckIncomeExpenseMenu.Execute();
+        CheckIncomeAndExpenseMenu.Execute();
 
         string userChoice = string.Empty;
         string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
-
         // csharpier-ignore
         if (string.IsNullOrEmpty(hideUserChoice)) { return; }
 
@@ -73,7 +72,6 @@ public class CheckIncomeCommand : Command
             "Y" => transactions = await getTransaction.GetTransactionsByYear(transactionDate, transactionType),
             _ => transactions = null!,
         };
-
         // csharpier-ignore
         if (hideUserChoice.Equals("D")) { transactionCategory = TransactionCategory.Day; }
         else if (hideUserChoice.Equals("W")) { transactionCategory = TransactionCategory.Week; }
@@ -81,16 +79,16 @@ public class CheckIncomeCommand : Command
         else if (hideUserChoice.Equals("Y")) { transactionCategory = TransactionCategory.Year; }
 
         Console.WriteLine($"{transactionCategory}:");
-        Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
-        Console.WriteLine("| Date        | Transaction Name                |      Amount |");
-        Console.WriteLine("|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|");
+        Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
+        Console.WriteLine("| Id  | Date        | Transaction Name                |      Amount |");
+        Console.WriteLine("|‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|");
 
         foreach (Transaction transaction in transactions)
         {
             Console.WriteLine(transaction);
         }
 
-        Console.WriteLine("|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|");
+        Console.WriteLine("|_ _ _|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|");
 
         PressKeyToContinue.Execute();
     }

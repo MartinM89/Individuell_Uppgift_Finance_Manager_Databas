@@ -17,13 +17,6 @@ public class Transaction
 
     public override string ToString()
     {
-        string transactionTable = " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n"
-                                + "| Id  | Date        | Transaction Name                |      Amount |\n"
-                                + "|‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|\n"
-
-                                + $"| {Id,-3} | {Date:yyyy MMM dd} | {Name,-31} | {Amount,11:N2} |\n"
-
-                                + "|_ _ _|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|";
-        return transactionTable;
+        return $"| {Id, -3} | {Date:yyyy MMM dd} | {Name, -31} | {Amount, 11:N2} |";
     }
 }
