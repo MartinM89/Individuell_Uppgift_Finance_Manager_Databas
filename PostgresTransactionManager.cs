@@ -138,14 +138,14 @@ public class PostgresTransactionManager : ITransactionManager
         await insertTransactionCmd.ExecuteNonQueryAsync();
     }
 
-    public async Task DeleteTransaction(int transactionToDelete)
+    public async Task<int> DeleteTransaction(int transactionToDelete)
     {
         string deleteTransactionSql = "DELETE FROM transactions WHERE user_id = @user_id AND id = @id";
         using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, Connection);
         deleteTransactionCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         deleteTransactionCmd.Parameters.AddWithValue("@id", transactionToDelete);
 
-        await deleteTransactionCmd.ExecuteNonQueryAsync();
+        return await deleteTransactionCmd.ExecuteNonQueryAsync();
     }
 
     public async Task<decimal> GetBalance()
@@ -175,7 +175,7 @@ public class PostgresTransactionManager : ITransactionManager
         using NpgsqlDataReader reader = await getAllTransactionsCmd.ExecuteReaderAsync();
 
         List<Transaction> transactions = [];
-
+        // csharpier-ignore
         while (await reader.ReadAsync())
         {
             Transaction transaction = new(
@@ -191,23 +191,23 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    public async Task<int> GetTransactionsCount()
-    {
-        string getTransactionsCountSql = "SELECT COUNT(*) FROM transactions WHERE user_id = @user_id";
-        using NpgsqlCommand getTransactionsCountCmd = new(getTransactionsCountSql, Connection);
-        getTransactionsCountCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
+    // public async Task<int> GetTransactionsCount()
+    // {
+    //     string getTransactionsCountSql = "SELECT COUNT(*) FROM transactions WHERE user_id = @user_id";
+    //     using NpgsqlCommand getTransactionsCountCmd = new(getTransactionsCountSql, Connection);
+    //     getTransactionsCountCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
 
-        object? queryResult = await getTransactionsCountCmd.ExecuteScalarAsync();
+    //     object? queryResult = await getTransactionsCountCmd.ExecuteScalarAsync();
 
-        if (queryResult == null)
-        {
-            return 0;
-        }
+    //     if (queryResult == null)
+    //     {
+    //         return 0;
+    //     }
 
-        int rowCount = Convert.ToInt32(queryResult);
+    //     int rowCount = Convert.ToInt32(queryResult);
 
-        return rowCount;
-    }
+    //     return rowCount;
+    // }
 
     public async Task<List<Transaction>> GetTransactionsByDay(int dayOfMonth, char transactionType) // Send bool instead of char to trigger tenerary interator
     {
@@ -224,7 +224,7 @@ public class PostgresTransactionManager : ITransactionManager
         using NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync();
 
         List<Transaction> transactions = [];
-
+        // csharpier-ignore
         while (await reader.ReadAsync())
         {
             Transaction transaction = new(
@@ -256,7 +256,7 @@ public class PostgresTransactionManager : ITransactionManager
         using NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync();
 
         List<Transaction> transactions = [];
-
+        // csharpier-ignore
         while (await reader.ReadAsync())
         {
             Transaction transaction = new(
@@ -288,7 +288,7 @@ public class PostgresTransactionManager : ITransactionManager
         using NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync();
 
         List<Transaction> transactions = [];
-
+        // csharpier-ignore
         while (await reader.ReadAsync())
         {
             Transaction transaction = new(
@@ -320,7 +320,7 @@ public class PostgresTransactionManager : ITransactionManager
         using NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync();
 
         List<Transaction> transactions = [];
-
+        // csharpier-ignore
         while (await reader.ReadAsync())
         {
             Transaction transaction = new(

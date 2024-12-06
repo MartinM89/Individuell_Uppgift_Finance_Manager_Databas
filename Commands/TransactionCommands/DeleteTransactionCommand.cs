@@ -26,16 +26,18 @@ public class DeleteTransactionCommand : Command
         Console.Write("What transaction do you wish to delete? ");
         int transactionToDelete = int.Parse(Console.ReadLine()!);
 
-        int rowCount = await postgresTransactionManager.GetTransactionsCount();
+        int rowsAffected = await postgresTransactionManager.DeleteTransaction(transactionToDelete);
 
-        if (transactionToDelete >= rowCount)
+        Console.WriteLine(rowsAffected);
+        PressKeyToContinue.Execute();
+
+        if (rowsAffected <= 0)
         {
-            Console.WriteLine("Transaction does not exist.");
+            Console.Clear();
+            Console.WriteLine("Transactions does not exists.");
             PressKeyToContinue.Execute();
             return;
         }
-
-        await postgresTransactionManager.DeleteTransaction(transactionToDelete);
 
         Console.Clear();
         Console.WriteLine($"Transaction {transactionToDelete} deleted.");
