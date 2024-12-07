@@ -6,7 +6,7 @@ public class CommandManagerTransaction
 {
     public static async Task Execute(NpgsqlConnection connection)
     {
-        while (PostgresAccountManager.loggedIn)
+        while (PostgresAccountManager.LoggedIn)
         {
             TransactionMenu.Execute();
 
@@ -16,26 +16,26 @@ public class CommandManagerTransaction
             switch (hideUserChoice)
             {
                 case "A":
-                    AddTransactionCommand addTransaction = new();
-                    await addTransaction.Execute(connection);
+                    AddTransactionCommand addTransaction = new(connection);
+                    await addTransaction.Execute();
                     break;
 
                 case "D":
                     Console.Clear();
-                    DeleteTransactionCommand deleteTransaction = new();
-                    await deleteTransaction.Execute(connection);
+                    DeleteTransactionCommand deleteTransaction = new(connection);
+                    await deleteTransaction.Execute();
                     break;
 
                 case "B":
                     Console.Clear();
-                    CheckBalanceCommand checkBalance = new();
-                    await checkBalance.Execute(connection);
+                    CheckBalanceCommand checkBalance = new(connection);
+                    await checkBalance.Execute();
                     break;
 
                 case "I":
                     Console.Clear();
-                    CheckIncomeCommand checkIncome = new();
-                    await checkIncome.Execute(connection);
+                    CheckIncomeCommand checkIncome = new(connection);
+                    await checkIncome.Execute();
                     // PressKeyToContinue.Execute();
                     break;
 
@@ -46,7 +46,7 @@ public class CommandManagerTransaction
                     break;
 
                 case "L":
-                    PostgresAccountManager.loggedIn = false;
+                    PostgresAccountManager.LoggedIn = false;
                     Console.Clear();
                     Console.WriteLine("Thank you for using your personal finance app.");
                     PressKeyToContinue.Execute();
@@ -60,8 +60,8 @@ public class CommandManagerTransaction
 
                 case "P":
                     Console.Clear();
-                    CheckAllTransactionsCommand checkAllTransactions = new();
-                    await checkAllTransactions.Execute(connection);
+                    CheckAllTransactionsCommand checkAllTransactions = new(connection);
+                    await checkAllTransactions.Execute();
                     break;
 
                 default:

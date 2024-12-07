@@ -1,22 +1,30 @@
+using Individuell_Uppgift.Utilities;
 using Npgsql;
 
 public class CheckBalanceCommand : Command
 {
-    public CheckBalanceCommand()
-        : base("Check Balance") { }
+    NpgsqlConnection connection;
+
+    public CheckBalanceCommand(NpgsqlConnection connection)
+        : base(connection, "B")
+    {
+        this.connection = connection;
+    }
 
     public override string GetDescription()
     {
         return "Check your current balance";
     }
 
-    public override async Task Execute(NpgsqlConnection connection)
+    public override async Task Execute()
     {
         PostgresTransactionManager postgresTransactionManager = new(connection);
 
         decimal totalAmount = await postgresTransactionManager.GetBalance();
 
-        Console.WriteLine($"Your total balance is {totalAmount}.");
+        Console.Write("Your total balance is ");
+        ChangeColor.TextColorGreen($"{totalAmount:N2}");
+        Console.WriteLine(".");
         PressKeyToContinue.Execute();
     }
 }

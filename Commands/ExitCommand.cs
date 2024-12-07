@@ -2,15 +2,20 @@ using Npgsql;
 
 public class ExitCommand : Command
 {
-    public ExitCommand()
-        : base("Save and Exit") { }
+    NpgsqlConnection connection;
+
+    public ExitCommand(NpgsqlConnection connection)
+        : base(connection, "E")
+    {
+        this.connection = connection;
+    }
 
     public override string GetDescription()
     {
-        return "Save and exit the program";
+        return "Exit the program";
     }
 
-    public override Task Execute(NpgsqlConnection connection)
+    public override Task Execute()
     {
         throw new NotImplementedException();
     }

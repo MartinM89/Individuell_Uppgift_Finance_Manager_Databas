@@ -1,13 +1,20 @@
 using Individuell_Uppgift.Utilities;
 using Npgsql;
 
-public class PostgresAccountManager : IAccount
+public class PostgresAccountManager : IAccountManager
 {
+    private NpgsqlConnection connection; // Readonly?
+
     public static Guid LoggedInUserId { get; private set; }
 
-    public static bool loggedIn = false;
+    public static bool LoggedIn { get; set; } = false;
 
-    public void Create(NpgsqlConnection connection, User user)
+    public PostgresAccountManager(NpgsqlConnection connection)
+    {
+        this.connection = connection;
+    }
+
+    public async Task Create(NpgsqlConnection connection, User user)
     {
         string createAccountSql = """
             INSERT INTO users (username, password_hash, password_salt)
@@ -19,10 +26,10 @@ public class PostgresAccountManager : IAccount
         command.Parameters.AddWithValue("password_hash", Convert.ToBase64String(user.PasswordHash!));
         command.Parameters.AddWithValue("password_salt", Convert.ToBase64String(user.PasswordSalt!));
 
-        command.ExecuteNonQuery();
+        await command.ExecuteNonQueryAsync();
     }
 
-    public void Login(NpgsqlConnection connection, string username)
+    public async Task Login(NpgsqlConnection connection, string username)
     {
         string getIdSql = """
             SELECT id
@@ -30,15 +37,24 @@ public class PostgresAccountManager : IAccount
             WHERE username = @username
             """;
 
-        NpgsqlCommand command = new NpgsqlCommand(getIdSql, connection);
-        command.Parameters.AddWithValue("username", username);
+        NpgsqlCommand getIdCmd = new NpgsqlCommand(getIdSql, connection);
+        getIdCmd.Parameters.AddWithValue("username", username);
 
-        LoggedInUserId = (Guid)command.ExecuteScalar()!;
+        // object? result = await getIdCmd.ExecuteScalarAsync();
 
-        loggedIn = true;
+        // if (result == null || result == DBNull.Value)
+        // {
+        //     throw new InvalidOperationException("User not found!");
+        // }
+
+        // LoggedInUserId = (Guid)result;
+
+        LoggedInUserId = await getIdCmd.ExecuteScalarAsync() as Guid? ?? throw new InvalidOperationException("User not found!");
+
+        LoggedIn = true;
     }
 
-    public static bool CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
+    public static async Task<bool> CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
     {
         string loginSql = """
             SELECT password_hash, password_salt
@@ -52,7 +68,7 @@ public class PostgresAccountManager : IAccount
         byte[] storedPasswordHash = [];
         byte[] storedPasswordSalt = [];
 
-        using NpgsqlDataReader reader = command.ExecuteReader();
+        using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
         if (reader.Read())
         {
             string passwordHashString = reader.GetString(0);

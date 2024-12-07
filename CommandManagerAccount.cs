@@ -13,9 +13,8 @@ public class CommandManagerAccount
 
     public static async Task Execute(NpgsqlConnection connection)
     {
-        PostgresAccountManager userAccount = new();
-        CreateAccountCommand createAccount = new();
-        LoginCommand loginAccount = new();
+        CreateAccountCommand createAccount = new(connection);
+        LoginCommand loginAccount = new(connection);
 
         string userChoice = string.Empty;
         string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
@@ -23,13 +22,11 @@ public class CommandManagerAccount
         switch (hideUserChoice)
         {
             case "C":
-                await createAccount.Execute(connection);
-                // userAccount.Create(connection);
+                await createAccount.Execute();
                 break;
 
             case "L":
-                await loginAccount.Execute(connection);
-                // userAccount.Login(connection);
+                await loginAccount.Execute();
                 await CommandManagerTransaction.Execute(connection);
                 break;
 

@@ -2,15 +2,20 @@ using Npgsql;
 
 public class HelpCommand : Command
 {
-    public HelpCommand()
-        : base("Help") { }
+    NpgsqlConnection connection;
+
+    public HelpCommand(NpgsqlConnection connection)
+        : base(connection, "H")
+    {
+        this.connection = connection;
+    }
 
     public override string GetDescription()
     {
         return "Check help commands";
     }
 
-    public override Task Execute(NpgsqlConnection connection)
+    public override Task Execute()
     {
         throw new NotImplementedException();
     }

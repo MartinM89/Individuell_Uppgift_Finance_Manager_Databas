@@ -2,15 +2,20 @@ using Npgsql;
 
 public class DeleteTransactionCommand : Command
 {
-    public DeleteTransactionCommand()
-        : base("Delete Transaction") { }
+    NpgsqlConnection connection;
+
+    public DeleteTransactionCommand(NpgsqlConnection connection)
+        : base(connection, "D")
+    {
+        this.connection = connection;
+    }
 
     public override string GetDescription()
     {
         return "Delete a transaction";
     }
 
-    public override async Task Execute(NpgsqlConnection connection)
+    public override async Task Execute()
     {
         Console.Clear();
 
@@ -25,6 +30,8 @@ public class DeleteTransactionCommand : Command
 
         Console.Write("What transaction do you wish to delete? ");
         int transactionToDelete = int.Parse(Console.ReadLine()!);
+        // csharpier-ignore
+        // if (string.IsNullOrEmpty(transactionValueString)) { return; }
 
         int rowsAffected = await postgresTransactionManager.DeleteTransaction(transactionToDelete);
 

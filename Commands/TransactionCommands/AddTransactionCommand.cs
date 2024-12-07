@@ -2,15 +2,20 @@ using Npgsql;
 
 public class AddTransactionCommand : Command
 {
-    public AddTransactionCommand()
-        : base("Add Transaction") { }
+    NpgsqlConnection connection;
+
+    public AddTransactionCommand(NpgsqlConnection connection)
+        : base(connection, "A")
+    {
+        this.connection = connection;
+    }
 
     public override string GetDescription()
     {
         return "Adds a transaction";
     }
 
-    public override async Task Execute(NpgsqlConnection connection)
+    public override async Task Execute()
     {
         Console.Clear();
 
@@ -22,7 +27,7 @@ public class AddTransactionCommand : Command
         {
             Console.Clear();
             Console.Write("Enter name: ");
-            string transactionName = Console.ReadLine()!;
+            string? transactionName = Console.ReadLine();
             // csharpier-ignore
             if (string.IsNullOrEmpty(transactionName)) { return; }
 
@@ -46,10 +51,10 @@ public class AddTransactionCommand : Command
                 continue;
             }
 
-            if (transactionName.Length! < 3 || transactionName.Length! > 20)
+            if (transactionName.Length! < 3 || transactionName.Length > TransactionTable.transactionNameWidth)
             {
                 Console.Clear();
-                Console.WriteLine("Invalid Input. Name must be between 3 to 20 characters long.");
+                Console.WriteLine("Invalid Input. Name must be between 3 - 21 characters long.");
                 PressKeyToContinue.Execute();
                 continue;
             }
@@ -64,16 +69,24 @@ public class AddTransactionCommand : Command
         {
             Console.Clear();
             Console.Write("Enter amount: ");
-            string transactionValueString = Console.ReadLine()!;
+            string? transactionValueString = Console.ReadLine();
             // csharpier-ignore
             if (string.IsNullOrEmpty(transactionValueString)) { return; }
 
             transactionValueString = transactionValueString.Replace('.', ',');
 
-            if (transactionValueString.Length > 10 || !decimal.TryParse(transactionValueString, out transactionValue))
+            if (!decimal.TryParse(transactionValueString, out transactionValue))
             {
                 Console.Clear();
-                Console.WriteLine("Invalid Input. Amount must be only numbers and not exceed 10 numbers long.");
+                Console.WriteLine("Invalid Input. Amount must only be numbers.");
+                PressKeyToContinue.Execute();
+                continue;
+            }
+
+            if (transactionValueString.Length > TransactionTable.amountWidth - 5)
+            {
+                Console.Clear();
+                Console.WriteLine("Invalid Input. Amount can't exceed 8 numbers.");
                 PressKeyToContinue.Execute();
                 continue;
             }
@@ -89,7 +102,7 @@ public class AddTransactionCommand : Command
             break;
         }
 
-        Transaction transaction = new(0, capitalizedTransactionName, transactionValue, transactionDate, PostgresAccountManager.LoggedInUserId);
+        Transaction transaction = new(1, capitalizedTransactionName, transactionValue, transactionDate, PostgresAccountManager.LoggedInUserId);
 
         PostgresTransactionManager postgresTransactionManager = new(connection);
 
@@ -97,13 +110,9 @@ public class AddTransactionCommand : Command
 
         Console.Clear();
         Console.WriteLine("The following transaction has been added:");
-        Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
-        Console.WriteLine("| Id  | Date        | Transaction Name                |      Amount |");
-        Console.WriteLine("|‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|");
-
-        Console.WriteLine(transaction);
-
-        Console.WriteLine("|_ _ _|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|");
+        TransactionTable.GetTransactionTableTop();
+        TransactionTable.GetSingleRowTransactionTableCenter(transaction);
+        TransactionTable.GetTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
     }

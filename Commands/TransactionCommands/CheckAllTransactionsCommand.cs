@@ -2,31 +2,29 @@ using Npgsql;
 
 public class CheckAllTransactionsCommand : Command
 {
-    public CheckAllTransactionsCommand()
-        : base("Check All Transactions") { }
+    NpgsqlConnection connection;
+
+    public CheckAllTransactionsCommand(NpgsqlConnection connection)
+        : base(connection, "P")
+    {
+        this.connection = connection;
+    }
 
     public override string GetDescription()
     {
         return "Print a list of all transactions";
     }
 
-    public override async Task Execute(NpgsqlConnection connection)
+    public override async Task Execute()
     {
         Console.WriteLine("List of all transactions:");
 
         PostgresTransactionManager postgresTransactionManager = new(connection);
         List<Transaction> transactions = await postgresTransactionManager.GetAllTransactions();
 
-        Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
-        Console.WriteLine("| Id  | Date        | Transaction Name                |      Amount |");
-        Console.WriteLine("|‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|");
-
-        foreach (Transaction transaction in transactions)
-        {
-            Console.WriteLine(transaction);
-        }
-
-        Console.WriteLine("|_ _ _|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|");
+        TransactionTable.GetTransactionTableTop();
+        TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
+        TransactionTable.GetTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
     }

@@ -4,15 +4,20 @@ using Npgsql;
 
 public class CheckIncomeCommand : Command
 {
-    public CheckIncomeCommand()
-        : base("Check Income") { }
+    NpgsqlConnection connection;
+
+    public CheckIncomeCommand(NpgsqlConnection connection)
+        : base(connection, "I")
+    {
+        this.connection = connection;
+    }
 
     public override string GetDescription()
     {
         return "Check your income";
     }
 
-    public override async Task Execute(NpgsqlConnection connection)
+    public override async Task Execute()
     {
         Console.Clear();
 
@@ -79,16 +84,9 @@ public class CheckIncomeCommand : Command
         else if (hideUserChoice.Equals("Y")) { transactionCategory = TransactionCategory.Year; }
 
         Console.WriteLine($"{transactionCategory}:");
-        Console.WriteLine(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
-        Console.WriteLine("| Id  | Date        | Transaction Name                |      Amount |");
-        Console.WriteLine("|‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾|‾ ‾ ‾ ‾ ‾ ‾ ‾|");
-
-        foreach (Transaction transaction in transactions)
-        {
-            Console.WriteLine(transaction);
-        }
-
-        Console.WriteLine("|_ _ _|_ _ _ _ _ _ _|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _|_ _ _ _ _ _ _|");
+        TransactionTable.GetTransactionTableTop();
+        TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
+        TransactionTable.GetTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
     }

@@ -3,17 +3,22 @@ using Npgsql;
 
 public class LoginCommand : Command
 {
-    public LoginCommand()
-        : base("Login") { }
+    NpgsqlConnection connection;
+
+    public LoginCommand(NpgsqlConnection connection)
+        : base(connection, "L")
+    {
+        this.connection = connection;
+    }
 
     public override string GetDescription()
     {
         return "Use to login in";
     }
 
-    public override Task Execute(NpgsqlConnection connection)
+    public override async Task Execute()
     {
-        PostgresAccountManager postgresAccountManager = new();
+        PostgresAccountManager postgresAccountManager = new(connection);
         Console.Clear();
 
         string enteredPassword = string.Empty;
@@ -23,7 +28,7 @@ public class LoginCommand : Command
 
         if (string.IsNullOrEmpty(username))
         {
-            return Task.CompletedTask;
+            return;
         }
 
         username = username[..1].ToUpper() + username[1..].ToLower();
@@ -35,7 +40,7 @@ public class LoginCommand : Command
             Console.Clear();
             ChangeColor.TextColorRed("Could not find account.\n");
             PressKeyToContinue.Execute();
-            return Task.CompletedTask;
+            return;
         }
 
         Console.Write("Enter password: ");
@@ -43,25 +48,25 @@ public class LoginCommand : Command
 
         if (string.IsNullOrEmpty(enteredPassword))
         {
-            return Task.CompletedTask;
+            return;
         }
 
-        bool isPasswordCorrect = PostgresAccountManager.CheckLoginDetailsIsCorrect(connection, username, enteredPassword);
+        bool isPasswordCorrect = await PostgresAccountManager.CheckLoginDetailsIsCorrect(connection, username, enteredPassword);
 
         if (!isPasswordCorrect)
         {
             Console.Clear();
             ChangeColor.TextColorRed("Password does not match.\n");
             PressKeyToContinue.Execute();
-            return Task.CompletedTask;
+            return;
         }
 
-        postgresAccountManager.Login(connection, username);
+        await postgresAccountManager.Login(connection, username);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");
         PressKeyToContinue.Execute();
 
-        return Task.CompletedTask;
+        return;
     }
 }

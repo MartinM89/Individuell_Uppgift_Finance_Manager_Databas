@@ -2,25 +2,30 @@ namespace Individuell_Uppgift.Menus;
 
 public abstract class Menu
 {
-    private readonly List<Command> commands = [];
+    private List<Command> commands = [];
 
     public void AddCommand(Command command)
     {
         this.commands.Add(command);
     }
 
-    public void ExecuteCommand(string inputCommand)
+    public void ExecuteCommand(string userChoice)
     {
-        foreach (Command command in commands)
+        try
         {
-            if (command.Name.Equals(inputCommand))
+            foreach (Command command in commands)
             {
-                command.Execute(inputCommand);
-                return;
+                if (command.Name.Equals(userChoice))
+                {
+                    command.Execute();
+                    return;
+                }
             }
         }
-
-        throw new ArgumentException("Command not found.");
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Command not found. | {ex.Message}");
+        }
     }
 
     public abstract void Display();

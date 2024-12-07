@@ -3,17 +3,22 @@ using Npgsql;
 
 public class CreateAccountCommand : Command
 {
-    public CreateAccountCommand()
-        : base("Create Account") { }
+    NpgsqlConnection connection;
+
+    public CreateAccountCommand(NpgsqlConnection connection)
+        : base(connection, "C")
+    {
+        this.connection = connection;
+    }
 
     public override string GetDescription()
     {
         return "Create a new account";
     }
 
-    public override Task Execute(NpgsqlConnection connection)
+    public override async Task Execute()
     {
-        PostgresAccountManager postgresAccountManager = new();
+        PostgresAccountManager postgresAccountManager = new(connection);
 
         Console.Clear();
 
@@ -25,7 +30,7 @@ public class CreateAccountCommand : Command
 
         if (string.IsNullOrEmpty(username))
         {
-            return Task.CompletedTask;
+            return;
         }
 
         username = username[..1].ToUpper() + username[1..].ToLower();
@@ -37,7 +42,7 @@ public class CreateAccountCommand : Command
             Console.Clear();
             ChangeColor.TextColorRed("Username unavailable.\n");
             PressKeyToContinue.Execute();
-            return Task.CompletedTask;
+            return;
         }
 
         Console.Write("Enter password: ");
@@ -45,7 +50,7 @@ public class CreateAccountCommand : Command
 
         if (string.IsNullOrEmpty(password))
         {
-            return Task.CompletedTask;
+            return;
         }
 
         Console.Write("\nRetype password: ");
@@ -53,7 +58,7 @@ public class CreateAccountCommand : Command
 
         if (string.IsNullOrEmpty(confirmPassword))
         {
-            return Task.CompletedTask;
+            return;
         }
 
         if (!password.Equals(confirmPassword))
@@ -61,18 +66,18 @@ public class CreateAccountCommand : Command
             Console.Clear();
             ChangeColor.TextColorRed("Passwords do not match.\n");
             PressKeyToContinue.Execute();
-            return Task.CompletedTask;
+            return;
         }
 
         PasswordHasher.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
 
         User user = new User(username, passwordHash, passwordSalt);
 
-        postgresAccountManager.Create(connection, user);
+        await postgresAccountManager.Create(connection, user);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Account {username} registered successfully.\n");
         PressKeyToContinue.Execute();
-        return Task.CompletedTask;
+        return;
     }
 }

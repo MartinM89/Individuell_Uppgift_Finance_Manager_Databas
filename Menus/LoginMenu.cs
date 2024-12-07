@@ -1,12 +1,16 @@
 using Individuell_Uppgift.Menus;
 using Individuell_Uppgift.Utilities;
+using Npgsql;
 
 public class LoginMenu : Menu
 {
-    public LoginMenu()
+    NpgsqlConnection connection;
+
+    public LoginMenu(NpgsqlConnection connection)
     {
-        AddCommand(new LoginCommand());
-        AddCommand(new CreateAccountCommand());
+        this.connection = connection;
+        AddCommand(new LoginCommand(connection));
+        AddCommand(new CreateAccountCommand(connection));
     }
 
     public override void Display()
