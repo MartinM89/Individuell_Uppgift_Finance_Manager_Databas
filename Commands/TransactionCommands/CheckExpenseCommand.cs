@@ -2,13 +2,8 @@ using Npgsql;
 
 public class CheckExpenseCommand : Command
 {
-    NpgsqlConnection connection;
-
-    public CheckExpenseCommand(NpgsqlConnection connection)
-        : base(connection, "E")
-    {
-        this.connection = connection;
-    }
+    public CheckExpenseCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
+        : base("E", connection, accountManager, menuManager, transactionManager) { }
 
     public override string GetDescription()
     {

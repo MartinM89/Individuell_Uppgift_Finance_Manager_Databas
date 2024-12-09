@@ -21,6 +21,6 @@ public class Transaction
     public override string ToString()
     {
         // return $"| {Id, 3} | {Date:yyyy MMM dd} | {Name, -21} | {Amount, 13:N2} |";
-        return $"| {Id, TransactionTable.idWidth} | {Date:yyyy MMM dd} | {Name, -TransactionTable.transactionNameWidth} | ";
+        return $"| {Id, TransactionTable.idWidth} | {Date:yyyy MMM dd} | {Name, -TransactionTable.nameWidth} | ";
     }
 }

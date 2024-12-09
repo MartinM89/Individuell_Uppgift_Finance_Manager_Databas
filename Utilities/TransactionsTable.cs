@@ -1,6 +1,7 @@
 using Individuell_Uppgift.Utilities;
+using Npgsql.Replication;
 
-public static class TransactionTable
+public class TransactionTable
 {
     private static readonly string id = "Id";
     private static readonly string date = "Date";
@@ -9,20 +10,18 @@ public static class TransactionTable
 
     public const int idWidth = 3;
     public const int dateWidth = 11;
-    public const int transactionNameWidth = 21;
+    public const int nameWidth = 21;
     public const int amountWidth = 13;
     public const int columns = 4;
     public const int padding = columns * 2;
 
     public static void GetTransactionTableTop()
     {
-        int tableLength = idWidth + dateWidth + transactionNameWidth + amountWidth + padding + columns;
-        string repeatedUnderscore = string.Concat(Enumerable.Repeat(" _", tableLength / 2));
-        string repeatedUpperUnderscore = string.Concat(Enumerable.Repeat(" ═", tableLength / 2));
+        int tableLength = idWidth + dateWidth + nameWidth + amountWidth + padding + columns;
 
-        Console.WriteLine(repeatedUnderscore);
-        Console.WriteLine($"| {id, idWidth} | {date, -dateWidth} | {transactionName, -transactionNameWidth} | {amount, amountWidth} |");
-        Console.WriteLine(repeatedUpperUnderscore);
+        Console.WriteLine(string.Concat(Enumerable.Repeat(" _", tableLength / 2)));
+        Console.WriteLine($"| {id, idWidth} | {date, -dateWidth} | {transactionName, -nameWidth} | {amount, amountWidth} |");
+        Console.WriteLine(string.Concat(Enumerable.Repeat(" ═", tableLength / 2)));
     }
 
     public static void GetSingleRowTransactionTableCenter(Transaction transaction)
@@ -53,9 +52,8 @@ public static class TransactionTable
 
     public static void GetTransactionsTableBottom()
     {
-        int tableLength = idWidth + dateWidth + transactionNameWidth + amountWidth + padding + columns;
-        string repeatedUpperscore = string.Concat(Enumerable.Repeat(" ═", tableLength / 2));
+        int tableLength = idWidth + dateWidth + nameWidth + amountWidth + padding + columns;
 
-        Console.WriteLine(repeatedUpperscore);
+        Console.WriteLine(string.Concat(Enumerable.Repeat(" ═", tableLength / 2)));
     }
 }

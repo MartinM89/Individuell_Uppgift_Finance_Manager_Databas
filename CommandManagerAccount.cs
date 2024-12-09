@@ -4,17 +4,10 @@ using Npgsql;
 
 public class CommandManagerAccount
 {
-    // private readonly NpgsqlConnection Connection;
-
-    // public CommandManagerAccount(NpgsqlConnection connection)
-    // {
-    //     Connection = connection;
-    // }
-
-    public static async Task Execute(NpgsqlConnection connection)
+    public static async Task Execute(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
     {
-        CreateAccountCommand createAccount = new(connection);
-        LoginCommand loginAccount = new(connection);
+        CreateAccountCommand createAccount = new(connection, accountManager, menuManager, transactionManager);
+        LoginCommand loginAccount = new(connection, accountManager, menuManager, transactionManager);
 
         string userChoice = string.Empty;
         string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
@@ -27,7 +20,7 @@ public class CommandManagerAccount
 
             case "L":
                 await loginAccount.Execute();
-                await CommandManagerTransaction.Execute(connection);
+                await CommandManagerTransaction.Execute(connection, accountManager, menuManager, transactionManager);
                 break;
 
             case "G":

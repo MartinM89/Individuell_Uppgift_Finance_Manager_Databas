@@ -4,13 +4,8 @@ using Npgsql;
 
 public class CheckIncomeCommand : Command
 {
-    NpgsqlConnection connection;
-
-    public CheckIncomeCommand(NpgsqlConnection connection)
-        : base(connection, "I")
-    {
-        this.connection = connection;
-    }
+    public CheckIncomeCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
+        : base("I", connection, accountManager, menuManager, transactionManager) { }
 
     public override string GetDescription()
     {
@@ -83,11 +78,15 @@ public class CheckIncomeCommand : Command
         else if (hideUserChoice.Equals("M")) { transactionCategory = TransactionCategory.Month; }
         else if (hideUserChoice.Equals("Y")) { transactionCategory = TransactionCategory.Year; }
 
+        Console.Clear();
+
         Console.WriteLine($"{transactionCategory}:");
         TransactionTable.GetTransactionTableTop();
         TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
         TransactionTable.GetTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
+
+        menuManager.ReturnToSameMenu();
     }
 }

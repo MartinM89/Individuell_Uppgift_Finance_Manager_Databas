@@ -1,15 +1,11 @@
+using Individuell_Uppgift.Menus;
 using Individuell_Uppgift.Utilities;
 using Npgsql;
 
 public class LoginCommand : Command
 {
-    NpgsqlConnection connection;
-
-    public LoginCommand(NpgsqlConnection connection)
-        : base(connection, "L")
-    {
-        this.connection = connection;
-    }
+    public LoginCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
+        : base("L", connection, accountManager, menuManager, transactionManager) { }
 
     public override string GetDescription()
     {
@@ -18,7 +14,6 @@ public class LoginCommand : Command
 
     public override async Task Execute()
     {
-        PostgresAccountManager postgresAccountManager = new(connection);
         Console.Clear();
 
         string enteredPassword = string.Empty;
@@ -61,12 +56,12 @@ public class LoginCommand : Command
             return;
         }
 
-        await postgresAccountManager.Login(connection, username);
+        await accountManager.Login(connection, username);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");
         PressKeyToContinue.Execute();
 
-        return;
+        menuManager.SetMenu(new TransactionMenu(connection, accountManager, menuManager, transactionManager));
     }
 }

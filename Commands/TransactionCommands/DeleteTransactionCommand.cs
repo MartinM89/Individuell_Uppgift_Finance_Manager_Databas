@@ -2,13 +2,8 @@ using Npgsql;
 
 public class DeleteTransactionCommand : Command
 {
-    NpgsqlConnection connection;
-
-    public DeleteTransactionCommand(NpgsqlConnection connection)
-        : base(connection, "D")
-    {
-        this.connection = connection;
-    }
+    public DeleteTransactionCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
+        : base("D", connection, accountManager, menuManager, transactionManager) { }
 
     public override string GetDescription()
     {
@@ -29,9 +24,13 @@ public class DeleteTransactionCommand : Command
         }
 
         Console.Write("What transaction do you wish to delete? ");
-        int transactionToDelete = int.Parse(Console.ReadLine()!);
+        string transactionToDeleteString = Console.ReadLine()!;
         // csharpier-ignore
-        // if (string.IsNullOrEmpty(transactionValueString)) { return; }
+        if (string.IsNullOrEmpty(transactionToDeleteString)) { return; }
+
+        _ = int.TryParse(transactionToDeleteString, out int transactionToDelete);
+
+        // int transactionToDelete = int.Parse(Console.ReadLine()!);
 
         int rowsAffected = await postgresTransactionManager.DeleteTransaction(transactionToDelete);
 
@@ -47,7 +46,11 @@ public class DeleteTransactionCommand : Command
         }
 
         Console.Clear();
+
         Console.WriteLine($"Transaction {transactionToDelete} deleted.");
+
         PressKeyToContinue.Execute();
+
+        menuManager.ReturnToSameMenu();
     }
 }

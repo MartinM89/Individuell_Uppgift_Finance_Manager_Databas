@@ -19,26 +19,26 @@ class Program
         ITransactionManager transactionManager = new PostgresTransactionManager(connection);
         // IMenuManager loginMenuManager = new LoginMenuManager();
         IMenuManager userMenuManager = new UserMenuManager();
-        Menu loginMenu = new LoginMenu(connection);
-        userMenuManager.SetMenu(loginMenu);
+        userMenuManager.SetMenu(new LoginMenu(connection, accountManager, userMenuManager, transactionManager));
 
         // Creates tables, functions and triggers
         // _ = new PostgresTransactionManager(connection); // Required?
 
         while (run)
         {
-            AccountMenu.Execute();
-            await CommandManagerAccount.Execute(connection);
-            // string? userChoice = string.Empty;
-            // string? hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
-            // if (userChoice != null)
-            // {
-            //     userMenuManager.GetMenu().ExecuteCommand(hideUserChoice.ToUpper());
-            // }
-            // else
-            // {
-            //     break;
-            // }
+            // AccountMenu.Execute();
+            // await CommandManagerAccount.Execute(connection, accountManager, userMenuManager, transactionManager);
+
+            string? userChoice = string.Empty;
+            string? hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
+            if (userChoice != null)
+            {
+                userMenuManager.GetMenu().ExecuteCommand(hideUserChoice.ToUpper());
+            }
+            else
+            {
+                break;
+            }
         }
     }
 }

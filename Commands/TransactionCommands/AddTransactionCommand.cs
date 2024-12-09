@@ -2,13 +2,8 @@ using Npgsql;
 
 public class AddTransactionCommand : Command
 {
-    NpgsqlConnection connection;
-
-    public AddTransactionCommand(NpgsqlConnection connection)
-        : base(connection, "A")
-    {
-        this.connection = connection;
-    }
+    public AddTransactionCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
+        : base("A", connection, accountManager, menuManager, transactionManager) { }
 
     public override string GetDescription()
     {
@@ -51,7 +46,7 @@ public class AddTransactionCommand : Command
                 continue;
             }
 
-            if (transactionName.Length! < 3 || transactionName.Length > TransactionTable.transactionNameWidth)
+            if (transactionName.Length! < 3 || transactionName.Length > TransactionTable.nameWidth)
             {
                 Console.Clear();
                 Console.WriteLine("Invalid Input. Name must be between 3 - 21 characters long.");
@@ -115,5 +110,7 @@ public class AddTransactionCommand : Command
         TransactionTable.GetTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
+
+        menuManager.ReturnToSameMenu();
     }
 }

@@ -14,4 +14,9 @@ public class LoginMenuManager : IMenuManager
         this.menu = menu;
         this.menu.Display();
     }
+
+    public void ReturnToSameMenu()
+    {
+        this.menu.Display();
+    }
 }

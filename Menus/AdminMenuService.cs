@@ -7,6 +7,11 @@ public class AdminMenuManager : IMenuManager
         throw new NotImplementedException();
     }
 
+    public void ReturnToSameMenu()
+    {
+        throw new NotImplementedException();
+    }
+
     public void SetMenu(Menu menu)
     {
         throw new NotImplementedException();

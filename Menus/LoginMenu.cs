@@ -4,13 +4,12 @@ using Npgsql;
 
 public class LoginMenu : Menu
 {
-    NpgsqlConnection connection;
-
-    public LoginMenu(NpgsqlConnection connection)
+    public LoginMenu(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
     {
-        this.connection = connection;
-        AddCommand(new LoginCommand(connection));
-        AddCommand(new CreateAccountCommand(connection));
+        AddCommand(new CreateAccountCommand(connection, accountManager, menuManager, transactionManager));
+        AddCommand(new LoginCommand(connection, accountManager, menuManager, transactionManager));
+        // AddCommand(new GuestCommand(connection, accountManager, menuManager, transactionManager));
+        AddCommand(new ExitCommand(connection, accountManager, menuManager, transactionManager));
     }
 
     public override void Display()

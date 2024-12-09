@@ -3,13 +3,8 @@ using Npgsql;
 
 public class CreateAccountCommand : Command
 {
-    NpgsqlConnection connection;
-
-    public CreateAccountCommand(NpgsqlConnection connection)
-        : base(connection, "C")
-    {
-        this.connection = connection;
-    }
+    public CreateAccountCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
+        : base("C", connection, accountManager, menuManager, transactionManager) { }
 
     public override string GetDescription()
     {

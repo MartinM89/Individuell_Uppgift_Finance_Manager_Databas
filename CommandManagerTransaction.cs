@@ -4,7 +4,7 @@ using Npgsql;
 
 public class CommandManagerTransaction
 {
-    public static async Task Execute(NpgsqlConnection connection)
+    public static async Task Execute(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
     {
         while (PostgresAccountManager.LoggedIn)
         {
@@ -16,25 +16,25 @@ public class CommandManagerTransaction
             switch (hideUserChoice)
             {
                 case "A":
-                    AddTransactionCommand addTransaction = new(connection);
+                    AddTransactionCommand addTransaction = new(connection, accountManager, menuManager, transactionManager);
                     await addTransaction.Execute();
                     break;
 
                 case "D":
                     Console.Clear();
-                    DeleteTransactionCommand deleteTransaction = new(connection);
+                    DeleteTransactionCommand deleteTransaction = new(connection, accountManager, menuManager, transactionManager);
                     await deleteTransaction.Execute();
                     break;
 
                 case "B":
                     Console.Clear();
-                    CheckBalanceCommand checkBalance = new(connection);
+                    CheckBalanceCommand checkBalance = new(connection, accountManager, menuManager, transactionManager);
                     await checkBalance.Execute();
                     break;
 
                 case "I":
                     Console.Clear();
-                    CheckIncomeCommand checkIncome = new(connection);
+                    CheckIncomeCommand checkIncome = new(connection, accountManager, menuManager, transactionManager);
                     await checkIncome.Execute();
                     // PressKeyToContinue.Execute();
                     break;
@@ -60,7 +60,7 @@ public class CommandManagerTransaction
 
                 case "P":
                     Console.Clear();
-                    CheckAllTransactionsCommand checkAllTransactions = new(connection);
+                    CheckAllTransactionsCommand checkAllTransactions = new(connection, accountManager, menuManager, transactionManager);
                     await checkAllTransactions.Execute();
                     break;
 

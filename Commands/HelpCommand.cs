@@ -2,13 +2,8 @@ using Npgsql;
 
 public class HelpCommand : Command
 {
-    NpgsqlConnection connection;
-
-    public HelpCommand(NpgsqlConnection connection)
-        : base(connection, "H")
-    {
-        this.connection = connection;
-    }
+    public HelpCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
+        : base("H", connection, accountManager, menuManager, transactionManager) { }
 
     public override string GetDescription()
     {
