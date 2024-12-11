@@ -12,11 +12,11 @@ public class LoginMenuManager : IMenuManager
     public void SetMenu(Menu menu)
     {
         this.menu = menu;
-        this.menu.Display();
+        menu.Display();
     }
 
     public void ReturnToSameMenu()
     {
-        this.menu.Display();
+        menu.Display();
     }
 }

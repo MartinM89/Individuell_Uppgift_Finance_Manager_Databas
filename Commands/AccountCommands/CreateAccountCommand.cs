@@ -1,10 +1,9 @@
 using Individuell_Uppgift.Utilities;
-using Npgsql;
 
 public class CreateAccountCommand : Command
 {
-    public CreateAccountCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
-        : base("C", connection, accountManager, menuManager, transactionManager) { }
+    public CreateAccountCommand(GetManagers getManagers)
+        : base("C", getManagers) { }
 
     public override string GetDescription()
     {
@@ -13,12 +12,14 @@ public class CreateAccountCommand : Command
 
     public override async Task Execute()
     {
-        PostgresAccountManager postgresAccountManager = new(connection);
+        PostgresAccountManager postgresAccountManager = new(GetManagers.Connection);
 
         Console.Clear();
 
         string password = string.Empty;
         string confirmPassword = string.Empty;
+
+        Console.WriteLine("Create Account Menu:\n");
 
         Console.Write("Enter username: ");
         string username = Console.ReadLine()!;
@@ -30,7 +31,7 @@ public class CreateAccountCommand : Command
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = UserNameUnavailable.Execute(connection, username);
+        bool usernameExists = UserNameUnavailable.Execute(GetManagers.Connection, username);
 
         if (usernameExists)
         {
@@ -68,11 +69,12 @@ public class CreateAccountCommand : Command
 
         User user = new User(username, passwordHash, passwordSalt);
 
-        await postgresAccountManager.Create(connection, user);
+        await postgresAccountManager.Create(GetManagers.Connection, user);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Account {username} registered successfully.\n");
         PressKeyToContinue.Execute();
-        return;
+
+        GetManagers.UserMenuManager.ReturnToSameMenu();
     }
 }

@@ -5,16 +5,16 @@ namespace Individuell_Uppgift.Menus;
 
 public class TransactionMenu : Menu
 {
-    public TransactionMenu(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
+    public TransactionMenu(GetManagers getManagers)
     {
-        AddCommand(new AddTransactionCommand(connection, accountManager, menuManager, transactionManager));
-        AddCommand(new DeleteTransactionCommand(connection, accountManager, menuManager, transactionManager));
-        AddCommand(new CheckBalanceCommand(connection, accountManager, menuManager, transactionManager));
-        AddCommand(new CheckIncomeCommand(connection, accountManager, menuManager, transactionManager));
-        AddCommand(new CheckExpenseCommand(connection, accountManager, menuManager, transactionManager));
-        AddCommand(new LogoutCommand(connection, accountManager, menuManager, transactionManager));
-        AddCommand(new HelpCommand(connection, accountManager, menuManager, transactionManager));
-        AddCommand(new CheckAllTransactionsCommand(connection, accountManager, menuManager, transactionManager));
+        AddCommand(new AddTransactionCommand(getManagers));
+        AddCommand(new DeleteTransactionCommand(getManagers));
+        AddCommand(new CheckBalanceCommand(getManagers));
+        AddCommand(new CheckIncomeCommand(getManagers));
+        AddCommand(new CheckExpenseCommand(getManagers));
+        AddCommand(new LogoutCommand(getManagers));
+        AddCommand(new HelpCommand(getManagers));
+        AddCommand(new CheckAllTransactionsCommand(getManagers));
     }
 
     public override void Display()

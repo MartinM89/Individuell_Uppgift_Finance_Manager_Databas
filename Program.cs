@@ -10,15 +10,26 @@ class Program
     static void Main(string[] args)
     {
         string connectionString = DatabaseConnection.GetConnectionString();
-        using NpgsqlConnection connection = new(connectionString);
-        connection.Open();
+
+        NpgsqlConnection? connection = null;
+
+        try
+        {
+            connection = new(connectionString);
+            connection.Open();
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new NpgsqlException($"Can't access database {ex.Message}");
+        }
 
         IAccountManager accountManager = new PostgresAccountManager(connection);
         // PostgresTransactionManager creates tables, functions and triggers
         ITransactionManager transactionManager = new PostgresTransactionManager(connection);
         // IMenuManager loginMenuManager = new LoginMenuManager();
         IMenuManager userMenuManager = new UserMenuManager();
-        userMenuManager.SetMenu(new LoginMenu(connection, accountManager, userMenuManager, transactionManager));
+        GetManagers getManagers = new(connection, accountManager, transactionManager, userMenuManager);
+        userMenuManager.SetMenu(new LoginMenu(getManagers));
 
         while (run)
         {

@@ -2,8 +2,8 @@ using Npgsql;
 
 public class DeleteTransactionCommand : Command
 {
-    public DeleteTransactionCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
-        : base("D", connection, accountManager, menuManager, transactionManager) { }
+    public DeleteTransactionCommand(GetManagers getManagers)
+        : base("D", getManagers) { }
 
     public override string GetDescription()
     {
@@ -14,7 +14,7 @@ public class DeleteTransactionCommand : Command
     {
         Console.Clear();
 
-        PostgresTransactionManager postgresTransactionManager = new(connection);
+        PostgresTransactionManager postgresTransactionManager = new(GetManagers.Connection);
 
         List<Transaction> transactions = await postgresTransactionManager.GetAllTransactions();
 
@@ -51,6 +51,6 @@ public class DeleteTransactionCommand : Command
 
         PressKeyToContinue.Execute();
 
-        menuManager.ReturnToSameMenu();
+        GetManagers.UserMenuManager.ReturnToSameMenu();
     }
 }

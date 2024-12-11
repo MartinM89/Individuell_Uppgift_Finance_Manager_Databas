@@ -2,8 +2,8 @@ using Npgsql;
 
 public class CheckAllTransactionsCommand : Command
 {
-    public CheckAllTransactionsCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
-        : base("P", connection, accountManager, menuManager, transactionManager) { }
+    public CheckAllTransactionsCommand(GetManagers getManagers)
+        : base("P", getManagers) { }
 
     public override string GetDescription()
     {
@@ -14,7 +14,7 @@ public class CheckAllTransactionsCommand : Command
     {
         Console.WriteLine("List of all transactions:");
 
-        PostgresTransactionManager postgresTransactionManager = new(connection);
+        PostgresTransactionManager postgresTransactionManager = new(GetManagers.Connection);
         List<Transaction> transactions = await postgresTransactionManager.GetAllTransactions();
 
         Console.Clear();
@@ -25,8 +25,6 @@ public class CheckAllTransactionsCommand : Command
 
         PressKeyToContinue.Execute();
 
-        // menuManager.SetMenu(new TransactionMenu(connection, accountManager, menuManager, transactionManager));
-
-        menuManager.ReturnToSameMenu();
+        GetManagers.UserMenuManager.ReturnToSameMenu();
     }
 }

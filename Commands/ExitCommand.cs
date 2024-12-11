@@ -2,8 +2,8 @@ using Npgsql;
 
 public class ExitCommand : Command
 {
-    public ExitCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
-        : base("E", connection, accountManager, menuManager, transactionManager) { }
+    public ExitCommand(GetManagers getManagers)
+        : base("E", getManagers) { }
 
     public override string GetDescription()
     {

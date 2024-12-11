@@ -15,4 +15,11 @@ public class ChangeColor
         Console.Write(message);
         Console.ResetColor();
     }
+
+    public static void TextColorCyan(string message)
+    {
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.Write(message);
+        Console.ResetColor();
+    }
 }

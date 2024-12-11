@@ -2,8 +2,8 @@ using Npgsql;
 
 public class LogoutCommand : Command
 {
-    public LogoutCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
-        : base("L", connection, accountManager, menuManager, transactionManager) { }
+    public LogoutCommand(GetManagers getManagers)
+        : base("L", getManagers) { }
 
     public override string GetDescription()
     {
@@ -16,7 +16,7 @@ public class LogoutCommand : Command
         Console.WriteLine("Thank you for using your personal finance app.");
         PressKeyToContinue.Execute();
 
-        menuManager.SetMenu(new LoginMenu(connection, accountManager, menuManager, transactionManager));
+        GetManagers.UserMenuManager.SetMenu(new LoginMenu(GetManagers));
 
         return Task.CompletedTask;
     }

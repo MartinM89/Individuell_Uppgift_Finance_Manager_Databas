@@ -35,7 +35,14 @@ public class TransactionTable
     {
         foreach (Transaction transaction in transactions)
         {
-            Console.Write(transaction);
+            if (transaction.Id % 2 == 1)
+            {
+                ChangeColor.TextColorCyan(transaction.ToString());
+            }
+            else
+            {
+                Console.Write(transaction);
+            }
 
             if (transaction.Amount > 0)
             {

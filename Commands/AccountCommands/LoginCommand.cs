@@ -1,11 +1,10 @@
 using Individuell_Uppgift.Menus;
 using Individuell_Uppgift.Utilities;
-using Npgsql;
 
 public class LoginCommand : Command
 {
-    public LoginCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
-        : base("L", connection, accountManager, menuManager, transactionManager) { }
+    public LoginCommand(GetManagers getManagers)
+        : base("L", getManagers) { }
 
     public override string GetDescription()
     {
@@ -18,17 +17,21 @@ public class LoginCommand : Command
 
         string enteredPassword = string.Empty;
 
+        Console.WriteLine("Login Menu:\n");
+
         Console.Write("Enter username: ");
         string username = Console.ReadLine()!;
 
         if (string.IsNullOrEmpty(username))
         {
+            Console.WriteLine("Fel");
+            PressKeyToContinue.Execute();
             return;
         }
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = UserNameUnavailable.Execute(connection, username);
+        bool usernameExists = UserNameUnavailable.Execute(GetManagers.Connection, username);
 
         if (!usernameExists)
         {
@@ -43,10 +46,12 @@ public class LoginCommand : Command
 
         if (string.IsNullOrEmpty(enteredPassword))
         {
+            Console.WriteLine("Fel");
+            PressKeyToContinue.Execute();
             return;
         }
 
-        bool isPasswordCorrect = await PostgresAccountManager.CheckLoginDetailsIsCorrect(connection, username, enteredPassword);
+        bool isPasswordCorrect = await PostgresAccountManager.CheckLoginDetailsIsCorrect(GetManagers.Connection, username, enteredPassword);
 
         if (!isPasswordCorrect)
         {
@@ -56,12 +61,16 @@ public class LoginCommand : Command
             return;
         }
 
-        await accountManager.Login(connection, username);
+        await GetManagers.AccountManager.Login(GetManagers.Connection, username);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");
+        while (Console.KeyAvailable)
+        {
+            Console.ReadKey(true);
+        }
         PressKeyToContinue.Execute();
 
-        menuManager.SetMenu(new TransactionMenu(connection, accountManager, menuManager, transactionManager));
+        GetManagers.UserMenuManager.SetMenu(new TransactionMenu(GetManagers));
     }
 }

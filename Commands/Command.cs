@@ -1,20 +1,12 @@
-using Npgsql;
-
 public abstract class Command
 {
     public string Name { get; init; }
-    protected NpgsqlConnection connection;
-    protected IAccountManager accountManager;
-    protected IMenuManager menuManager;
-    protected ITransactionManager transactionManager;
+    protected GetManagers GetManagers { get; init; }
 
-    public Command(string name, NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
+    public Command(string name, GetManagers getManagers)
     {
         this.Name = name;
-        this.connection = connection;
-        this.accountManager = accountManager;
-        this.menuManager = menuManager;
-        this.transactionManager = transactionManager;
+        this.GetManagers = getManagers;
     }
 
     public abstract Task Execute();

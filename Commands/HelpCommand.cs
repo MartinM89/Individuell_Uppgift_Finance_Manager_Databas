@@ -2,8 +2,8 @@ using Npgsql;
 
 public class HelpCommand : Command
 {
-    public HelpCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
-        : base("H", connection, accountManager, menuManager, transactionManager) { }
+    public HelpCommand(GetManagers getManagers)
+        : base("H", getManagers) { }
 
     public override string GetDescription()
     {
@@ -12,6 +12,10 @@ public class HelpCommand : Command
 
     public override Task Execute()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("Help Menu");
+
+        GetManagers.UserMenuManager.ReturnToSameMenu();
+
+        return Task.CompletedTask;
     }
 }

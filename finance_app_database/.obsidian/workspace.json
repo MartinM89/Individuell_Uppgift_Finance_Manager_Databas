@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Transactions.md",
+                "file": "Joins.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Transactions"
+              "title": "Joins"
             }
           }
         ]
@@ -164,9 +164,9 @@
   },
   "active": "bac0ae49753eaa38",
   "lastOpenFiles": [
+    "Transactions.md",
     "Admin.md",
     "Joins.md",
-    "Transactions.md",
     "Finance App.md",
     "User.md",
     "Guest.md",

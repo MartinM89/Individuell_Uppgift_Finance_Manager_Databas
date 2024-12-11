@@ -4,8 +4,8 @@ using Npgsql;
 
 public class CheckIncomeCommand : Command
 {
-    public CheckIncomeCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
-        : base("I", connection, accountManager, menuManager, transactionManager) { }
+    public CheckIncomeCommand(GetManagers getManagers)
+        : base("I", getManagers) { }
 
     public override string GetDescription()
     {
@@ -16,7 +16,7 @@ public class CheckIncomeCommand : Command
     {
         Console.Clear();
 
-        PostgresTransactionManager getTransaction = new(connection);
+        PostgresTransactionManager getTransaction = new(GetManagers.Connection);
 
         // int transactionCount = TransactionManager.GetTransactionCount();  // Implement if table is empty for Guid
 
@@ -65,12 +65,11 @@ public class CheckIncomeCommand : Command
 
         char transactionType = '>';
         List<Transaction> transactions = await fetchTransactions(transactionDate, transactionType);
-        Console.Clear();
-        // csharpier-ignore
-        if (hideUserChoice.Equals("D")) { transactionCategory = TransactionCategory.Day; }
-        else if (hideUserChoice.Equals("W")) { transactionCategory = TransactionCategory.Week; }
-        else if (hideUserChoice.Equals("M")) { transactionCategory = TransactionCategory.Month; }
-        else if (hideUserChoice.Equals("Y")) { transactionCategory = TransactionCategory.Year; }
+        // // csharpier-ignore
+        // if (hideUserChoice.Equals("D")) { transactionCategory = TransactionCategory.Day; }
+        // else if (hideUserChoice.Equals("W")) { transactionCategory = TransactionCategory.Week; }
+        // else if (hideUserChoice.Equals("M")) { transactionCategory = TransactionCategory.Month; }
+        // else if (hideUserChoice.Equals("Y")) { transactionCategory = TransactionCategory.Year; }
 
         Console.Clear();
 
@@ -81,6 +80,6 @@ public class CheckIncomeCommand : Command
 
         PressKeyToContinue.Execute();
 
-        menuManager.ReturnToSameMenu();
+        GetManagers.UserMenuManager.ReturnToSameMenu();
     }
 }

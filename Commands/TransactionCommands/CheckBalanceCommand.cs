@@ -3,8 +3,8 @@ using Npgsql;
 
 public class CheckBalanceCommand : Command
 {
-    public CheckBalanceCommand(NpgsqlConnection connection, IAccountManager accountManager, IMenuManager menuManager, ITransactionManager transactionManager)
-        : base("B", connection, accountManager, menuManager, transactionManager) { }
+    public CheckBalanceCommand(GetManagers getManagers)
+        : base("B", getManagers) { }
 
     public override string GetDescription()
     {
@@ -13,7 +13,7 @@ public class CheckBalanceCommand : Command
 
     public override async Task Execute()
     {
-        PostgresTransactionManager postgresTransactionManager = new(connection);
+        PostgresTransactionManager postgresTransactionManager = new(GetManagers.Connection);
 
         decimal totalAmount = await postgresTransactionManager.GetBalance();
 
@@ -25,6 +25,6 @@ public class CheckBalanceCommand : Command
 
         PressKeyToContinue.Execute();
 
-        menuManager.ReturnToSameMenu();
+        GetManagers.UserMenuManager.ReturnToSameMenu();
     }
 }
