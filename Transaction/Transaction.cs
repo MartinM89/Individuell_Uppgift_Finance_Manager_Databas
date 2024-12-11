@@ -1,6 +1,3 @@
-using System.Drawing;
-using Individuell_Uppgift.Utilities;
-
 public class Transaction
 {
     public int Id { get; private set; }
@@ -20,7 +17,6 @@ public class Transaction
 
     public override string ToString()
     {
-        // return $"| {Id, 3} | {Date:yyyy MMM dd} | {Name, -21} | {Amount, 13:N2} |";
         return $"| {Id, TransactionTable.idWidth} | {Date:yyyy MMM dd} | {Name, -TransactionTable.nameWidth} | ";
     }
 }

@@ -20,8 +20,6 @@ public class UserNameUnavailable
         object? result = command.ExecuteScalar();
         bool usernameExists = result != null && (bool)result;
 
-        // bool usernameExists = (bool)command.ExecuteScalar(); // Same as above
-
         return usernameExists;
     }
 }

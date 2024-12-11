@@ -1,4 +1,3 @@
-using Individuell_Uppgift.Menus;
 using Npgsql;
 
 public class CheckAllTransactionsCommand : Command

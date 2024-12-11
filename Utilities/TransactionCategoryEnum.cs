@@ -6,4 +6,5 @@ public enum TransactionCategory
     Week,
     Month,
     Year,
+    Null,
 }

@@ -1,5 +1,4 @@
-﻿using Individuell_Uppgift.Menus;
-using Individuell_Uppgift.Utilities;
+﻿using Individuell_Uppgift.Utilities;
 using Npgsql;
 
 namespace Individuell_Uppgift;
@@ -8,7 +7,7 @@ class Program
 {
     public static bool run = true;
 
-    static async Task Main(string[] args)
+    static void Main(string[] args)
     {
         string connectionString = DatabaseConnection.GetConnectionString();
         using NpgsqlConnection connection = new(connectionString);
@@ -21,14 +20,8 @@ class Program
         IMenuManager userMenuManager = new UserMenuManager();
         userMenuManager.SetMenu(new LoginMenu(connection, accountManager, userMenuManager, transactionManager));
 
-        // Creates tables, functions and triggers
-        // _ = new PostgresTransactionManager(connection); // Required?
-
         while (run)
         {
-            // AccountMenu.Execute();
-            // await CommandManagerAccount.Execute(connection, accountManager, userMenuManager, transactionManager);
-
             string? userChoice = string.Empty;
             string? hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
             if (userChoice != null)
@@ -42,8 +35,3 @@ class Program
         }
     }
 }
-
-
-// IAccountManager
-// IMenuManager
-// ITransactionManager

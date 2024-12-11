@@ -27,7 +27,9 @@ public class CheckIncomeCommand : Command
         //     break;
         // }
 
-        CheckIncomeAndExpenseMenu.Execute();
+        CheckIncomeAndExpenseMenu checkIncomeMenu = new();
+
+        checkIncomeMenu.Display();
 
         string userChoice = string.Empty;
         string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
@@ -42,14 +44,16 @@ public class CheckIncomeCommand : Command
             return;
         }
 
-        Enum transactionCategory = hideUserChoice switch
+        (TransactionCategory, Func<int, char, Task<List<Transaction>>>) values = hideUserChoice switch
         {
-            "D" => TransactionCategory.Day,
-            "W" => TransactionCategory.Week,
-            "M" => TransactionCategory.Month,
-            "Y" => TransactionCategory.Year,
-            _ => transactionCategory = null!,
+            "D" => (TransactionCategory.Day, getTransaction.GetTransactionsByDay),
+            "W" => (TransactionCategory.Week, getTransaction.GetTransactionsByWeek),
+            "M" => (TransactionCategory.Month, getTransaction.GetTransactionsByMonth),
+            "Y" => (TransactionCategory.Year, getTransaction.GetTransactionsByYear),
+            _ => (TransactionCategory.Null, null!),
         };
+
+        var (transactionCategory, fetchTransactions) = values;
 
         Console.CursorVisible = true;
 
@@ -60,18 +64,8 @@ public class CheckIncomeCommand : Command
         Console.CursorVisible = false;
 
         char transactionType = '>';
-        List<Transaction> transactions = [];
-
+        List<Transaction> transactions = await fetchTransactions(transactionDate, transactionType);
         Console.Clear();
-
-        transactions = hideUserChoice switch
-        {
-            "D" => transactions = await getTransaction.GetTransactionsByDay(transactionDate, transactionType),
-            "W" => transactions = await getTransaction.GetTransactionsByWeek(transactionDate, transactionType),
-            "M" => transactions = await getTransaction.GetTransactionsByMonth(transactionDate, transactionType),
-            "Y" => transactions = await getTransaction.GetTransactionsByYear(transactionDate, transactionType),
-            _ => transactions = null!,
-        };
         // csharpier-ignore
         if (hideUserChoice.Equals("D")) { transactionCategory = TransactionCategory.Day; }
         else if (hideUserChoice.Equals("W")) { transactionCategory = TransactionCategory.Week; }
