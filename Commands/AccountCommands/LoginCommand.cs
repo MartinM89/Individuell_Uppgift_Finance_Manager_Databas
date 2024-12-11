@@ -61,7 +61,7 @@ public class LoginCommand : Command
             return;
         }
 
-        await GetManagers.AccountManager.Login(GetManagers.Connection, username);
+        await GetManagers.AccountManager.CheckUsername(GetManagers.Connection, username);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");

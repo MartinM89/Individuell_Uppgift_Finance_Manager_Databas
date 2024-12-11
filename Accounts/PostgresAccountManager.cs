@@ -29,7 +29,7 @@ public class PostgresAccountManager : IAccountManager
         await command.ExecuteNonQueryAsync();
     }
 
-    public async Task Login(NpgsqlConnection connection, string username)
+    public async Task CheckUsername(NpgsqlConnection connection, string username)
     {
         string getIdSql = """
             SELECT id

@@ -30,12 +30,7 @@ public class DeleteTransactionCommand : Command
 
         _ = int.TryParse(transactionToDeleteString, out int transactionToDelete);
 
-        // int transactionToDelete = int.Parse(Console.ReadLine()!);
-
         int rowsAffected = await postgresTransactionManager.DeleteTransaction(transactionToDelete);
-
-        Console.WriteLine(rowsAffected);
-        PressKeyToContinue.Execute();
 
         if (rowsAffected <= 0)
         {

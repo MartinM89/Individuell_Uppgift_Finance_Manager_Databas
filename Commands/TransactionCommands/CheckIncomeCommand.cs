@@ -44,7 +44,7 @@ public class CheckIncomeCommand : Command
             return;
         }
 
-        (TransactionCategory, Func<int, char, Task<List<Transaction>>>) values = hideUserChoice switch
+        (TransactionCategory, Func<int, bool, Task<List<Transaction>>>) values = hideUserChoice switch
         {
             "D" => (TransactionCategory.Day, getTransaction.GetTransactionsByDay),
             "W" => (TransactionCategory.Week, getTransaction.GetTransactionsByWeek),
@@ -63,7 +63,7 @@ public class CheckIncomeCommand : Command
 
         Console.CursorVisible = false;
 
-        char transactionType = '>';
+        bool transactionType = true;
         List<Transaction> transactions = await fetchTransactions(transactionDate, transactionType);
         // // csharpier-ignore
         // if (hideUserChoice.Equals("D")) { transactionCategory = TransactionCategory.Day; }

@@ -17,6 +17,8 @@ public class CheckAllTransactionsCommand : Command
         PostgresTransactionManager postgresTransactionManager = new(GetManagers.Connection);
         List<Transaction> transactions = await postgresTransactionManager.GetAllTransactions();
 
+        LongestTransationLength.Execute(transactions);
+
         Console.Clear();
 
         TransactionTable.GetTransactionTableTop();

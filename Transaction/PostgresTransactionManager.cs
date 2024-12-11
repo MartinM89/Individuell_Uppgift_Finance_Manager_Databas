@@ -123,8 +123,8 @@ public class PostgresTransactionManager : ITransactionManager
 
         #endregion
 
-        using NpgsqlCommand createTablesCmd = new(createTablesSql, Connection);
-        createTablesCmd.ExecuteNonQuery();
+        using NpgsqlCommand createTablesCmd = new NpgsqlCommand(createTablesSql, Connection);
+        createTablesCmd.ExecuteNonQueryAsync();
     }
 
     public async Task AddTransaction(Transaction transaction)
@@ -191,14 +191,22 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    public async Task<List<Transaction>> GetTransactionsByDay(int dayOfMonth, char transactionType) // Send bool instead of char to trigger tenerary interator
+    public async Task<List<Transaction>> GetTransactionsByDay(int dayOfMonth, bool isCredit) // Send bool instead of char to trigger tenerary interator
     {
-        string getTransactionsByDaySql = $"""
-            SELECT * FROM transactions
-            WHERE user_id = @user_id
-            AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
-            AND amount {transactionType} 0
-            """; // Use tenerary iterator here for '>' / '<'
+        string getTransactionsByDaySql = isCredit
+            ? """
+                SELECT * FROM transactions
+                WHERE user_id = @user_id
+                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND amount > 0
+                """
+            : """
+                SELECT * FROM transactions
+                WHERE user_id = @user_id
+                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND amount < 0
+                """;
+
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDaySql, Connection);
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@dayOfMonth", dayOfMonth);
@@ -223,14 +231,21 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    public async Task<List<Transaction>> GetTransactionsByWeek(int weekNumber, char transactionType)
+    public async Task<List<Transaction>> GetTransactionsByWeek(int weekNumber, bool isCredit)
     {
-        string getTransactionsByWeekSql = $"""
-            SELECT * FROM transactions
-            WHERE user_id = @user_id
-            AND @weekNumber IS NOT NULL AND EXTRACT(WEEK FROM date) = @weekNumber
-            AND amount {transactionType} 0
-            """;
+        string getTransactionsByWeekSql = isCredit
+            ? """
+                SELECT * FROM transactions
+                WHERE user_id = @user_id
+                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND amount > 0
+                """
+            : """
+                SELECT * FROM transactions
+                WHERE user_id = @user_id
+                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND amount < 0
+                """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByWeekSql, Connection);
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@weekNumber", weekNumber);
@@ -255,14 +270,21 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    public async Task<List<Transaction>> GetTransactionsByMonth(int month, char transactionType)
+    public async Task<List<Transaction>> GetTransactionsByMonth(int month, bool isCredit)
     {
-        string getTransactionsByMonthSql = $"""
-            SELECT * FROM transactions
-            WHERE user_id = @user_id
-            AND @month IS NOT NULL AND EXTRACT(MONTH FROM date) = @month
-            AND amount {transactionType} 0
-            """;
+        string getTransactionsByMonthSql = isCredit
+            ? """
+                SELECT * FROM transactions
+                WHERE user_id = @user_id
+                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND amount > 0
+                """
+            : """
+                SELECT * FROM transactions
+                WHERE user_id = @user_id
+                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND amount < 0
+                """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByMonthSql, Connection);
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@month", month);
@@ -287,14 +309,21 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    public async Task<List<Transaction>> GetTransactionsByYear(int year, char transactionType)
+    public async Task<List<Transaction>> GetTransactionsByYear(int year, bool isCredit)
     {
-        string getTransactionsByYearSql = $"""
-            SELECT * FROM transactions
-            WHERE user_id = @user_id
-            AND @year IS NOT NULL AND EXTRACT(YEAR FROM date) = @year
-            AND amount {transactionType} 0
-            """;
+        string getTransactionsByYearSql = isCredit
+            ? """
+                SELECT * FROM transactions
+                WHERE user_id = @user_id
+                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND amount > 0
+                """
+            : """
+                SELECT * FROM transactions
+                WHERE user_id = @user_id
+                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND amount < 0
+                """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByYearSql, Connection);
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@year", year);
