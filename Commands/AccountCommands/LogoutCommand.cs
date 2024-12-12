@@ -1,9 +1,7 @@
-using Npgsql;
-
 public class LogoutCommand : Command
 {
     public LogoutCommand(GetManagers getManagers)
-        : base("L", getManagers) { }
+        : base('L', "Logout", getManagers) { }
 
     public override string GetDescription()
     {

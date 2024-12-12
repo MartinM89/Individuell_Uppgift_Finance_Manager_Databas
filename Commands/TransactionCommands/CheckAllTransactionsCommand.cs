@@ -3,7 +3,7 @@ using Npgsql;
 public class CheckAllTransactionsCommand : Command
 {
     public CheckAllTransactionsCommand(GetManagers getManagers)
-        : base("P", getManagers) { }
+        : base('P', "All", getManagers) { }
 
     public override string GetDescription()
     {
@@ -14,12 +14,7 @@ public class CheckAllTransactionsCommand : Command
     {
         Console.WriteLine("List of all transactions:");
 
-        PostgresTransactionManager postgresTransactionManager = new(GetManagers.Connection);
-        List<Transaction> transactions = await postgresTransactionManager.GetAllTransactions();
-
-        LongestTransationLength.Execute(transactions);
-
-        Console.Clear();
+        List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions();
 
         TransactionTable.GetTransactionTableTop();
         TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);

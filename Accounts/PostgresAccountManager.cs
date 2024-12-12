@@ -29,7 +29,7 @@ public class PostgresAccountManager : IAccountManager
         await command.ExecuteNonQueryAsync();
     }
 
-    public async Task CheckUsername(NpgsqlConnection connection, string username)
+    public async Task GetUserGuid(NpgsqlConnection connection, string username)
     {
         string getIdSql = """
             SELECT id
@@ -40,16 +40,16 @@ public class PostgresAccountManager : IAccountManager
         NpgsqlCommand getIdCmd = new NpgsqlCommand(getIdSql, connection);
         getIdCmd.Parameters.AddWithValue("username", username);
 
-        // object? result = await getIdCmd.ExecuteScalarAsync();
+        object? result = await getIdCmd.ExecuteScalarAsync();
 
-        // if (result == null || result == DBNull.Value)
-        // {
-        //     throw new InvalidOperationException("User not found!");
-        // }
+        if (result == null || result == DBNull.Value)
+        {
+            throw new InvalidOperationException("User not found!");
+        }
 
-        // LoggedInUserId = (Guid)result;
+        LoggedInUserId = (Guid)result;
 
-        LoggedInUserId = await getIdCmd.ExecuteScalarAsync() as Guid? ?? throw new InvalidOperationException("User not found!");
+        // LoggedInUserId = await getIdCmd.ExecuteScalarAsync() as Guid? ?? throw new InvalidOperationException("User not found!");
 
         LoggedIn = true;
     }
@@ -86,5 +86,24 @@ public class PostgresAccountManager : IAccountManager
     public static Guid GetLoggedInUserId()
     {
         return LoggedInUserId;
+    }
+
+    public bool CheckUsernameRegistered(NpgsqlConnection connection, string username)
+    {
+        var checkUsernameSql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM users
+                WHERE username = @username
+            )
+            """;
+
+        var command = new NpgsqlCommand(checkUsernameSql, connection);
+        command.Parameters.AddWithValue("username", username);
+
+        object? result = command.ExecuteScalar();
+        bool usernameExists = result != null && (bool)result;
+
+        return usernameExists;
     }
 }

@@ -23,10 +23,9 @@ class Program
             throw new NpgsqlException($"Can't access database {ex.Message}");
         }
 
-        IAccountManager accountManager = new PostgresAccountManager(connection);
-        // PostgresTransactionManager creates tables, functions and triggers
+        // 'PostgresTransactionManager' creates tables, functions and triggers
         ITransactionManager transactionManager = new PostgresTransactionManager(connection);
-        // IMenuManager loginMenuManager = new LoginMenuManager();
+        IAccountManager accountManager = new PostgresAccountManager(connection);
         IMenuManager userMenuManager = new UserMenuManager();
         GetManagers getManagers = new(connection, accountManager, transactionManager, userMenuManager);
         userMenuManager.SetMenu(new LoginMenu(getManagers));

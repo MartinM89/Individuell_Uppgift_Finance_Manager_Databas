@@ -3,7 +3,7 @@ using Npgsql;
 public class HelpCommand : Command
 {
     public HelpCommand(GetManagers getManagers)
-        : base("H", getManagers) { }
+        : base('H', "Help", getManagers) { }
 
     public override string GetDescription()
     {

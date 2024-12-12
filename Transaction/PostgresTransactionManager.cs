@@ -191,7 +191,7 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    public async Task<List<Transaction>> GetTransactionsByDay(int dayOfMonth, bool isCredit) // Send bool instead of char to trigger tenerary interator
+    public async Task<List<Transaction>> GetTransactionsByDay(int dayOfMonth, bool isCredit) // Send bool instead of char to trigger tenerary operator
     {
         string getTransactionsByDaySql = isCredit
             ? """
@@ -237,13 +237,13 @@ public class PostgresTransactionManager : ITransactionManager
             ? """
                 SELECT * FROM transactions
                 WHERE user_id = @user_id
-                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND @weekNumber IS NOT NULL AND EXTRACT(WEEK FROM date) = @weekNumber
                 AND amount > 0
                 """
             : """
                 SELECT * FROM transactions
                 WHERE user_id = @user_id
-                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND @weekNumber IS NOT NULL AND EXTRACT(WEEK FROM date) = @weekNumber
                 AND amount < 0
                 """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByWeekSql, Connection);
@@ -276,13 +276,13 @@ public class PostgresTransactionManager : ITransactionManager
             ? """
                 SELECT * FROM transactions
                 WHERE user_id = @user_id
-                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND @month IS NOT NULL AND EXTRACT(MONTH FROM date) = @month
                 AND amount > 0
                 """
             : """
                 SELECT * FROM transactions
                 WHERE user_id = @user_id
-                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND @month IS NOT NULL AND EXTRACT(MONTH FROM date) = @month
                 AND amount < 0
                 """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByMonthSql, Connection);
@@ -315,13 +315,13 @@ public class PostgresTransactionManager : ITransactionManager
             ? """
                 SELECT * FROM transactions
                 WHERE user_id = @user_id
-                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND @year IS NOT NULL AND EXTRACT(YEAR FROM date) = @year
                 AND amount > 0
                 """
             : """
                 SELECT * FROM transactions
                 WHERE user_id = @user_id
-                AND @dayOfMonth IS NOT NULL AND EXTRACT(DAY FROM date) = @dayOfMonth
+                AND @year IS NOT NULL AND EXTRACT(YEAR FROM date) = @year
                 AND amount < 0
                 """;
         using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByYearSql, Connection);

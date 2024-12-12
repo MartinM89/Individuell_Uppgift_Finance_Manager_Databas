@@ -11,11 +11,13 @@ public abstract class Menu
 
     public void ExecuteCommand(string userChoice)
     {
+        _ = char.TryParse(userChoice, out char userChoiceChar);
+
         try
         {
             foreach (Command command in commands)
             {
-                if (command.Name.Equals(userChoice))
+                if (command.Shortcut.Equals(userChoiceChar))
                 {
                     command.Execute();
                     return;

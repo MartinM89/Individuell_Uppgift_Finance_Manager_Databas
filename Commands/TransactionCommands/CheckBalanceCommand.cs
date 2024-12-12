@@ -4,7 +4,7 @@ using Npgsql;
 public class CheckBalanceCommand : Command
 {
     public CheckBalanceCommand(GetManagers getManagers)
-        : base("B", getManagers) { }
+        : base('B', "Balance", getManagers) { }
 
     public override string GetDescription()
     {
@@ -13,9 +13,7 @@ public class CheckBalanceCommand : Command
 
     public override async Task Execute()
     {
-        PostgresTransactionManager postgresTransactionManager = new(GetManagers.Connection);
-
-        decimal totalAmount = await postgresTransactionManager.GetBalance();
+        decimal totalAmount = await GetManagers.TransactionManager.GetBalance();
 
         Console.Clear();
 

@@ -4,7 +4,7 @@ using Individuell_Uppgift.Utilities;
 public class LoginCommand : Command
 {
     public LoginCommand(GetManagers getManagers)
-        : base("L", getManagers) { }
+        : base('L', "Login", getManagers) { }
 
     public override string GetDescription()
     {
@@ -15,6 +15,10 @@ public class LoginCommand : Command
     {
         Console.Clear();
 
+        var connection = GetManagers.Connection;
+        var userMenuManager = GetManagers.UserMenuManager;
+        var accountManager = GetManagers.AccountManager;
+
         string enteredPassword = string.Empty;
 
         Console.WriteLine("Login Menu:\n");
@@ -24,20 +28,20 @@ public class LoginCommand : Command
 
         if (string.IsNullOrEmpty(username))
         {
-            Console.WriteLine("Fel");
-            PressKeyToContinue.Execute();
+            userMenuManager.SetMenu(new LoginMenu(GetManagers));
             return;
         }
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = UserNameUnavailable.Execute(GetManagers.Connection, username);
+        bool usernameExists = accountManager.CheckUsernameRegistered(connection, username);
 
         if (!usernameExists)
         {
             Console.Clear();
             ChangeColor.TextColorRed("Could not find account.\n");
             PressKeyToContinue.Execute();
+            userMenuManager.SetMenu(new LoginMenu(GetManagers));
             return;
         }
 
@@ -46,31 +50,27 @@ public class LoginCommand : Command
 
         if (string.IsNullOrEmpty(enteredPassword))
         {
-            Console.WriteLine("Fel");
-            PressKeyToContinue.Execute();
+            userMenuManager.SetMenu(new LoginMenu(GetManagers));
             return;
         }
 
-        bool isPasswordCorrect = await PostgresAccountManager.CheckLoginDetailsIsCorrect(GetManagers.Connection, username, enteredPassword);
+        bool isPasswordCorrect = await PostgresAccountManager.CheckLoginDetailsIsCorrect(connection, username, enteredPassword);
 
         if (!isPasswordCorrect)
         {
             Console.Clear();
             ChangeColor.TextColorRed("Password does not match.\n");
             PressKeyToContinue.Execute();
+            userMenuManager.SetMenu(new LoginMenu(GetManagers));
             return;
         }
 
-        await GetManagers.AccountManager.CheckUsername(GetManagers.Connection, username);
+        await GetManagers.AccountManager.GetUserGuid(GetManagers.Connection, username);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");
-        while (Console.KeyAvailable)
-        {
-            Console.ReadKey(true);
-        }
         PressKeyToContinue.Execute();
 
-        GetManagers.UserMenuManager.SetMenu(new TransactionMenu(GetManagers));
+        userMenuManager.SetMenu(new TransactionMenu(GetManagers));
     }
 }

@@ -3,7 +3,7 @@ using Npgsql;
 public class CheckExpenseCommand : Command
 {
     public CheckExpenseCommand(GetManagers getManagers)
-        : base("E", getManagers) { }
+        : base('E', "Expense", getManagers) { }
 
     public override string GetDescription()
     {

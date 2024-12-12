@@ -2,30 +2,32 @@ public class GetTransactionAmount
 {
     public static decimal Execute()
     {
-        decimal transactionValue;
-
         while (true)
         {
             Console.Clear();
             Console.Write("Enter amount: ");
             string? transactionValueString = Console.ReadLine();
-            // csharpier-ignore
-            if (string.IsNullOrEmpty(transactionValueString)) { return 0; }
+
+            if (string.IsNullOrEmpty(transactionValueString))
+            {
+                return 0;
+            }
 
             transactionValueString = transactionValueString.Replace('.', ',');
 
-            if (!decimal.TryParse(transactionValueString, out transactionValue))
+            if (!decimal.TryParse(transactionValueString, out decimal transactionValue))
             {
                 Console.Clear();
-                Console.WriteLine("Invalid Input. Amount must only be numbers.");
+                Console.WriteLine("Invalid Input. Amount can only be numbers.");
                 PressKeyToContinue.Execute();
                 continue;
             }
 
+            // Subtract 5 to account for spaces and the decimal in the formatted value.
             if (transactionValueString.Length > TransactionTable.amountWidth - 5)
             {
                 Console.Clear();
-                Console.WriteLine("Invalid Input. Amount can't exceed 8 numbers.");
+                Console.WriteLine($"Invalid Input. Amount can't exceed {TransactionTable.amountWidth - 5} numbers.");
                 PressKeyToContinue.Execute();
                 continue;
             }
@@ -37,9 +39,6 @@ public class GetTransactionAmount
                 PressKeyToContinue.Execute();
                 continue;
             }
-
-            Console.WriteLine("Decimal:" + transactionValue);
-            PressKeyToContinue.Execute();
 
             return transactionValue;
         }

@@ -4,8 +4,10 @@ using Npgsql;
 
 public class CheckIncomeCommand : Command
 {
+    private readonly string[] availableInputs = ["D", "W", "M", "Y"];
+
     public CheckIncomeCommand(GetManagers getManagers)
-        : base("I", getManagers) { }
+        : base('I', "Income", getManagers) { }
 
     public override string GetDescription()
     {
@@ -15,8 +17,6 @@ public class CheckIncomeCommand : Command
     public override async Task Execute()
     {
         Console.Clear();
-
-        PostgresTransactionManager getTransaction = new(GetManagers.Connection);
 
         // int transactionCount = TransactionManager.GetTransactionCount();  // Implement if table is empty for Guid
 
@@ -33,23 +33,28 @@ public class CheckIncomeCommand : Command
 
         string userChoice = string.Empty;
         string hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
-        // csharpier-ignore
-        if (string.IsNullOrEmpty(hideUserChoice)) { return; }
 
-        if (!hideUserChoice.All(Char.IsLetter) && !hideUserChoice.Length.Equals(1))
+        if (string.IsNullOrEmpty(hideUserChoice))
+        {
+            GetManagers.UserMenuManager.ReturnToSameMenu();
+            return;
+        }
+
+        if (!availableInputs.Contains(hideUserChoice))
         {
             Console.Clear();
             Console.WriteLine("Invalid Input. [DWMY]");
             PressKeyToContinue.Execute();
+            GetManagers.UserMenuManager.ReturnToSameMenu();
             return;
         }
 
         (TransactionCategory, Func<int, bool, Task<List<Transaction>>>) values = hideUserChoice switch
         {
-            "D" => (TransactionCategory.Day, getTransaction.GetTransactionsByDay),
-            "W" => (TransactionCategory.Week, getTransaction.GetTransactionsByWeek),
-            "M" => (TransactionCategory.Month, getTransaction.GetTransactionsByMonth),
-            "Y" => (TransactionCategory.Year, getTransaction.GetTransactionsByYear),
+            "D" => (TransactionCategory.Day, GetManagers.TransactionManager.GetTransactionsByDay),
+            "W" => (TransactionCategory.Week, GetManagers.TransactionManager.GetTransactionsByWeek),
+            "M" => (TransactionCategory.Month, GetManagers.TransactionManager.GetTransactionsByMonth),
+            "Y" => (TransactionCategory.Year, GetManagers.TransactionManager.GetTransactionsByYear),
             _ => (TransactionCategory.Null, null!),
         };
 
@@ -59,7 +64,7 @@ public class CheckIncomeCommand : Command
 
         Console.Clear();
         Console.Write($"What {transactionCategory} do you wish to check? ");
-        if (int.TryParse(Console.ReadLine()!, out int transactionDate)) { }
+        _ = int.TryParse(Console.ReadLine(), out int transactionDate);
 
         Console.CursorVisible = false;
 

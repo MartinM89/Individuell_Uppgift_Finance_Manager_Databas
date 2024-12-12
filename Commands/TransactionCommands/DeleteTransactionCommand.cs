@@ -1,9 +1,9 @@
-using Npgsql;
+using Individuell_Uppgift.Utilities;
 
 public class DeleteTransactionCommand : Command
 {
     public DeleteTransactionCommand(GetManagers getManagers)
-        : base("D", getManagers) { }
+        : base('D', "Delete", getManagers) { }
 
     public override string GetDescription()
     {
@@ -14,29 +14,33 @@ public class DeleteTransactionCommand : Command
     {
         Console.Clear();
 
-        PostgresTransactionManager postgresTransactionManager = new(GetManagers.Connection);
+        List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions();
 
-        List<Transaction> transactions = await postgresTransactionManager.GetAllTransactions();
+        TransactionTable.GetTransactionTableTop();
+        TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
+        TransactionTable.GetTransactionsTableBottom();
 
-        foreach (Transaction transaction in transactions)
-        {
-            Console.WriteLine(transaction);
-        }
-
-        Console.Write("What transaction do you wish to delete? ");
+        Console.CursorVisible = true;
+        Console.Write("\nTransaction to delete: ");
         string transactionToDeleteString = Console.ReadLine()!;
-        // csharpier-ignore
-        if (string.IsNullOrEmpty(transactionToDeleteString)) { return; }
+        Console.CursorVisible = false;
+
+        if (string.IsNullOrEmpty(transactionToDeleteString))
+        {
+            GetManagers.UserMenuManager.ReturnToSameMenu();
+            return;
+        }
 
         _ = int.TryParse(transactionToDeleteString, out int transactionToDelete);
 
-        int rowsAffected = await postgresTransactionManager.DeleteTransaction(transactionToDelete);
+        int rowsAffected = await GetManagers.TransactionManager.DeleteTransaction(transactionToDelete);
 
         if (rowsAffected <= 0)
         {
             Console.Clear();
-            Console.WriteLine("Transactions does not exists.");
+            ChangeColor.TextColorRed($"{transactionToDelete} does not exists.\n");
             PressKeyToContinue.Execute();
+            GetManagers.UserMenuManager.ReturnToSameMenu();
             return;
         }
 

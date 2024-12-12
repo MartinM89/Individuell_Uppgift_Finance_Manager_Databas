@@ -1,32 +1,23 @@
 public class GetTransactionName
 {
-    public static string Execute()
+    public static string? Execute()
     {
-        string capitalizedTransactionName;
-
         while (true)
         {
             Console.Clear();
             Console.Write("Enter name: ");
             string? transactionName = Console.ReadLine();
-            // csharpier-ignore
-            if (string.IsNullOrEmpty(transactionName)) { return null!; }
 
-            bool onlyLettersOrWhiteSpace = true;
-
-            foreach (char c in transactionName)
+            if (string.IsNullOrEmpty(transactionName))
             {
-                if (!char.IsLetter(c) && !char.IsWhiteSpace(c))
-                {
-                    onlyLettersOrWhiteSpace = false;
-                    break;
-                }
+                return null;
             }
 
-            // bool onlyLettersOrWhiteSpace = transactionName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)); // Worse than foreach loop
+            bool onlyLettersOrWhiteSpace = transactionName.All(c => char.IsLetter(c) || char.IsWhiteSpace(c));
 
             if (!onlyLettersOrWhiteSpace)
             {
+                Console.Clear();
                 Console.WriteLine("Invalid Input. Name can't contain numbers or symbols.");
                 PressKeyToContinue.Execute();
                 continue;
@@ -35,12 +26,12 @@ public class GetTransactionName
             if (transactionName.Length! < 3 || transactionName.Length > TransactionTable.nameWidth)
             {
                 Console.Clear();
-                Console.WriteLine("Invalid Input. Name must be between 3 - 21 characters long.");
+                Console.WriteLine($"Invalid Input. Name must be between 3 - {TransactionTable.nameWidth} characters long.");
                 PressKeyToContinue.Execute();
                 continue;
             }
 
-            return capitalizedTransactionName = char.ToUpper(transactionName[0]) + transactionName[1..];
+            return char.ToUpper(transactionName[0]) + transactionName[1..];
         }
     }
 }

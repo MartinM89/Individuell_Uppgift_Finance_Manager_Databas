@@ -3,7 +3,7 @@ using Individuell_Uppgift.Utilities;
 public class CreateAccountCommand : Command
 {
     public CreateAccountCommand(GetManagers getManagers)
-        : base("C", getManagers) { }
+        : base('C', "Create", getManagers) { }
 
     public override string GetDescription()
     {
@@ -12,8 +12,6 @@ public class CreateAccountCommand : Command
 
     public override async Task Execute()
     {
-        PostgresAccountManager postgresAccountManager = new(GetManagers.Connection);
-
         Console.Clear();
 
         string password = string.Empty;
@@ -26,18 +24,20 @@ public class CreateAccountCommand : Command
 
         if (string.IsNullOrEmpty(username))
         {
+            GetManagers.UserMenuManager.SetMenu(new LoginMenu(GetManagers));
             return;
         }
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = UserNameUnavailable.Execute(GetManagers.Connection, username);
+        bool usernameExists = GetManagers.AccountManager.CheckUsernameRegistered(GetManagers.Connection, username);
 
         if (usernameExists)
         {
             Console.Clear();
             ChangeColor.TextColorRed("Username unavailable.\n");
             PressKeyToContinue.Execute();
+            GetManagers.UserMenuManager.SetMenu(new LoginMenu(GetManagers));
             return;
         }
 
@@ -46,6 +46,7 @@ public class CreateAccountCommand : Command
 
         if (string.IsNullOrEmpty(password))
         {
+            GetManagers.UserMenuManager.SetMenu(new LoginMenu(GetManagers));
             return;
         }
 
@@ -54,6 +55,7 @@ public class CreateAccountCommand : Command
 
         if (string.IsNullOrEmpty(confirmPassword))
         {
+            GetManagers.UserMenuManager.SetMenu(new LoginMenu(GetManagers));
             return;
         }
 
@@ -62,14 +64,15 @@ public class CreateAccountCommand : Command
             Console.Clear();
             ChangeColor.TextColorRed("Passwords do not match.\n");
             PressKeyToContinue.Execute();
+            GetManagers.UserMenuManager.SetMenu(new LoginMenu(GetManagers));
             return;
         }
 
         PasswordHasher.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
 
-        User user = new User(username, passwordHash, passwordSalt);
+        User user = new(username, passwordHash, passwordSalt);
 
-        await postgresAccountManager.Create(GetManagers.Connection, user);
+        await GetManagers.AccountManager.Create(GetManagers.Connection, user);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Account {username} registered successfully.\n");

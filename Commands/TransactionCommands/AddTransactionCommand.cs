@@ -1,9 +1,7 @@
-using Npgsql;
-
 public class AddTransactionCommand : Command
 {
     public AddTransactionCommand(GetManagers getManagers)
-        : base("A", getManagers) { }
+        : base('A', "Add", getManagers) { }
 
     public override string GetDescription()
     {
@@ -13,17 +11,26 @@ public class AddTransactionCommand : Command
     public override async Task Execute()
     {
         Console.Clear();
-        // csharpier-ignore
-        Transaction transaction = new(
-            1,
-            GetTransactionName.Execute(),
-            GetTransactionAmount.Execute(),
-            DateTime.Now,
-            PostgresAccountManager.LoggedInUserId);
 
-        PostgresTransactionManager postgresTransactionManager = new(GetManagers.Connection);
+        string? name = GetTransactionName.Execute();
 
-        await postgresTransactionManager.AddTransaction(transaction);
+        if (string.IsNullOrEmpty(name))
+        {
+            GetManagers.UserMenuManager.ReturnToSameMenu();
+            return;
+        }
+
+        decimal amount = GetTransactionAmount.Execute();
+
+        if (amount.Equals(0))
+        {
+            GetManagers.UserMenuManager.ReturnToSameMenu();
+            return;
+        }
+
+        Transaction transaction = new(1, name, amount, DateTime.Now, PostgresAccountManager.LoggedInUserId);
+
+        await GetManagers.TransactionManager.AddTransaction(transaction);
 
         Console.Clear();
         Console.WriteLine("The following transaction has been added:");

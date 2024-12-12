@@ -3,7 +3,7 @@ using Npgsql;
 public class ExitCommand : Command
 {
     public ExitCommand(GetManagers getManagers)
-        : base("E", getManagers) { }
+        : base('E', "Exit", getManagers) { }
 
     public override string GetDescription()
     {
