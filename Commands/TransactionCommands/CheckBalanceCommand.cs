@@ -13,16 +13,47 @@ public class CheckBalanceCommand : Command
 
     public override async Task Execute()
     {
-        decimal totalAmount = await GetManagers.TransactionManager.GetBalance();
+        while (true)
+        {
+            decimal totalAmount = await GetManagers.TransactionManager.GetBalance();
 
-        Console.Clear();
+            Console.Clear();
 
-        Console.Write("Your total balance is ");
-        ChangeColor.TextColorGreen($"{totalAmount:N2}");
-        Console.WriteLine(".");
+            Console.Write("Your total balance is ");
+            ChangeColor.TextColorGreen($"{totalAmount:N2}");
+            Console.WriteLine(".");
 
-        PressKeyToContinue.Execute();
+            Console.Write("\nSee list of all transactions? [Y/N]");
+            string? seeFullListAnswer = HideCursor.Execute(new string("")).ToUpper();
 
-        GetManagers.UserMenuManager.ReturnToSameMenu();
+            if (seeFullListAnswer == null)
+            {
+                GetManagers.UserMenuManager.ReturnToSameMenu();
+                return;
+            }
+
+            if (seeFullListAnswer.Equals("N"))
+            {
+                GetManagers.UserMenuManager.ReturnToSameMenu();
+                return;
+            }
+
+            if (!seeFullListAnswer.Equals("Y"))
+            {
+                Console.WriteLine("Invalid Input. [Y/N]");
+                continue;
+            }
+
+            List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions();
+
+            TransactionTable.GetTransactionTableTop();
+            TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
+            TransactionTable.GetTransactionsTableBottom();
+
+            PressKeyToContinue.Execute();
+
+            GetManagers.UserMenuManager.ReturnToSameMenu();
+            break;
+        }
     }
 }

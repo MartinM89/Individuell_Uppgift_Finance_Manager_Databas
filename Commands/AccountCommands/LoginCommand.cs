@@ -69,6 +69,7 @@ public class LoginCommand : Command
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");
+        // SimulateKeyPress.Execute();
         PressKeyToContinue.Execute();
 
         userMenuManager.SetMenu(new TransactionMenu(GetManagers));

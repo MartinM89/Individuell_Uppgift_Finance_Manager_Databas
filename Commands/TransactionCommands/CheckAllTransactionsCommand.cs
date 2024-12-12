@@ -1,5 +1,3 @@
-using Npgsql;
-
 public class CheckAllTransactionsCommand : Command
 {
     public CheckAllTransactionsCommand(GetManagers getManagers)

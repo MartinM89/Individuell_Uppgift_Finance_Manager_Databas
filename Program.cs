@@ -32,11 +32,10 @@ class Program
 
         while (run)
         {
-            string? userChoice = string.Empty;
-            string? hideUserChoice = HideCursor.Execute(userChoice).ToUpper();
+            string? userChoice = HideCursor.Execute(new string("")).ToUpper();
             if (userChoice != null)
             {
-                userMenuManager.GetMenu().ExecuteCommand(hideUserChoice.ToUpper());
+                userMenuManager.GetMenu().ExecuteCommand(userChoice.ToUpper());
             }
             else
             {

@@ -1,5 +1,4 @@
 using Individuell_Uppgift.Utilities;
-using Npgsql.Replication;
 
 public class TransactionTable
 {
