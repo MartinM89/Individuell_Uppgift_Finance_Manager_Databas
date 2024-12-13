@@ -10,7 +10,7 @@ public class CheckExpenseCommand : Command
         return "Check your expenses";
     }
 
-    public override void Execute()
+    public override Task Execute()
     {
         throw new NotImplementedException();
     }

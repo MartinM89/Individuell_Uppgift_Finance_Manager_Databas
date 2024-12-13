@@ -14,7 +14,7 @@ public class CheckIncomeCommand : Command
         return "Check your income";
     }
 
-    public override void Execute()
+    public override async Task Execute()
     {
         Console.Clear();
 
@@ -27,7 +27,7 @@ public class CheckIncomeCommand : Command
         //     break;
         // }
 
-        CheckIncomeAndExpenseMenu checkIncomeMenu = new();
+        CheckIncomeAndExpenseMenu checkIncomeMenu = new(); // Check
 
         checkIncomeMenu.Display();
 
@@ -49,7 +49,7 @@ public class CheckIncomeCommand : Command
             return;
         }
 
-        (TransactionCategory, Func<int, bool, List<Transaction>>) values = hideUserChoice switch
+        (TransactionCategory, Func<int, bool, Task<List<Transaction>>>) values = hideUserChoice switch
         {
             "D" => (TransactionCategory.Day, GetManagers.TransactionManager.GetTransactionsByDay),
             "W" => (TransactionCategory.Week, GetManagers.TransactionManager.GetTransactionsByWeek),
@@ -69,7 +69,7 @@ public class CheckIncomeCommand : Command
         Console.CursorVisible = false;
 
         bool transactionType = true;
-        List<Transaction> transactions = fetchTransactions(transactionDate, transactionType);
+        List<Transaction> transactions = await fetchTransactions(transactionDate, transactionType);
         // // csharpier-ignore
         // if (hideUserChoice.Equals("D")) { transactionCategory = TransactionCategory.Day; }
         // else if (hideUserChoice.Equals("W")) { transactionCategory = TransactionCategory.Week; }

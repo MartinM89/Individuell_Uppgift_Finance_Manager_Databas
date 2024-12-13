@@ -124,10 +124,10 @@ public class PostgresTransactionManager : ITransactionManager
         #endregion
 
         using NpgsqlCommand createTablesCmd = new NpgsqlCommand(createTablesSql, Connection);
-        createTablesCmd.ExecuteNonQuery();
+        createTablesCmd.ExecuteNonQueryAsync();
     }
 
-    public void AddTransaction(Transaction transaction)
+    public async Task AddTransaction(Transaction transaction)
     {
         string insertTransactionSql = "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)";
         using NpgsqlCommand insertTransactionCmd = new(insertTransactionSql, Connection);
@@ -135,30 +135,30 @@ public class PostgresTransactionManager : ITransactionManager
         insertTransactionCmd.Parameters.AddWithValue("@amount", transaction.Amount);
         insertTransactionCmd.Parameters.AddWithValue("@user_id", transaction.UserId);
 
-        insertTransactionCmd.ExecuteNonQuery();
+        await insertTransactionCmd.ExecuteNonQueryAsync();
     }
 
-    public int DeleteTransaction(int transactionToDelete)
+    public async Task<int> DeleteTransaction(int transactionToDelete)
     {
         string deleteTransactionSql = "DELETE FROM transactions WHERE user_id = @user_id AND id = @id";
         using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, Connection);
         deleteTransactionCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         deleteTransactionCmd.Parameters.AddWithValue("@id", transactionToDelete);
 
-        return deleteTransactionCmd.ExecuteNonQuery();
+        return await deleteTransactionCmd.ExecuteNonQueryAsync();
     }
 
-    public decimal GetBalance()
+    public async Task<decimal> GetBalance()
     {
         string getBalanceSql = "SELECT amount FROM transactions WHERE user_id = @user_id";
         using NpgsqlCommand getBalanceCmd = new(getBalanceSql, Connection);
         getBalanceCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
 
-        using NpgsqlDataReader reader = getBalanceCmd.ExecuteReader();
+        using NpgsqlDataReader reader = await getBalanceCmd.ExecuteReaderAsync();
 
         decimal totalBalance = 0;
 
-        while (reader.Read())
+        while (await reader.ReadAsync())
         {
             totalBalance += reader.GetDecimal(0);
         }
@@ -166,17 +166,17 @@ public class PostgresTransactionManager : ITransactionManager
         return totalBalance;
     }
 
-    public List<Transaction> GetAllTransactions()
+    public async Task<List<Transaction>> GetAllTransactions()
     {
         string getAllTransactionsSql = "SELECT * FROM transactions WHERE user_id = @user_id";
         using NpgsqlCommand getAllTransactionsCmd = new(getAllTransactionsSql, Connection);
         getAllTransactionsCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
 
-        using NpgsqlDataReader reader = getAllTransactionsCmd.ExecuteReader();
+        using NpgsqlDataReader reader = await getAllTransactionsCmd.ExecuteReaderAsync();
 
         List<Transaction> transactions = [];
         // csharpier-ignore
-        while ( reader.Read())
+        while ( await reader.ReadAsync())
         {
             Transaction transaction = new(
                 reader.GetInt32(0),
@@ -191,7 +191,7 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    public List<Transaction> GetTransactionsByDay(int dayOfMonth, bool isCredit) // Send bool instead of char to trigger tenerary operator
+    public async Task<List<Transaction>> GetTransactionsByDay(int dayOfMonth, bool isCredit) // Send bool instead of char to trigger tenerary operator
     {
         string getTransactionsByDaySql = isCredit
             ? """
@@ -211,11 +211,11 @@ public class PostgresTransactionManager : ITransactionManager
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@dayOfMonth", dayOfMonth);
 
-        using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+        using NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync();
 
         List<Transaction> transactions = [];
         // csharpier-ignore
-        while ( reader.Read())
+        while ( await reader.ReadAsync())
         {
             Transaction transaction = new(
                 reader.GetInt32(0),
@@ -231,7 +231,7 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    public List<Transaction> GetTransactionsByWeek(int weekNumber, bool isCredit)
+    public async Task<List<Transaction>> GetTransactionsByWeek(int weekNumber, bool isCredit)
     {
         string getTransactionsByWeekSql = isCredit
             ? """
@@ -250,11 +250,11 @@ public class PostgresTransactionManager : ITransactionManager
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@weekNumber", weekNumber);
 
-        using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+        using NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync();
 
         List<Transaction> transactions = [];
         // csharpier-ignore
-        while ( reader.Read())
+        while ( await reader.ReadAsync())
         {
             Transaction transaction = new(
                 reader.GetInt32(0),
@@ -270,7 +270,7 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    public List<Transaction> GetTransactionsByMonth(int month, bool isCredit)
+    public async Task<List<Transaction>> GetTransactionsByMonth(int month, bool isCredit)
     {
         string getTransactionsByMonthSql = isCredit
             ? """
@@ -289,11 +289,11 @@ public class PostgresTransactionManager : ITransactionManager
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@month", month);
 
-        using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+        using NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync();
 
         List<Transaction> transactions = [];
         // csharpier-ignore
-        while ( reader.Read())
+        while ( await reader.ReadAsync())
         {
             Transaction transaction = new(
                 reader.GetInt32(0),
@@ -309,7 +309,7 @@ public class PostgresTransactionManager : ITransactionManager
         return transactions;
     }
 
-    public List<Transaction> GetTransactionsByYear(int year, bool isCredit)
+    public async Task<List<Transaction>> GetTransactionsByYear(int year, bool isCredit)
     {
         string getTransactionsByYearSql = isCredit
             ? """
@@ -328,11 +328,11 @@ public class PostgresTransactionManager : ITransactionManager
         getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
         getTransactionsByDayCmd.Parameters.AddWithValue("@year", year);
 
-        using NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader();
+        using NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync();
 
         List<Transaction> transactions = [];
         // csharpier-ignore
-        while ( reader.Read())
+        while ( await reader.ReadAsync())
         {
             Transaction transaction = new(
                 reader.GetInt32(0),

@@ -3,7 +3,7 @@ using Npgsql;
 
 public class PostgresAccountManager : IAccountManager
 {
-    private NpgsqlConnection connection; // Readonly?
+    private readonly NpgsqlConnection connection;
 
     public static Guid LoggedInUserId { get; private set; }
 
@@ -14,7 +14,7 @@ public class PostgresAccountManager : IAccountManager
         this.connection = connection;
     }
 
-    public void Create(NpgsqlConnection connection, User user)
+    public async Task Create(NpgsqlConnection connection, User user)
     {
         string createAccountSql = """
             INSERT INTO users (username, password_hash, password_salt)
@@ -26,10 +26,10 @@ public class PostgresAccountManager : IAccountManager
         command.Parameters.AddWithValue("password_hash", Convert.ToBase64String(user.PasswordHash!));
         command.Parameters.AddWithValue("password_salt", Convert.ToBase64String(user.PasswordSalt!));
 
-        command.ExecuteNonQuery();
+        await command.ExecuteNonQueryAsync();
     }
 
-    public void GetUserGuid(NpgsqlConnection connection, string username)
+    public async Task GetUserGuid(NpgsqlConnection connection, string username)
     {
         string getIdSql = """
             SELECT id
@@ -40,7 +40,7 @@ public class PostgresAccountManager : IAccountManager
         NpgsqlCommand getIdCmd = new NpgsqlCommand(getIdSql, connection);
         getIdCmd.Parameters.AddWithValue("username", username);
 
-        object? result = getIdCmd.ExecuteScalar();
+        object? result = await getIdCmd.ExecuteScalarAsync();
 
         if (result == null || result == DBNull.Value)
         {
@@ -54,7 +54,7 @@ public class PostgresAccountManager : IAccountManager
         LoggedIn = true;
     }
 
-    public static bool CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
+    public static async Task<bool> CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
     {
         string loginSql = """
             SELECT password_hash, password_salt
@@ -68,7 +68,7 @@ public class PostgresAccountManager : IAccountManager
         byte[] storedPasswordHash = [];
         byte[] storedPasswordSalt = [];
 
-        using NpgsqlDataReader reader = command.ExecuteReader();
+        using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
         if (reader.Read())
         {
             string passwordHashString = reader.GetString(0);
@@ -88,7 +88,7 @@ public class PostgresAccountManager : IAccountManager
         return LoggedInUserId;
     }
 
-    public bool CheckUsernameRegistered(NpgsqlConnection connection, string username)
+    public async Task<bool> CheckUsernameRegistered(NpgsqlConnection connection, string username)
     {
         var checkUsernameSql = """
             SELECT EXISTS (
@@ -101,7 +101,7 @@ public class PostgresAccountManager : IAccountManager
         var command = new NpgsqlCommand(checkUsernameSql, connection);
         command.Parameters.AddWithValue("username", username);
 
-        object? result = command.ExecuteScalar();
+        object? result = await command.ExecuteScalarAsync();
         bool usernameExists = result != null && (bool)result;
 
         return usernameExists;

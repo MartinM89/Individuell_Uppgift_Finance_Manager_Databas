@@ -11,7 +11,7 @@ public abstract class Command
         this.GetManagers = getManagers;
     }
 
-    public abstract void Execute();
+    public abstract Task Execute();
 
     public abstract string GetDescription();
 }

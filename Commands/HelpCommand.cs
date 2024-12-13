@@ -10,12 +10,12 @@ public class HelpCommand : Command
         return "Check help commands";
     }
 
-    public override void Execute()
+    public override Task Execute()
     {
         Console.WriteLine("Help Menu");
 
         GetManagers.UserMenuManager.ReturnToSameMenu();
 
-        return;
+        return Task.CompletedTask;
     }
 }

@@ -8,7 +8,7 @@ public class AddTransactionCommand : Command
         return "Adds a transaction";
     }
 
-    public override void Execute()
+    public override async Task Execute()
     {
         Console.Clear();
 
@@ -30,7 +30,7 @@ public class AddTransactionCommand : Command
 
         Transaction transaction = new(1, name, amount, DateTime.Now, PostgresAccountManager.LoggedInUserId);
 
-        GetManagers.TransactionManager.AddTransaction(transaction);
+        await GetManagers.TransactionManager.AddTransaction(transaction);
 
         Console.Clear();
         Console.WriteLine("The following transaction has been added:");
