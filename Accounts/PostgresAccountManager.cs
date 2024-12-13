@@ -54,7 +54,7 @@ public class PostgresAccountManager : IAccountManager
         LoggedIn = true;
     }
 
-    public static async Task<bool> CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
+    public static bool CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
     {
         string loginSql = """
             SELECT password_hash, password_salt
@@ -68,7 +68,7 @@ public class PostgresAccountManager : IAccountManager
         byte[] storedPasswordHash = [];
         byte[] storedPasswordSalt = [];
 
-        using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+        using NpgsqlDataReader reader = command.ExecuteReader();
         if (reader.Read())
         {
             string passwordHashString = reader.GetString(0);

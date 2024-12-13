@@ -38,7 +38,7 @@ public class DeleteTransactionCommand : Command
         if (rowsAffected <= 0)
         {
             Console.Clear();
-            ChangeColor.TextColorRed($"{transactionToDelete} does not exists.\n");
+            ChangeColor.TextColorRed($"{transactionToDelete} does not exist.\n");
             PressKeyToContinue.Execute();
             GetManagers.UserMenuManager.ReturnToSameMenu();
             return;
@@ -46,7 +46,21 @@ public class DeleteTransactionCommand : Command
 
         Console.Clear();
 
-        Console.WriteLine($"Transaction {transactionToDelete} deleted.");
+        Transaction? deletedTransaction = transactions.Find(t => t.Id.Equals(transactionToDelete));
+
+        if (deletedTransaction == null)
+        {
+            Console.Clear();
+            ChangeColor.TextColorRed($"{transactionToDelete} does not exist.");
+            PressKeyToContinue.Execute();
+            GetManagers.UserMenuManager.ReturnToSameMenu();
+            return;
+        }
+
+        Console.WriteLine("The following transaction has been deleted:");
+        TransactionTable.GetTransactionTableTop();
+        Console.WriteLine($"| {deletedTransaction.Id} | {deletedTransaction.Date:dd MMM yyyy} | {deletedTransaction.Name, -21} | {deletedTransaction.Amount, 13} |");
+        TransactionTable.GetTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
 
