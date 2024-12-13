@@ -11,7 +11,7 @@ public class LoginCommand : Command
         return "Use to login in";
     }
 
-    public override async Task Execute()
+    public override void Execute()
     {
         Console.Clear();
 
@@ -65,7 +65,7 @@ public class LoginCommand : Command
             return;
         }
 
-        await GetManagers.AccountManager.GetUserGuid(GetManagers.Connection, username);
+        GetManagers.AccountManager.GetUserGuid(GetManagers.Connection, username);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");

@@ -10,7 +10,7 @@ public class CreateAccountCommand : Command
         return "Create a new account";
     }
 
-    public override async Task Execute()
+    public override void Execute()
     {
         Console.Clear();
 
@@ -72,7 +72,7 @@ public class CreateAccountCommand : Command
 
         User user = new(username, passwordHash, passwordSalt);
 
-        await GetManagers.AccountManager.Create(GetManagers.Connection, user);
+        GetManagers.AccountManager.Create(GetManagers.Connection, user);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Account {username} registered successfully.\n");

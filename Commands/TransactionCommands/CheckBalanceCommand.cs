@@ -11,11 +11,11 @@ public class CheckBalanceCommand : Command
         return "Check your current balance";
     }
 
-    public override async Task Execute()
+    public override void Execute()
     {
         while (true)
         {
-            decimal totalAmount = await GetManagers.TransactionManager.GetBalance();
+            decimal totalAmount = GetManagers.TransactionManager.GetBalance();
 
             Console.Clear();
 
@@ -44,7 +44,7 @@ public class CheckBalanceCommand : Command
                 continue;
             }
 
-            List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions();
+            List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
 
             TransactionTable.GetTransactionTableTop();
             TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);

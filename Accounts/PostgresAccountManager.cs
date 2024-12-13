@@ -14,7 +14,7 @@ public class PostgresAccountManager : IAccountManager
         this.connection = connection;
     }
 
-    public async Task Create(NpgsqlConnection connection, User user)
+    public void Create(NpgsqlConnection connection, User user)
     {
         string createAccountSql = """
             INSERT INTO users (username, password_hash, password_salt)
@@ -26,10 +26,10 @@ public class PostgresAccountManager : IAccountManager
         command.Parameters.AddWithValue("password_hash", Convert.ToBase64String(user.PasswordHash!));
         command.Parameters.AddWithValue("password_salt", Convert.ToBase64String(user.PasswordSalt!));
 
-        await command.ExecuteNonQueryAsync();
+        command.ExecuteNonQuery();
     }
 
-    public async Task GetUserGuid(NpgsqlConnection connection, string username)
+    public void GetUserGuid(NpgsqlConnection connection, string username)
     {
         string getIdSql = """
             SELECT id
@@ -40,7 +40,7 @@ public class PostgresAccountManager : IAccountManager
         NpgsqlCommand getIdCmd = new NpgsqlCommand(getIdSql, connection);
         getIdCmd.Parameters.AddWithValue("username", username);
 
-        object? result = await getIdCmd.ExecuteScalarAsync();
+        object? result = getIdCmd.ExecuteScalar();
 
         if (result == null || result == DBNull.Value)
         {
@@ -49,7 +49,7 @@ public class PostgresAccountManager : IAccountManager
 
         LoggedInUserId = (Guid)result;
 
-        // LoggedInUserId = await getIdCmd.ExecuteScalarAsync() as Guid? ?? throw new InvalidOperationException("User not found!");
+        // LoggedInUserId =  getIdCmd.ExecuteScalar() as Guid? ?? throw new InvalidOperationException("User not found!");
 
         LoggedIn = true;
     }
