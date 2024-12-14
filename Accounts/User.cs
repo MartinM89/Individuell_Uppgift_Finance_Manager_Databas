@@ -7,7 +7,7 @@ public class User
 
     public User(string username, byte[] passwordHash, byte[] passwordSalt)
     {
-        // Id = Guid.NewGuid();
+        // Id = id;
         Username = username;
         PasswordHash = passwordHash;
         PasswordSalt = passwordSalt;

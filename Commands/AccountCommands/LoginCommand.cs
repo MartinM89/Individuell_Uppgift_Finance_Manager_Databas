@@ -11,7 +11,7 @@ public class LoginCommand : Command
         return "Use to login in";
     }
 
-    public override async Task Execute()
+    public override void Execute()
     {
         Console.Clear();
 
@@ -34,7 +34,7 @@ public class LoginCommand : Command
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = await accountManager.CheckUsernameRegistered(connection, username);
+        bool usernameExists = accountManager.CheckUsernameRegistered(username);
 
         if (!usernameExists)
         {
@@ -46,7 +46,7 @@ public class LoginCommand : Command
         }
 
         Console.Write("Enter password: ");
-        enteredPassword = HidePassword.Execute(enteredPassword);
+        enteredPassword = HidePassword.Execute();
 
         if (string.IsNullOrEmpty(enteredPassword))
         {
@@ -54,7 +54,7 @@ public class LoginCommand : Command
             return;
         }
 
-        bool isPasswordCorrect = await PostgresAccountManager.CheckLoginDetailsIsCorrect(connection, username, enteredPassword);
+        bool isPasswordCorrect = PostgresAccountManager.CheckLoginDetailsIsCorrect(connection, username, enteredPassword);
 
         if (!isPasswordCorrect)
         {
@@ -65,7 +65,7 @@ public class LoginCommand : Command
             return;
         }
 
-        await GetManagers.AccountManager.GetUserGuid(GetManagers.Connection, username);
+        GetManagers.AccountManager.GetUserGuid(username);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");

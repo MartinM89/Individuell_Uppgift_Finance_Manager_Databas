@@ -10,11 +10,11 @@ public class DeleteTransactionCommand : Command
         return "Delete a transaction";
     }
 
-    public override async Task Execute()
+    public override void Execute()
     {
         Console.Clear();
 
-        List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions();
+        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
 
         TransactionTable.GetTransactionTableTop();
         TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
@@ -33,7 +33,7 @@ public class DeleteTransactionCommand : Command
 
         _ = int.TryParse(transactionToDeleteString, out int transactionToDelete);
 
-        int rowsAffected = await GetManagers.TransactionManager.DeleteTransaction(transactionToDelete);
+        int rowsAffected = GetManagers.TransactionManager.DeleteTransaction(transactionToDelete);
 
         if (rowsAffected <= 0)
         {

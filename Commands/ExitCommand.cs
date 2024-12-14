@@ -10,7 +10,7 @@ public class ExitCommand : Command
         return "Exit the program";
     }
 
-    public override Task Execute()
+    public override void Execute()
     {
         throw new NotImplementedException();
     }

@@ -8,14 +8,12 @@ public class LogoutCommand : Command
         return "Log out from current user";
     }
 
-    public override Task Execute()
+    public override void Execute()
     {
         Console.Clear();
         Console.WriteLine("Thank you for using your personal finance app.");
         PressKeyToContinue.Execute();
 
         GetManagers.UserMenuManager.SetMenu(new LoginMenu(GetManagers));
-
-        return Task.CompletedTask;
     }
 }

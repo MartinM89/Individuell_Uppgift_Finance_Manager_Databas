@@ -9,10 +9,9 @@ class Program
 
     static void Main(string[] args)
     {
-        string connectionString = DatabaseConnection.GetConnectionString();
+        string connectionString = Database.GetConnectionString();
 
-        NpgsqlConnection? connection = null;
-
+        NpgsqlConnection? connection;
         try
         {
             connection = new(connectionString);
@@ -23,7 +22,8 @@ class Program
             throw new NpgsqlException($"Can't access database {ex.Message}");
         }
 
-        // 'PostgresTransactionManager' creates tables, functions and triggers
+        Database.Initialize(connection);
+
         ITransactionManager transactionManager = new PostgresTransactionManager(connection);
         IAccountManager accountManager = new PostgresAccountManager(connection);
         IMenuManager userMenuManager = new UserMenuManager();
@@ -32,7 +32,7 @@ class Program
 
         while (run)
         {
-            string? userChoice = HideCursor.Execute(new string("")).ToUpper();
+            string? userChoice = HideCursor.Execute().ToUpper();
             if (userChoice != null)
             {
                 userMenuManager.GetMenu().ExecuteCommand(userChoice.ToUpper());

@@ -8,11 +8,11 @@ public class CheckAllTransactionsCommand : Command
         return "Print a list of all transactions";
     }
 
-    public override async Task Execute()
+    public override void Execute()
     {
         Console.WriteLine("List of all transactions:");
 
-        List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions();
+        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
 
         TransactionTable.GetTransactionTableTop();
         TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);

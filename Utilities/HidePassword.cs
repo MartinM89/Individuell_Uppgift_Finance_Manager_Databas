@@ -2,10 +2,11 @@ namespace Individuell_Uppgift.Utilities;
 
 public class HidePassword
 {
-    public static string Execute(string password)
+    public static string Execute()
     {
         Console.CursorVisible = false;
         ConsoleKey key;
+        string password = "";
 
         do
         {
@@ -25,6 +26,7 @@ public class HidePassword
         } while (key != ConsoleKey.Enter);
 
         Console.CursorVisible = true;
+        Console.WriteLine();
         return password;
     }
 }

@@ -10,12 +10,12 @@ public class CreateAccountCommand : Command
         return "Create a new account";
     }
 
-    public override async Task Execute()
+    public override void Execute()
     {
         Console.Clear();
 
-        string password = string.Empty;
-        string confirmPassword = string.Empty;
+        string password;
+        string confirmPassword;
 
         Console.WriteLine("Create Account Menu:\n");
 
@@ -30,7 +30,7 @@ public class CreateAccountCommand : Command
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = await GetManagers.AccountManager.CheckUsernameRegistered(GetManagers.Connection, username);
+        bool usernameExists = GetManagers.AccountManager.CheckUsernameRegistered(username);
 
         if (usernameExists)
         {
@@ -42,7 +42,7 @@ public class CreateAccountCommand : Command
         }
 
         Console.Write("Enter password: ");
-        password = HidePassword.Execute(password);
+        password = HidePassword.Execute();
 
         if (string.IsNullOrEmpty(password))
         {
@@ -51,7 +51,7 @@ public class CreateAccountCommand : Command
         }
 
         Console.Write("\nRetype password: ");
-        confirmPassword = HidePassword.Execute(confirmPassword);
+        confirmPassword = HidePassword.Execute();
 
         if (string.IsNullOrEmpty(confirmPassword))
         {
@@ -72,7 +72,7 @@ public class CreateAccountCommand : Command
 
         User user = new(username, passwordHash, passwordSalt);
 
-        await GetManagers.AccountManager.Create(GetManagers.Connection, user);
+        GetManagers.AccountManager.Create(user);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Account {username} registered successfully.\n");

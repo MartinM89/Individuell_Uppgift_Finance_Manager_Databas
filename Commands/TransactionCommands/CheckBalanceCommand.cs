@@ -1,5 +1,4 @@
 using Individuell_Uppgift.Utilities;
-using Npgsql;
 
 public class CheckBalanceCommand : Command
 {
@@ -11,11 +10,11 @@ public class CheckBalanceCommand : Command
         return "Check your current balance";
     }
 
-    public override async Task Execute()
+    public override void Execute()
     {
         while (true)
         {
-            decimal totalAmount = await GetManagers.TransactionManager.GetBalance();
+            decimal totalAmount = GetManagers.TransactionManager.GetBalance();
 
             Console.Clear();
 
@@ -24,7 +23,7 @@ public class CheckBalanceCommand : Command
             Console.WriteLine(".");
 
             Console.Write("\nSee list of all transactions? [Y/N]");
-            string? seeFullListAnswer = HideCursor.Execute(new string("")).ToUpper();
+            string? seeFullListAnswer = HideCursor.Execute().ToUpper();
 
             if (seeFullListAnswer == null)
             {
@@ -44,7 +43,7 @@ public class CheckBalanceCommand : Command
                 continue;
             }
 
-            List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions();
+            List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
 
             TransactionTable.GetTransactionTableTop();
             TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);

@@ -2,10 +2,11 @@ namespace Individuell_Uppgift.Utilities;
 
 public class HideCursor
 {
-    public static string Execute(string input)
+    public static string Execute()
     {
         Console.CursorVisible = false;
         ConsoleKey key;
+        string input = "";
 
         do
         {

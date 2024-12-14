@@ -1,6 +1,5 @@
 using Individuell_Uppgift.Menus;
 using Individuell_Uppgift.Utilities;
-using Npgsql;
 
 public class LoginMenu : Menu
 {
