@@ -1,5 +1,6 @@
 using Individuell_Uppgift.Menus;
 using Individuell_Uppgift.Utilities;
+using Npgsql;
 
 public class LoginCommand : Command
 {
@@ -15,11 +16,11 @@ public class LoginCommand : Command
     {
         Console.Clear();
 
-        var connection = GetManagers.Connection;
-        var userMenuManager = GetManagers.UserMenuManager;
-        var accountManager = GetManagers.AccountManager;
+        NpgsqlConnection connection = GetManagers.Connection;
+        IMenuManager userMenuManager = GetManagers.UserMenuManager;
+        IAccountManager accountManager = GetManagers.AccountManager;
 
-        string enteredPassword = string.Empty;
+        string enteredPassword;
 
         Console.WriteLine("Login Menu:\n");
 
@@ -69,7 +70,6 @@ public class LoginCommand : Command
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");
-        // SimulateKeyPress.Execute();
         PressKeyToContinue.Execute();
 
         userMenuManager.SetMenu(new TransactionMenu(GetManagers));

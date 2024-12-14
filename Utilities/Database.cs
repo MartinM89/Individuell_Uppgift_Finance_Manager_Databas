@@ -1,10 +1,13 @@
+using DotNetEnv;
 using Npgsql;
 
 public class Database
 {
     public static string GetConnectionString()
     {
-        return "Host=80.217.81.80:44448;" + "Database=finance_app;" + "Password=783259;" + "Username=postgres;";
+        Env.Load();
+
+        return Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING") ?? throw new Exception("Can't access connection string to connect to database");
     }
 
     public static void Initialize(NpgsqlConnection connection)

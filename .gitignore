@@ -483,8 +483,5 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-# Connection String
-*DatabaseConnection.cs
-
 # csharpier
 *.csharpierrc.json
