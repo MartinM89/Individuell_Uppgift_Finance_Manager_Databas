@@ -12,12 +12,26 @@ public class PostgresTransactionManager : ITransactionManager
     public void AddTransaction(Transaction transaction)
     {
         string insertTransactionSql = "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)";
-        using NpgsqlCommand insertTransactionCmd = new(insertTransactionSql, Connection);
-        insertTransactionCmd.Parameters.AddWithValue("@name", transaction.Name!);
-        insertTransactionCmd.Parameters.AddWithValue("@amount", transaction.Amount);
-        insertTransactionCmd.Parameters.AddWithValue("@user_id", transaction.UserId);
 
-        insertTransactionCmd.ExecuteNonQuery();
+        try
+        {
+            using NpgsqlCommand insertTransactionCmd = new(insertTransactionSql, Connection);
+            insertTransactionCmd.Parameters.AddWithValue("@name", transaction.Name!);
+            insertTransactionCmd.Parameters.AddWithValue("@amount", transaction.Amount);
+            insertTransactionCmd.Parameters.AddWithValue("@user_id", transaction.UserId);
+
+            insertTransactionCmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException ex)
+        {
+            Console.WriteLine($"PostgreSQL error: {ex.Message}");
+            throw new Exception("An error occured while attempting to add a transaction to database.", ex);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            throw new Exception("An error occured while attempting to add a transaction.", ex);
+        }
     }
 
     public int DeleteTransaction(int transactionToDelete)
