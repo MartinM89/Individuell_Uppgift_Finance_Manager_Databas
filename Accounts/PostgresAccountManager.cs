@@ -5,7 +5,7 @@ public class PostgresAccountManager : IAccountManager
 {
     private readonly NpgsqlConnection connection;
 
-    public static Guid LoggedInUserId { get; private set; }
+    private static Guid loggedInUserId;
 
     public PostgresAccountManager(NpgsqlConnection connection)
     {
@@ -47,7 +47,7 @@ public class PostgresAccountManager : IAccountManager
                 throw new InvalidOperationException("User not found!");
             }
 
-            LoggedInUserId = (Guid)result;
+            loggedInUserId = (Guid)result;
 
             // LoggedInUserId =  getIdCmd.ExecuteScalar() as Guid? ?? throw new InvalidOperationException("User not found!");
         }
@@ -63,7 +63,7 @@ public class PostgresAccountManager : IAccountManager
 
     public static Guid GetLoggedInUserId()
     {
-        return LoggedInUserId;
+        return loggedInUserId;
     }
 
     public static bool CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
