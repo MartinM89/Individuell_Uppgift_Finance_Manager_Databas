@@ -14,6 +14,8 @@ public class LogoutCommand : Command
         Console.WriteLine("Thank you for using your personal finance app.");
         PressKeyToContinue.Execute();
 
+        PostgresAccountManager.SetLoggedInUserIdToEmpty();
+
         GetManagers.UserMenuManager.SetMenu(new LoginMenu(GetManagers));
     }
 }

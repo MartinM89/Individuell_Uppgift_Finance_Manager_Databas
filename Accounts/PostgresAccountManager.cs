@@ -66,6 +66,11 @@ public class PostgresAccountManager : IAccountManager
         return loggedInUserId;
     }
 
+    public static void SetLoggedInUserIdToEmpty()
+    {
+        loggedInUserId = Guid.Empty;
+    }
+
     public static bool CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
     {
         string loginSql = """
