@@ -15,6 +15,8 @@ public class LoginMenu : Menu
     {
         Console.Clear();
 
+        Console.WriteLine("Login Menu:\n");
+
         ChangeColor.TextColorGreen("[C]");
         Console.WriteLine("reate Account");
         ChangeColor.TextColorGreen("[L]");

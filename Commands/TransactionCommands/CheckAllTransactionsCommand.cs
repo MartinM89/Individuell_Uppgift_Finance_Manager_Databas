@@ -14,6 +14,14 @@ public class CheckAllTransactionsCommand : Command
 
         List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
 
+        if (transactions.Count.Equals(0))
+        {
+            Console.WriteLine("There are no saved transactions.");
+            PressKeyToContinue.Execute();
+            GetManagers.UserMenuManager.ReturnToSameMenu();
+            return;
+        }
+
         TransactionTable.GetTransactionTableTop();
         TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
         TransactionTable.GetTransactionsTableBottom();

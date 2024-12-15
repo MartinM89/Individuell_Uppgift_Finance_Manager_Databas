@@ -12,17 +12,17 @@ public class CheckBalanceCommand : Command
 
     public override void Execute()
     {
+        decimal totalAmount = GetManagers.TransactionManager.GetBalance();
+
         while (true)
         {
-            decimal totalAmount = GetManagers.TransactionManager.GetBalance();
-
             Console.Clear();
 
             Console.Write("Your total balance is ");
             ChangeColor.TextColorGreen($"{totalAmount:N2}");
             Console.WriteLine(".");
 
-            Console.Write("\nSee list of all transactions? [Y/N]");
+            Console.WriteLine("\nSee list of all transactions? [Y/N]");
             string? seeFullListAnswer = HideCursor.Execute().ToUpper();
 
             if (seeFullListAnswer == null)

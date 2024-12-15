@@ -34,6 +34,7 @@ class Program
         while (run)
         {
             string? userChoice = HideCursor.Execute().ToUpper();
+
             if (userChoice != null)
             {
                 userMenuManager.GetMenu().ExecuteCommand(userChoice.ToUpper());

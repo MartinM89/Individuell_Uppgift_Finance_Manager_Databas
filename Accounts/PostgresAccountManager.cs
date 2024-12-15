@@ -20,9 +20,9 @@ public class PostgresAccountManager : IAccountManager
             """;
 
         NpgsqlCommand command = new(createAccountSql, connection);
-        command.Parameters.AddWithValue("username", user.Username);
-        command.Parameters.AddWithValue("password_hash", Convert.ToBase64String(user.PasswordHash));
-        command.Parameters.AddWithValue("password_salt", Convert.ToBase64String(user.PasswordSalt));
+        command.Parameters.AddWithValue("@username", user.Username);
+        command.Parameters.AddWithValue("@password_hash", Convert.ToBase64String(user.PasswordHash));
+        command.Parameters.AddWithValue("@password_salt", Convert.ToBase64String(user.PasswordSalt));
 
         command.ExecuteNonQuery();
     }
@@ -38,7 +38,7 @@ public class PostgresAccountManager : IAccountManager
         try
         {
             NpgsqlCommand getIdCmd = new NpgsqlCommand(getIdSql, connection);
-            getIdCmd.Parameters.AddWithValue("username", username);
+            getIdCmd.Parameters.AddWithValue("@username", username);
 
             object? result = getIdCmd.ExecuteScalar();
 
@@ -76,13 +76,13 @@ public class PostgresAccountManager : IAccountManager
         string loginSql = """
             SELECT password_hash, password_salt
             FROM users
-            WHERE username = @username
+            WHERE @username = username
             """;
 
         try
         {
             NpgsqlCommand command = new(loginSql, connection);
-            command.Parameters.AddWithValue("username", username);
+            command.Parameters.AddWithValue("@username", username);
 
             byte[] storedPasswordHash = [];
             byte[] storedPasswordSalt = [];
@@ -113,7 +113,7 @@ public class PostgresAccountManager : IAccountManager
 
     public bool CheckIfUsernameRegistered(string username)
     {
-        var checkUsernameSql = """
+        string checkUsernameSql = """
             SELECT EXISTS (
                 SELECT 1
                 FROM users
@@ -123,10 +123,10 @@ public class PostgresAccountManager : IAccountManager
 
         try
         {
-            var command = new NpgsqlCommand(checkUsernameSql, connection);
-            command.Parameters.AddWithValue("username", username);
+            NpgsqlCommand checkUsernameCmd = new(checkUsernameSql, connection);
+            checkUsernameCmd.Parameters.AddWithValue("@username", username);
 
-            object? result = command.ExecuteScalar();
+            object? result = checkUsernameCmd.ExecuteScalar();
             bool usernameExists = result != null && (bool)result;
 
             return usernameExists;
@@ -138,6 +138,33 @@ public class PostgresAccountManager : IAccountManager
         catch (Exception ex)
         {
             throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to verify if username already exists.", ex);
+        }
+    }
+
+    public Guid GetUserGuid(string username)
+    {
+        string getUserGuidSql = """
+            SELECT * FROM users
+            WHERE username = @username
+            """;
+
+        try
+        {
+            NpgsqlCommand getUserGuidCmd = new(getUserGuidSql, connection);
+            getUserGuidCmd.Parameters.AddWithValue("@username", username);
+
+            object? result = getUserGuidCmd.ExecuteScalar();
+
+            if (result != null)
+            {
+                return (Guid)result;
+            }
+
+            return Guid.Empty;
+        }
+        catch (NpgsqlException)
+        {
+            throw;
         }
     }
 }

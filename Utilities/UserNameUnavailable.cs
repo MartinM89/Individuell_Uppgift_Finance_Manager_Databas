@@ -23,3 +23,6 @@ public class UserNameUnavailable
         return usernameExists;
     }
 }
+
+
+// Useless?

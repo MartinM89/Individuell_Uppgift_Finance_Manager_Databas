@@ -299,4 +299,35 @@ public class PostgresTransactionManager : ITransactionManager
             throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (YEAR).", ex);
         }
     }
+
+    public void SendTransactionToOtherUser(Transaction transaction)
+    {
+        string SendTransactionToOtherUserSql =
+            "BEGIN;"
+            + "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @send_amount, @my_user_id);"
+            + "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @recieve_amount, @other_user_id);"
+            + "COMMIT;";
+
+        // INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)
+
+        try
+        {
+            using NpgsqlCommand SendTransactionToOtherUserCmd = new(SendTransactionToOtherUserSql, connection);
+            SendTransactionToOtherUserCmd.Parameters.AddWithValue("@name", transaction.Name);
+            SendTransactionToOtherUserCmd.Parameters.AddWithValue("@send_amount", -transaction.Amount);
+            SendTransactionToOtherUserCmd.Parameters.AddWithValue("@recieve_amount", transaction.Amount);
+            SendTransactionToOtherUserCmd.Parameters.AddWithValue("@my_user_id", PostgresAccountManager.GetLoggedInUserId());
+            SendTransactionToOtherUserCmd.Parameters.AddWithValue("@other_user_id", transaction.UserId); // Change id
+
+            SendTransactionToOtherUserCmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to send a transaction to another user to database.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to send a transaction to another user.", ex);
+        }
+    }
 }

@@ -1,3 +1,4 @@
+using Individuell_Uppgift;
 using Npgsql;
 
 public class ExitCommand : Command
@@ -12,6 +13,10 @@ public class ExitCommand : Command
 
     public override void Execute()
     {
-        throw new NotImplementedException();
+        Console.Clear();
+        Console.WriteLine("Thank you for using your personal finance program.");
+        PressKeyToContinue.Execute();
+        Console.Clear();
+        Program.run = false;
     }
 }

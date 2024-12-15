@@ -1,14 +1,13 @@
 using Individuell_Uppgift.Menus;
 using Individuell_Uppgift.Utilities;
 
-public class TransactionMenu : Menu
+public class TransactionMenuAdmin : Menu
 {
-    public TransactionMenu(GetManagers getManagers)
+    public TransactionMenuAdmin(GetManagers getManagers)
     {
         AddCommand(new AddTransactionCommand(getManagers));
         AddCommand(new DeleteTransactionCommand(getManagers));
         AddCommand(new CheckBalanceCommand(getManagers));
-        AddCommand(new TransferMoneyToOtherUserCommand(getManagers));
         AddCommand(new CheckIncomeCommand(getManagers));
         AddCommand(new CheckExpenseCommand(getManagers));
         AddCommand(new LogoutCommand(getManagers));
@@ -28,8 +27,6 @@ public class TransactionMenu : Menu
         Console.WriteLine("elete Transaction");
         ChangeColor.TextColorGreen("[B]");
         Console.WriteLine("alance");
-        ChangeColor.TextColorGreen("[T]");
-        Console.WriteLine("ransfer");
         ChangeColor.TextColorGreen("[I]");
         Console.WriteLine("ncome Summary");
         ChangeColor.TextColorGreen("[E]");

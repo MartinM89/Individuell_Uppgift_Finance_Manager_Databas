@@ -19,3 +19,5 @@ public class CheckIncomeAndExpenseMenu : Menu
         Console.WriteLine("early");
     }
 }
+
+// Add new commands here?

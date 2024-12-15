@@ -1,6 +1,5 @@
 using Individuell_Uppgift.Menus;
 using Individuell_Uppgift.Utilities;
-using Npgsql;
 
 public class CheckIncomeCommand : Command
 {
@@ -18,28 +17,28 @@ public class CheckIncomeCommand : Command
     {
         Console.Clear();
 
-        // int transactionCount = TransactionManager.GetTransactionCount();  // Implement if table is empty for Guid
+        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
 
-        // if (transactionCount == 0)
-        // {
-        //     Console.WriteLine("There are no saved transactions.");
-        //     PressKeyToContinue.Execute();
-        //     break;
-        // }
+        if (transactions.Count.Equals(0))
+        {
+            Console.WriteLine("There are no saved transactions.");
+            PressKeyToContinue.Execute();
+            GetManagers.UserMenuManager.ReturnToSameMenu();
+            return;
+        }
 
-        CheckIncomeAndExpenseMenu checkIncomeMenu = new(); // Check
-
+        CheckIncomeAndExpenseMenu checkIncomeMenu = new();
         checkIncomeMenu.Display();
 
-        string hideUserChoice = HideCursor.Execute().ToUpper();
+        string userChoice = HideCursor.Execute().ToUpper();
 
-        if (string.IsNullOrEmpty(hideUserChoice))
+        if (string.IsNullOrEmpty(userChoice))
         {
             GetManagers.UserMenuManager.ReturnToSameMenu();
             return;
         }
 
-        if (!availableInputs.Contains(hideUserChoice))
+        if (!availableInputs.Contains(userChoice))
         {
             Console.Clear();
             Console.WriteLine("Invalid Input. [DWMY]");
@@ -48,7 +47,7 @@ public class CheckIncomeCommand : Command
             return;
         }
 
-        (TransactionCategory, Func<int, bool, List<Transaction>>) values = hideUserChoice switch
+        (TransactionCategory, Func<int, bool, List<Transaction>>) values = userChoice switch
         {
             "D" => (TransactionCategory.Day, GetManagers.TransactionManager.GetTransactionsByDay),
             "W" => (TransactionCategory.Week, GetManagers.TransactionManager.GetTransactionsByWeek),
@@ -67,17 +66,12 @@ public class CheckIncomeCommand : Command
 
         Console.CursorVisible = false;
 
-        bool transactionType = true;
-        List<Transaction> transactions = fetchTransactions(transactionDate, transactionType);
-        // // csharpier-ignore
-        // if (hideUserChoice.Equals("D")) { transactionCategory = TransactionCategory.Day; }
-        // else if (hideUserChoice.Equals("W")) { transactionCategory = TransactionCategory.Week; }
-        // else if (hideUserChoice.Equals("M")) { transactionCategory = TransactionCategory.Month; }
-        // else if (hideUserChoice.Equals("Y")) { transactionCategory = TransactionCategory.Year; }
+        bool incomeTransaction = true;
+        transactions = fetchTransactions(transactionDate, incomeTransaction);
 
         Console.Clear();
 
-        Console.WriteLine($"{transactionCategory}:");
+        Console.WriteLine($"{transactionCategory} {transactionDate}:");
         TransactionTable.GetTransactionTableTop();
         TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
         TransactionTable.GetTransactionsTableBottom();
