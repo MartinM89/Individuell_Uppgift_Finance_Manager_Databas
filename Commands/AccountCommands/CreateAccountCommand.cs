@@ -70,9 +70,9 @@ public class CreateAccountCommand : Command
             return;
         }
 
-        PasswordHasher.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+        var passwordVerifier = PasswordHasher.CreatePasswordHash(password);
 
-        User user = new(username, passwordHash, passwordSalt);
+        User user = new(username, passwordVerifier.passwordHash, passwordVerifier.passwordSalt);
 
         GetManagers.AccountManager.Create(user);
 

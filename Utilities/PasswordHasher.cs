@@ -5,12 +5,14 @@ namespace Individuell_Uppgift.Utilities;
 
 public class PasswordHasher
 {
-    public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    public static (byte[] passwordHash, byte[] passwordSalt) CreatePasswordHash(string password)
     {
         using HMACSHA512 hmac = new();
-        passwordSalt = hmac.Key;
+        byte[] passwordSalt = hmac.Key;
 
-        passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        byte[] passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+        return (passwordHash, passwordSalt);
     }
 
     public static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
