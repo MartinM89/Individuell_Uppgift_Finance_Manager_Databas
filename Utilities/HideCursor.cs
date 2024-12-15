@@ -4,9 +4,8 @@ public class HideCursor
 {
     public static string Execute()
     {
-        Console.CursorVisible = false;
-        ConsoleKey key;
         string input = "";
+        ConsoleKey key;
 
         do
         {
@@ -25,7 +24,6 @@ public class HideCursor
             }
         } while (input.Length.Equals(0));
 
-        Console.CursorVisible = true;
         return input;
     }
 }

@@ -19,8 +19,10 @@ public class CreateAccountCommand : Command
 
         Console.WriteLine("Create Account Menu:\n");
 
+        Console.CursorVisible = true;
         Console.Write("Enter username: ");
-        string username = Console.ReadLine()!;
+        string? username = Console.ReadLine();
+        Console.CursorVisible = false;
 
         if (string.IsNullOrEmpty(username))
         {
@@ -30,7 +32,7 @@ public class CreateAccountCommand : Command
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = GetManagers.AccountManager.CheckUsernameRegistered(username);
+        bool usernameExists = GetManagers.AccountManager.CheckIfUsernameRegistered(username);
 
         if (usernameExists)
         {

@@ -24,8 +24,10 @@ public class LoginCommand : Command
 
         Console.WriteLine("Login Menu:\n");
 
+        Console.CursorVisible = true;
         Console.Write("Enter username: ");
-        string username = Console.ReadLine()!;
+        string? username = Console.ReadLine();
+        Console.CursorVisible = false;
 
         if (string.IsNullOrEmpty(username))
         {
@@ -35,7 +37,7 @@ public class LoginCommand : Command
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = accountManager.CheckUsernameRegistered(username);
+        bool usernameExists = accountManager.CheckIfUsernameRegistered(username);
 
         if (!usernameExists)
         {

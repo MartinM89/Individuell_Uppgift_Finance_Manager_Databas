@@ -88,7 +88,7 @@ public class PostgresAccountManager : IAccountManager
         return LoggedInUserId;
     }
 
-    public bool CheckUsernameRegistered(string username)
+    public bool CheckIfUsernameRegistered(string username)
     {
         var checkUsernameSql = """
             SELECT EXISTS (

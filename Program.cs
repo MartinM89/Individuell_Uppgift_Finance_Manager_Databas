@@ -9,6 +9,7 @@ class Program
 
     static void Main(string[] args)
     {
+        Console.CursorVisible = false;
         string connectionString = Database.GetConnectionString();
 
         NpgsqlConnection? connection;
