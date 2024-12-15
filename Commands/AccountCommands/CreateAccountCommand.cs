@@ -70,11 +70,11 @@ public class CreateAccountCommand : Command
             return;
         }
 
-        var passwordVerifier = PasswordHasher.CreatePasswordHash(password);
+        (byte[] passwordHash, byte[] passwordSalt) = PasswordHasher.CreatePasswordHash(password);
 
-        User user = new(username, passwordVerifier.passwordHash, passwordVerifier.passwordSalt);
+        User user = new(username, passwordHash, passwordSalt);
 
-        GetManagers.AccountManager.Create(user);
+        GetManagers.AccountManager.CreateUser(user);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Account {username} registered successfully.\n");

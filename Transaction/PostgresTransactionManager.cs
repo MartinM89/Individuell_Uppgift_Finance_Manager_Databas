@@ -2,11 +2,11 @@ using Npgsql;
 
 public class PostgresTransactionManager : ITransactionManager
 {
-    private readonly NpgsqlConnection Connection;
+    private readonly NpgsqlConnection connection;
 
     public PostgresTransactionManager(NpgsqlConnection connection)
     {
-        Connection = connection;
+        this.connection = connection;
     }
 
     public void AddTransaction(Transaction transaction)
@@ -15,7 +15,7 @@ public class PostgresTransactionManager : ITransactionManager
 
         try
         {
-            using NpgsqlCommand insertTransactionCmd = new(insertTransactionSql, Connection);
+            using NpgsqlCommand insertTransactionCmd = new(insertTransactionSql, connection);
             insertTransactionCmd.Parameters.AddWithValue("@name", transaction.Name!);
             insertTransactionCmd.Parameters.AddWithValue("@amount", transaction.Amount);
             insertTransactionCmd.Parameters.AddWithValue("@user_id", transaction.UserId);
@@ -24,63 +24,96 @@ public class PostgresTransactionManager : ITransactionManager
         }
         catch (NpgsqlException ex)
         {
-            Console.WriteLine($"PostgreSQL error: {ex.Message}");
-            throw new Exception("An error occured while attempting to add a transaction to database.", ex);
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to add a transaction to database.", ex);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
-            throw new Exception("An error occured while attempting to add a transaction.", ex);
+            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to add a transaction.", ex);
         }
     }
 
     public int DeleteTransaction(int transactionToDelete)
     {
         string deleteTransactionSql = "DELETE FROM transactions WHERE user_id = @user_id AND id = @id";
-        using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, Connection);
-        deleteTransactionCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
-        deleteTransactionCmd.Parameters.AddWithValue("@id", transactionToDelete);
 
-        return deleteTransactionCmd.ExecuteNonQuery();
+        try
+        {
+            using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, connection);
+            deleteTransactionCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
+            deleteTransactionCmd.Parameters.AddWithValue("@id", transactionToDelete);
+            return deleteTransactionCmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to delete a transaction from database.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to delete a transaction.", ex);
+        }
     }
 
     public decimal GetBalance()
     {
         string getBalanceSql = "SELECT amount FROM transactions WHERE user_id = @user_id";
-        using NpgsqlCommand getBalanceCmd = new(getBalanceSql, Connection);
-        getBalanceCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
 
-        using NpgsqlDataReader reader = getBalanceCmd.ExecuteReader();
-
-        decimal totalBalance = 0;
-
-        while (reader.Read())
+        try
         {
-            totalBalance += reader.GetDecimal(0);
-        }
+            using NpgsqlCommand getBalanceCmd = new(getBalanceSql, connection);
+            getBalanceCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
 
-        return totalBalance;
+            using NpgsqlDataReader reader = getBalanceCmd.ExecuteReader();
+
+            decimal totalBalance = 0;
+
+            while (reader.Read())
+            {
+                totalBalance += reader.GetDecimal(0);
+            }
+
+            return totalBalance;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get balance from database.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get balance.", ex);
+        }
     }
 
     public List<Transaction> GetAllTransactions()
     {
         string getAllTransactionsSql = "SELECT * FROM transactions WHERE user_id = @user_id";
-        using NpgsqlCommand getAllTransactionsCmd = new(getAllTransactionsSql, Connection);
-        getAllTransactionsCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
 
-        List<Transaction> transactions = [];
-
-        using (NpgsqlDataReader reader = getAllTransactionsCmd.ExecuteReader())
+        try
         {
-            while (reader.Read())
+            using NpgsqlCommand getAllTransactionsCmd = new(getAllTransactionsSql, connection);
+            getAllTransactionsCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
+
+            List<Transaction> transactions = [];
+
+            using (NpgsqlDataReader reader = getAllTransactionsCmd.ExecuteReader())
             {
-                Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.LoggedInUserId);
+                while (reader.Read())
+                {
+                    Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.GetLoggedInUserId());
 
-                transactions.Add(transaction);
+                    transactions.Add(transaction);
+                }
             }
-        }
 
-        return transactions;
+            return transactions;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to list all transactions from database.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to list all transactions.", ex);
+        }
     }
 
     public List<Transaction> GetTransactionsByDay(int dayOfMonth, bool isCredit)
@@ -99,23 +132,34 @@ public class PostgresTransactionManager : ITransactionManager
                 AND amount < 0
                 """;
 
-        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDaySql, Connection);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@dayOfMonth", dayOfMonth);
-
-        List<Transaction> transactions = [];
-
-        using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
+        try
         {
-            while (reader.Read())
+            using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDaySql, connection);
+            getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
+            getTransactionsByDayCmd.Parameters.AddWithValue("@dayOfMonth", dayOfMonth);
+
+            List<Transaction> transactions = [];
+
+            using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
             {
-                Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.LoggedInUserId);
+                while (reader.Read())
+                {
+                    Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.GetLoggedInUserId());
 
-                transactions.Add(transaction);
+                    transactions.Add(transaction);
+                }
             }
-        }
 
-        return transactions;
+            return transactions;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (DAY) from database.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (DAY).", ex);
+        }
     }
 
     public List<Transaction> GetTransactionsByWeek(int weekNumber, bool isCredit)
@@ -133,23 +177,35 @@ public class PostgresTransactionManager : ITransactionManager
                 AND @weekNumber IS NOT NULL AND EXTRACT(WEEK FROM date) = @weekNumber
                 AND amount < 0
                 """;
-        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByWeekSql, Connection);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@weekNumber", weekNumber);
 
-        List<Transaction> transactions = [];
-
-        using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
+        try
         {
-            while (reader.Read())
+            using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByWeekSql, connection);
+            getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
+            getTransactionsByDayCmd.Parameters.AddWithValue("@weekNumber", weekNumber);
+
+            List<Transaction> transactions = [];
+
+            using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
             {
-                Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.LoggedInUserId);
+                while (reader.Read())
+                {
+                    Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.GetLoggedInUserId());
 
-                transactions.Add(transaction);
+                    transactions.Add(transaction);
+                }
             }
-        }
 
-        return transactions;
+            return transactions;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (WEEK) from database.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (WEEK).", ex);
+        }
     }
 
     public List<Transaction> GetTransactionsByMonth(int month, bool isCredit)
@@ -167,23 +223,35 @@ public class PostgresTransactionManager : ITransactionManager
                 AND @month IS NOT NULL AND EXTRACT(MONTH FROM date) = @month
                 AND amount < 0
                 """;
-        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByMonthSql, Connection);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@month", month);
 
-        List<Transaction> transactions = [];
-
-        using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
+        try
         {
-            while (reader.Read())
+            using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByMonthSql, connection);
+            getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
+            getTransactionsByDayCmd.Parameters.AddWithValue("@month", month);
+
+            List<Transaction> transactions = [];
+
+            using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
             {
-                Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.LoggedInUserId);
+                while (reader.Read())
+                {
+                    Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.GetLoggedInUserId());
 
-                transactions.Add(transaction);
+                    transactions.Add(transaction);
+                }
             }
-        }
 
-        return transactions;
+            return transactions;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (MONTH) from database.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (MONTH).", ex);
+        }
     }
 
     public List<Transaction> GetTransactionsByYear(int year, bool isCredit)
@@ -201,22 +269,34 @@ public class PostgresTransactionManager : ITransactionManager
                 AND @year IS NOT NULL AND EXTRACT(YEAR FROM date) = @year
                 AND amount < 0
                 """;
-        using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByYearSql, Connection);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.LoggedInUserId);
-        getTransactionsByDayCmd.Parameters.AddWithValue("@year", year);
 
-        List<Transaction> transactions = [];
-
-        using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
+        try
         {
-            while (reader.Read())
+            using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByYearSql, connection);
+            getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
+            getTransactionsByDayCmd.Parameters.AddWithValue("@year", year);
+
+            List<Transaction> transactions = [];
+
+            using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
             {
-                Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.LoggedInUserId);
+                while (reader.Read())
+                {
+                    Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.GetLoggedInUserId());
 
-                transactions.Add(transaction);
+                    transactions.Add(transaction);
+                }
             }
-        }
 
-        return transactions;
+            return transactions;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (YEAR) from database.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (YEAR).", ex);
+        }
     }
 }

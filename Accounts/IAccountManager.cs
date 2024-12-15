@@ -2,7 +2,7 @@ using Npgsql;
 
 public interface IAccountManager
 {
-    void Create(User user);
-    void GetUserGuid(string username);
+    void CreateUser(User user);
+    void SetLoggedInUserId(string username);
     bool CheckIfUsernameRegistered(string username);
 }

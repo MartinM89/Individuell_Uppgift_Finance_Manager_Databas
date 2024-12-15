@@ -68,7 +68,7 @@ public class LoginCommand : Command
             return;
         }
 
-        GetManagers.AccountManager.GetUserGuid(username);
+        GetManagers.AccountManager.SetLoggedInUserId(username);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as {username}.\n");

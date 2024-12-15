@@ -28,7 +28,7 @@ public class AddTransactionCommand : Command
             return;
         }
 
-        Transaction transaction = new(1, name, amount, DateTime.Now, PostgresAccountManager.LoggedInUserId);
+        Transaction transaction = new(1, name, amount, DateTime.Now, PostgresAccountManager.GetLoggedInUserId());
 
         GetManagers.TransactionManager.AddTransaction(transaction);
 

@@ -12,7 +12,7 @@ public class Database
 
     public static void Initialize(NpgsqlConnection connection)
     {
-        #region Database tables, functions, triggers
+        #region Database tables, functions and triggers query
         string createTablesSql = """
                 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -125,7 +125,18 @@ public class Database
             """;
         #endregion
 
-        using NpgsqlCommand createTablesCmd = new(createTablesSql, connection);
-        createTablesCmd.ExecuteNonQuery();
+        try
+        {
+            using NpgsqlCommand createTablesCmd = new(createTablesSql, connection);
+            createTablesCmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to create tables, functions and/or triggers in database.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to create tables, functions and/or triggers.", ex);
+        }
     }
 }

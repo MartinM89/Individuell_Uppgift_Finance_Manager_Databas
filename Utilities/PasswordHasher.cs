@@ -9,7 +9,6 @@ public class PasswordHasher
     {
         using HMACSHA512 hmac = new();
         byte[] passwordSalt = hmac.Key;
-
         byte[] passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
 
         return (passwordHash, passwordSalt);
