@@ -16,7 +16,7 @@ public class PostgresTransactionManager : ITransactionManager
         try
         {
             using NpgsqlCommand insertTransactionCmd = new(insertTransactionSql, connection);
-            insertTransactionCmd.Parameters.AddWithValue("@name", transaction.Name!);
+            insertTransactionCmd.Parameters.AddWithValue("@name", transaction.Name);
             insertTransactionCmd.Parameters.AddWithValue("@amount", transaction.Amount);
             insertTransactionCmd.Parameters.AddWithValue("@user_id", transaction.UserId);
 
@@ -304,11 +304,9 @@ public class PostgresTransactionManager : ITransactionManager
     {
         string SendTransactionToOtherUserSql =
             "BEGIN;"
-            + "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @send_amount, @my_user_id);"
-            + "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @recieve_amount, @other_user_id);"
+            + "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @send_amount, @sender_user_id);"
+            + "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @recieve_amount, @reciever_user_id);"
             + "COMMIT;";
-
-        // INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)
 
         try
         {
@@ -316,8 +314,8 @@ public class PostgresTransactionManager : ITransactionManager
             SendTransactionToOtherUserCmd.Parameters.AddWithValue("@name", transaction.Name);
             SendTransactionToOtherUserCmd.Parameters.AddWithValue("@send_amount", -transaction.Amount);
             SendTransactionToOtherUserCmd.Parameters.AddWithValue("@recieve_amount", transaction.Amount);
-            SendTransactionToOtherUserCmd.Parameters.AddWithValue("@my_user_id", PostgresAccountManager.GetLoggedInUserId());
-            SendTransactionToOtherUserCmd.Parameters.AddWithValue("@other_user_id", transaction.UserId); // Change id
+            SendTransactionToOtherUserCmd.Parameters.AddWithValue("@sender_user_id", PostgresAccountManager.GetLoggedInUserId());
+            SendTransactionToOtherUserCmd.Parameters.AddWithValue("@reciever_user_id", transaction.UserId);
 
             SendTransactionToOtherUserCmd.ExecuteNonQuery();
         }
@@ -331,3 +329,18 @@ public class PostgresTransactionManager : ITransactionManager
         }
     }
 }
+
+
+// SHOWS BALANCE PER USER
+
+// CREATE VIEW user_balances AS
+// SELECT
+//     users.id AS user_id,
+//     users.username,
+//     COALESCE(SUM(transactions.amount), 0) AS total_balance
+// FROM
+//     users
+// LEFT JOIN
+//     transactions ON users.id = transactions.user_id
+// GROUP BY
+//     users.id, users.username;

@@ -14,6 +14,11 @@ public class PostgresAccountManager : IAccountManager
 
     public void CreateUser(User user)
     {
+        if (user.PasswordHash == null || user.PasswordSalt == null) // Correct?
+        {
+            throw new Exception("Password could not be sent to database.");
+        }
+
         string createAccountSql = """
             INSERT INTO users (username, password_hash, password_salt)
             VALUES (@username, @password_hash, @password_salt)

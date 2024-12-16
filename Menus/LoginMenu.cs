@@ -25,5 +25,10 @@ public class LoginMenu : Menu
         Console.WriteLine("uest Account");
         ChangeColor.TextColorGreen("[E]");
         Console.WriteLine("xit");
+
+        if (DateTime.Now.Day % 2 == 0)
+        {
+            Console.WriteLine("\nThere is currently a sign up bonus,\nsign up today and gain a 10 000:-");
+        }
     }
 }

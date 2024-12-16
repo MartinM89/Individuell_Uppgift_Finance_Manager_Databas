@@ -17,6 +17,7 @@ public class Transaction
 
     public override string ToString()
     {
+        // Amount in TransactionTable for green/red coloring
         return $"| {Id, TransactionTable.idWidth} | {Date:yyyy MMM dd} | {Name, -TransactionTable.nameWidth} | ";
     }
 }
