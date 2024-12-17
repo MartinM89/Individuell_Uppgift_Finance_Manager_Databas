@@ -43,6 +43,8 @@ public class CheckBalanceCommand : Command
                 continue;
             }
 
+            Console.Clear();
+
             List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
 
             TransactionTable.GetTransactionTableTop();
