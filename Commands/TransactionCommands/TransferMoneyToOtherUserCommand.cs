@@ -70,7 +70,7 @@ public class TransferMoneyToOtherUserCommand : Command
 
         Transaction transaction = new(1, name, amount, DateTime.Now, sendToGuid);
 
-        GetManagers.TransactionManager.SendTransactionToOtherUser(transaction);
+        GetManagers.TransactionManager.TransferFunds(transaction);
 
         Console.Clear();
         Console.WriteLine($"The following transaction has been send to {name}:");

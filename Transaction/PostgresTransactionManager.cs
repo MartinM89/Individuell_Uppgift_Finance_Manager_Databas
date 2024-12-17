@@ -300,7 +300,7 @@ public class PostgresTransactionManager : ITransactionManager
         }
     }
 
-    public void SendTransactionToOtherUser(Transaction transaction)
+    public void TransferFunds(Transaction transaction)
     {
         string SendTransactionToOtherUserSql =
             "BEGIN;"

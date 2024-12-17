@@ -8,5 +8,5 @@ public interface ITransactionManager
     List<Transaction> GetTransactionsByWeek(int weekNumber, bool isCredit);
     List<Transaction> GetTransactionsByMonth(int monthNumber, bool isCredit);
     List<Transaction> GetTransactionsByYear(int yearNumber, bool isCredit);
-    void SendTransactionToOtherUser(Transaction transaction);
+    void TransferFunds(Transaction transaction);
 }
