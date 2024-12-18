@@ -19,7 +19,7 @@ public class TransactionMenuAdmin : Menu
     {
         Console.Clear();
 
-        Console.WriteLine("Transasction Menu:\n");
+        Console.WriteLine("Admin Transasction Menu:\n");
 
         ChangeColor.TextColorGreen("[A]");
         Console.WriteLine("dd Transaction");

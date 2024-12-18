@@ -9,6 +9,7 @@ public class LoginMenu : Menu
         AddCommand(new LoginCommand(getManagers));
         // AddCommand(new GuestCommand(getManagers));
         AddCommand(new ExitCommand(getManagers));
+        AddCommand(new LoginAdminCommand(getManagers));
     }
 
     public override void Display()
