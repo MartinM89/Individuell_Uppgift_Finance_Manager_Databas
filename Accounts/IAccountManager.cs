@@ -6,4 +6,5 @@ public interface IAccountManager
     void SetLoggedInUserId(string username);
     bool CheckIfUsernameRegistered(string username);
     Guid GetUserGuid(string username);
+    bool GetLoggedInUsername(string username);
 }

@@ -128,7 +128,7 @@ public class PostgresAccountManager : IAccountManager
 
         try
         {
-            NpgsqlCommand checkUsernameCmd = new(checkUsernameSql, connection);
+            using NpgsqlCommand checkUsernameCmd = new(checkUsernameSql, connection);
             checkUsernameCmd.Parameters.AddWithValue("@username", username);
 
             object? result = checkUsernameCmd.ExecuteScalar();
@@ -146,7 +146,7 @@ public class PostgresAccountManager : IAccountManager
         }
     }
 
-    public Guid GetUserGuid(string username)
+    public Guid GetUserGuid(string username) // Change * to Id?
     {
         string getUserGuidSql = """
             SELECT * FROM users
@@ -155,7 +155,7 @@ public class PostgresAccountManager : IAccountManager
 
         try
         {
-            NpgsqlCommand getUserGuidCmd = new(getUserGuidSql, connection);
+            using NpgsqlCommand getUserGuidCmd = new(getUserGuidSql, connection);
             getUserGuidCmd.Parameters.AddWithValue("@username", username);
 
             object? result = getUserGuidCmd.ExecuteScalar();
@@ -167,9 +167,39 @@ public class PostgresAccountManager : IAccountManager
 
             return Guid.Empty;
         }
-        catch (NpgsqlException)
+        catch (NpgsqlException ex)
         {
-            throw;
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get guid of logged in user from database.", ex);
+        }
+    }
+
+    public bool GetLoggedInUsername(string username)
+    {
+        string getUsernameSql = """
+            SELECT username FROM users
+            WHERE id = @id
+            """;
+
+        try
+        {
+            using NpgsqlCommand getUsernameCmd = new(getUsernameSql, connection);
+            getUsernameCmd.Parameters.AddWithValue("@id", loggedInUserId);
+
+            object? result = getUsernameCmd.ExecuteScalar();
+
+            if (result != null)
+            {
+                Console.WriteLine($"Username of logged in user: {(string)result}");
+                PressKeyToContinue.Execute();
+                string returnedUsername = (string)result;
+                return username.Equals(returnedUsername);
+            }
+
+            return false;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get username of logged in user from database.", ex);
         }
     }
 }

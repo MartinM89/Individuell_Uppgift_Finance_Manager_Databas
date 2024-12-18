@@ -28,7 +28,39 @@ public class AddTransactionCommand : Command
             return;
         }
 
-        Transaction transaction = new(1, name, amount, DateTime.Now, PostgresAccountManager.GetLoggedInUserId());
+        Guid userId = Guid.Empty;
+        if (GetManagers.AccountManager.GetLoggedInUsername("Admin"))
+        {
+            Console.Write("Username: ");
+            string? targetUser = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(targetUser))
+            {
+                Console.WriteLine("Invalid username."); // Fix
+                PressKeyToContinue.Execute();
+                GetManagers.UserMenuManager.ReturnToSameMenu();
+                return;
+            }
+
+            userId = GetManagers.AccountManager.GetUserGuid(targetUser);
+            if (userId == Guid.Empty)
+            {
+                Console.WriteLine("User not found."); // Fix
+                GetManagers.UserMenuManager.ReturnToSameMenu();
+                PressKeyToContinue.Execute();
+                return;
+            }
+        }
+
+        Transaction transaction;
+        if (userId != Guid.Empty)
+        {
+            transaction = new(1, name, amount, DateTime.Now, userId);
+        }
+        else
+        {
+            transaction = new(1, name, amount, DateTime.Now, PostgresAccountManager.GetLoggedInUserId());
+        }
 
         GetManagers.TransactionManager.AddTransaction(transaction);
 
