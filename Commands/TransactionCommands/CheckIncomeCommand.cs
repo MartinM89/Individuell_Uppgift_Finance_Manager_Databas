@@ -58,12 +58,10 @@ public class CheckIncomeCommand : Command
 
         var (transactionCategory, fetchTransactions) = values;
 
-        Console.CursorVisible = true;
-
         Console.Clear();
+        Console.CursorVisible = true;
         Console.Write($"What {transactionCategory} do you wish to check? ");
         _ = int.TryParse(Console.ReadLine(), out int transactionDate);
-
         Console.CursorVisible = false;
 
         bool incomeTransaction = true;

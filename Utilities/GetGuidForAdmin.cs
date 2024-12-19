@@ -12,10 +12,8 @@ public class GetGuidForAdmin
         if (adminLoggedIn)
         {
             Console.CursorVisible = true;
-
             Console.Write("Username: ");
             targetUser = Console.ReadLine();
-
             Console.CursorVisible = false;
 
             if (string.IsNullOrEmpty(targetUser))

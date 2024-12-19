@@ -4,7 +4,6 @@ public class HidePassword
 {
     public static string Execute()
     {
-        // Console.CursorVisible = false;
         ConsoleKey key;
         string password = "";
 
@@ -25,7 +24,6 @@ public class HidePassword
             }
         } while (key != ConsoleKey.Enter);
 
-        // Console.CursorVisible = true;
         // Console.WriteLine();
         return password;
     }

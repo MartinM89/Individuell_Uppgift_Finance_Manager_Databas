@@ -8,7 +8,7 @@ public class CheckAllTransactionsCommand : Command
         return "Print a list of all transactions";
     }
 
-    public override void Execute()
+    public override void Execute() // Only for debuggin
     {
         Console.WriteLine("List of all transactions:");
 
