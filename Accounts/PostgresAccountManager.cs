@@ -189,8 +189,6 @@ public class PostgresAccountManager : IAccountManager
 
             if (result != null)
             {
-                Console.WriteLine($"Username of logged in user: {(string)result}");
-                PressKeyToContinue.Execute();
                 string returnedUsername = (string)result;
                 return username.Equals(returnedUsername);
             }

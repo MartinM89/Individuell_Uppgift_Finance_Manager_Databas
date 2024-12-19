@@ -1,3 +1,5 @@
+using Individuell_Uppgift.Utilities;
+
 public class AddTransactionCommand : Command
 {
     public AddTransactionCommand(GetManagers getManagers)
@@ -28,50 +30,41 @@ public class AddTransactionCommand : Command
             return;
         }
 
-        Guid userId = Guid.Empty;
-        if (GetManagers.AccountManager.GetLoggedInUsername("Admin"))
+        var (userGuid, targetUser, adminLoggedIn) = GetGuidForAdmin.Execute(GetManagers);
+
+        if (targetUser.Equals(string.Empty))
         {
-            Console.Write("Username: ");
-            string? targetUser = Console.ReadLine();
-
-            if (string.IsNullOrEmpty(targetUser))
-            {
-                Console.WriteLine("Invalid username."); // Fix
-                PressKeyToContinue.Execute();
-                GetManagers.UserMenuManager.ReturnToSameMenu();
-                return;
-            }
-
-            userId = GetManagers.AccountManager.GetUserGuid(targetUser);
-            if (userId == Guid.Empty)
-            {
-                Console.WriteLine("User not found."); // Fix
-                GetManagers.UserMenuManager.ReturnToSameMenu();
-                PressKeyToContinue.Execute();
-                return;
-            }
+            targetUser = "your account";
         }
 
         Transaction transaction;
-        if (userId != Guid.Empty)
+        if (userGuid.Equals(Guid.Empty))
         {
-            transaction = new(1, name, amount, DateTime.Now, userId);
+            transaction = new(1, name, amount, DateTime.Now, PostgresAccountManager.GetLoggedInUserId());
         }
         else
         {
-            transaction = new(1, name, amount, DateTime.Now, PostgresAccountManager.GetLoggedInUserId());
+            transaction = new(1, name, amount, DateTime.Now, userGuid);
+        }
+
+        if (adminLoggedIn && userGuid.Equals(Guid.Empty))
+        {
+            Console.Clear();
+            ChangeColor.TextColorRed("Could not find account.");
+            PressKeyToContinue.Execute();
+            GetManagers.UserMenuManager.ReturnToSameMenu();
+            return;
         }
 
         GetManagers.TransactionManager.AddTransaction(transaction);
 
         Console.Clear();
-        Console.WriteLine("The following transaction has been added:");
+        Console.WriteLine($"The following transaction has been added to {targetUser}.");
         TransactionTable.GetTransactionTableTop();
         TransactionTable.GetSingleRowTransactionTableCenter(transaction);
         TransactionTable.GetTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
-
         GetManagers.UserMenuManager.ReturnToSameMenu();
     }
 }
