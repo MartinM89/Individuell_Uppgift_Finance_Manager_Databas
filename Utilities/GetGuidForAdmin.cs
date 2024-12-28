@@ -1,5 +1,3 @@
-using Individuell_Uppgift.Utilities;
-
 public class GetGuidForAdmin
 {
     public static (Guid, string, bool) Execute(GetManagers managers)
@@ -11,6 +9,8 @@ public class GetGuidForAdmin
 
         if (adminLoggedIn)
         {
+            Console.Clear();
+
             Console.CursorVisible = true;
             Console.Write("Username: ");
             targetUser = Console.ReadLine();

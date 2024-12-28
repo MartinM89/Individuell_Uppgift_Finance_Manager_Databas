@@ -12,13 +12,17 @@ public class CheckBalanceCommand : Command
 
     public override void Execute()
     {
-        decimal totalAmount = GetManagers.TransactionManager.GetBalance();
+        var (userGuid, targetUser, adminLoggedIn) = GetGuidForAdmin.Execute(GetManagers);
 
         while (true)
         {
             Console.Clear();
 
-            Console.Write("Your total balance is ");
+            decimal totalAmount = GetManagers.TransactionManager.GetBalance(userGuid);
+
+            string balanceMessage = targetUser.Equals(string.Empty) ? "Your total balance is " : $"{targetUser}'s balance is ";
+
+            Console.Write(balanceMessage);
             ChangeColor.TextColorGreen($"{totalAmount:N2}");
             Console.WriteLine(".");
 
@@ -45,7 +49,7 @@ public class CheckBalanceCommand : Command
 
             Console.Clear();
 
-            List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
+            List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(userGuid);
 
             TransactionTable.GetTransactionTableTop();
             TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);

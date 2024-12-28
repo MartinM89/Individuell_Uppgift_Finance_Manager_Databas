@@ -39,7 +39,7 @@ public class TransferMoneyToOtherUserCommand : Command
             return;
         }
 
-        decimal balance = GetManagers.TransactionManager.GetBalance();
+        decimal balance = GetManagers.TransactionManager.GetBalance(PostgresAccountManager.GetLoggedInUserId());
 
         if (balance < amount)
         {

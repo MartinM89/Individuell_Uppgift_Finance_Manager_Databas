@@ -14,7 +14,7 @@ public class DeleteTransactionCommand : Command
     {
         Console.Clear();
 
-        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
+        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(PostgresAccountManager.GetLoggedInUserId());
 
         TransactionTable.GetTransactionTableTop();
         TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);

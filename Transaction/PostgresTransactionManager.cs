@@ -53,14 +53,16 @@ public class PostgresTransactionManager : ITransactionManager
         }
     }
 
-    public decimal GetBalance()
+    public decimal GetBalance(Guid userGuid)
     {
+        userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
+
         string getBalanceSql = "SELECT amount FROM transactions WHERE user_id = @user_id";
 
         try
         {
             using NpgsqlCommand getBalanceCmd = new(getBalanceSql, connection);
-            getBalanceCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
+            getBalanceCmd.Parameters.AddWithValue("@user_id", userGuid);
 
             using NpgsqlDataReader reader = getBalanceCmd.ExecuteReader();
 
@@ -83,14 +85,16 @@ public class PostgresTransactionManager : ITransactionManager
         }
     }
 
-    public List<Transaction> GetAllTransactions()
+    public List<Transaction> GetAllTransactions(Guid userGuid)
     {
+        userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
+
         string getAllTransactionsSql = "SELECT * FROM transactions WHERE user_id = @user_id";
 
         try
         {
             using NpgsqlCommand getAllTransactionsCmd = new(getAllTransactionsSql, connection);
-            getAllTransactionsCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
+            getAllTransactionsCmd.Parameters.AddWithValue("@user_id", userGuid);
 
             List<Transaction> transactions = [];
 

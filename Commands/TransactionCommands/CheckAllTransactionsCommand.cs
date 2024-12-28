@@ -12,7 +12,7 @@ public class CheckAllTransactionsCommand : Command
     {
         Console.WriteLine("List of all transactions:");
 
-        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
+        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(PostgresAccountManager.GetLoggedInUserId());
 
         if (transactions.Count.Equals(0))
         {

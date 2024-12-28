@@ -17,7 +17,7 @@ public class CheckIncomeCommand : Command
     {
         Console.Clear();
 
-        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions();
+        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(PostgresAccountManager.GetLoggedInUserId());
 
         if (transactions.Count.Equals(0))
         {
