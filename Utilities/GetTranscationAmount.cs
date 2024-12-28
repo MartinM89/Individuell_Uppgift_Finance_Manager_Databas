@@ -5,8 +5,10 @@ public class GetTransactionAmount
         while (true)
         {
             Console.Clear();
+            Console.CursorVisible = true;
             Console.Write("Enter amount: ");
             string? transactionValueString = Console.ReadLine();
+            Console.CursorVisible = false;
 
             if (string.IsNullOrEmpty(transactionValueString))
             {

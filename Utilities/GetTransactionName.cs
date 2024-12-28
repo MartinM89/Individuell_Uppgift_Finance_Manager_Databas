@@ -5,8 +5,10 @@ public class GetTransactionName
         while (true)
         {
             Console.Clear();
+            Console.CursorVisible = true;
             Console.Write("Enter name: ");
             string? transactionName = Console.ReadLine();
+            Console.CursorVisible = false;
 
             if (string.IsNullOrEmpty(transactionName))
             {
