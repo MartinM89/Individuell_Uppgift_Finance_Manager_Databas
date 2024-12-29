@@ -12,9 +12,13 @@ public class DeleteTransactionCommand : Command
 
     public override void Execute()
     {
+        var (userGuid, targetUser, adminLoggedIn) = GetGuidForAdmin.Execute(GetManagers);
+
+        userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
+
         Console.Clear();
 
-        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(PostgresAccountManager.GetLoggedInUserId());
+        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(userGuid);
 
         TransactionTable.GetTransactionTableTop();
         TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
@@ -33,7 +37,7 @@ public class DeleteTransactionCommand : Command
 
         _ = int.TryParse(transactionToDeleteString, out int transactionToDelete);
 
-        int rowsAffected = GetManagers.TransactionManager.DeleteTransaction(transactionToDelete);
+        int rowsAffected = GetManagers.TransactionManager.DeleteTransaction(userGuid, transactionToDelete);
 
         if (rowsAffected <= 0)
         {

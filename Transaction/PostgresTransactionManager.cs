@@ -32,14 +32,14 @@ public class PostgresTransactionManager : ITransactionManager
         }
     }
 
-    public int DeleteTransaction(int transactionToDelete)
+    public int DeleteTransaction(Guid userGuid, int transactionToDelete)
     {
         string deleteTransactionSql = "DELETE FROM transactions WHERE user_id = @user_id AND id = @id";
 
         try
         {
             using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, connection);
-            deleteTransactionCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
+            deleteTransactionCmd.Parameters.AddWithValue("@user_id", userGuid);
             deleteTransactionCmd.Parameters.AddWithValue("@id", transactionToDelete);
             return deleteTransactionCmd.ExecuteNonQuery();
         }

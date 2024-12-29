@@ -1,7 +1,7 @@
 public interface ITransactionManager
 {
     void AddTransaction(Transaction transaction);
-    int DeleteTransaction(int transactionToDelete);
+    int DeleteTransaction(Guid userGuid, int transactionToDelete);
     decimal GetBalance(Guid userGuid);
     List<Transaction> GetAllTransactions(Guid userGuid);
     List<Transaction> GetTransactionsByDay(Guid userGuid, int dayOfMonth, bool isIncome);
