@@ -14,7 +14,7 @@ public class TransferMoneyToOtherUserCommand : Command
     {
         Console.Clear();
 
-        string? name = GetTransactionName.Execute();
+        string? name = GetTransactionInfo.UserName();
 
         if (string.IsNullOrEmpty(name))
         {
@@ -22,7 +22,7 @@ public class TransferMoneyToOtherUserCommand : Command
             return;
         }
 
-        decimal amount = GetTransactionAmount.Execute();
+        decimal amount = GetTransactionInfo.Amount();
 
         if (amount.Equals(0))
         {
@@ -50,7 +50,7 @@ public class TransferMoneyToOtherUserCommand : Command
             return;
         }
 
-        Guid sendToGuid = GetTransactionName.GetUserGuid(GetManagers);
+        Guid sendToGuid = GetTransactionInfo.UserGuid(GetManagers);
 
         Transaction transaction = new(1, name, amount, DateTime.Now, sendToGuid);
 

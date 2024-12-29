@@ -14,7 +14,7 @@ public class AddTransactionCommand : Command
     {
         Console.Clear();
 
-        string? name = GetTransactionName.Execute();
+        string? name = GetTransactionInfo.UserName();
 
         if (string.IsNullOrEmpty(name))
         {
@@ -22,7 +22,7 @@ public class AddTransactionCommand : Command
             return;
         }
 
-        decimal amount = GetTransactionAmount.Execute();
+        decimal amount = GetTransactionInfo.Amount();
 
         if (amount.Equals(0))
         {
