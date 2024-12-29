@@ -1,3 +1,5 @@
+using Individuell_Uppgift.Utilities;
+
 public class GetTransactionName
 {
     public static string? Execute()
@@ -35,5 +37,26 @@ public class GetTransactionName
 
             return char.ToUpper(transactionName[0]) + transactionName[1..];
         }
+    }
+
+    public static Guid GetUserGuid(GetManagers getManagers)
+    {
+        Console.Write("Who do you wish to send money to? ");
+        string username = Console.ReadLine()!;
+
+        username = username[..1].ToUpper() + username[1..];
+
+        bool usernameExists = getManagers.AccountManager.CheckIfUsernameRegistered(username);
+
+        if (!usernameExists)
+        {
+            Console.Clear();
+            ChangeColor.TextColorRed("Could not find account.\n");
+            PressKeyToContinue.Execute();
+            getManagers.UserMenuManager.SetMenu(new TransactionMenu(getManagers));
+            return Guid.Empty;
+        }
+
+        return getManagers.AccountManager.GetUserGuid(username);
     }
 }

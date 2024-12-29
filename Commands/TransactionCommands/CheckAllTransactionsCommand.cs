@@ -10,6 +10,8 @@ public class CheckAllTransactionsCommand : Command
 
     public override void Execute() // Only for debuggin
     {
+        Console.Clear();
+
         Console.WriteLine("List of all transactions:");
 
         List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(PostgresAccountManager.GetLoggedInUserId());

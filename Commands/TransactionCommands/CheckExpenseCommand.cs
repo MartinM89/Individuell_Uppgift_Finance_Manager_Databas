@@ -15,9 +15,13 @@ public class CheckExpenseCommand : Command
 
     public override void Execute()
     {
+        var (userGuid, targetUser, adminLoggedIn) = GetGuidForAdmin.Execute(GetManagers);
+
+        userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
+
         Console.Clear();
 
-        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(PostgresAccountManager.GetLoggedInUserId());
+        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(userGuid);
 
         if (transactions.Count.Equals(0))
         {
@@ -47,7 +51,7 @@ public class CheckExpenseCommand : Command
             return;
         }
 
-        (TransactionCategory, Func<int, bool, List<Transaction>>) values = userChoice switch
+        (TransactionCategory, Func<Guid, int, bool, List<Transaction>>) transactionValues = userChoice switch
         {
             "D" => (TransactionCategory.Day, GetManagers.TransactionManager.GetTransactionsByDay),
             "W" => (TransactionCategory.Week, GetManagers.TransactionManager.GetTransactionsByWeek),
@@ -56,7 +60,7 @@ public class CheckExpenseCommand : Command
             _ => (TransactionCategory.Null, null!),
         };
 
-        var (transactionCategory, fetchTransactions) = values;
+        var (transactionCategory, fetchTransactions) = transactionValues;
 
         Console.Clear();
         Console.CursorVisible = true;
@@ -64,8 +68,8 @@ public class CheckExpenseCommand : Command
         _ = int.TryParse(Console.ReadLine(), out int transactionDate);
         Console.CursorVisible = false;
 
-        bool incomeTransaction = false;
-        transactions = fetchTransactions(transactionDate, incomeTransaction);
+        bool isIncome = false;
+        transactions = fetchTransactions(userGuid, transactionDate, isIncome);
 
         Console.Clear();
 

@@ -50,23 +50,7 @@ public class TransferMoneyToOtherUserCommand : Command
             return;
         }
 
-        Console.Write("Who do you wish to send money to? "); // Method out of this
-        string username = Console.ReadLine()!;
-
-        username = username[..1].ToUpper() + username[1..];
-
-        bool usernameExists = GetManagers.AccountManager.CheckIfUsernameRegistered(username);
-
-        if (!usernameExists)
-        {
-            Console.Clear();
-            ChangeColor.TextColorRed("Could not find account.\n");
-            PressKeyToContinue.Execute();
-            GetManagers.UserMenuManager.SetMenu(new TransactionMenu(GetManagers));
-            return;
-        }
-
-        Guid sendToGuid = GetManagers.AccountManager.GetUserGuid(username);
+        Guid sendToGuid = GetTransactionName.GetUserGuid(GetManagers);
 
         Transaction transaction = new(1, name, amount, DateTime.Now, sendToGuid);
 

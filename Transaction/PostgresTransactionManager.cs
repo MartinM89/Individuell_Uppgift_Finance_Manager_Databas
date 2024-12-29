@@ -120,9 +120,11 @@ public class PostgresTransactionManager : ITransactionManager
         }
     }
 
-    public List<Transaction> GetTransactionsByDay(int dayOfMonth, bool isCredit)
+    public List<Transaction> GetTransactionsByDay(Guid userGuid, int dayOfMonth, bool isIncome)
     {
-        string getTransactionsByDaySql = isCredit
+        userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
+
+        string getTransactionsByDaySql = isIncome
             ? """
                 SELECT * FROM transactions
                 WHERE user_id = @user_id
@@ -139,7 +141,7 @@ public class PostgresTransactionManager : ITransactionManager
         try
         {
             using NpgsqlCommand getTransactionsByDayCmd = new(getTransactionsByDaySql, connection);
-            getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", PostgresAccountManager.GetLoggedInUserId());
+            getTransactionsByDayCmd.Parameters.AddWithValue("@user_id", userGuid);
             getTransactionsByDayCmd.Parameters.AddWithValue("@dayOfMonth", dayOfMonth);
 
             List<Transaction> transactions = [];
@@ -166,9 +168,11 @@ public class PostgresTransactionManager : ITransactionManager
         }
     }
 
-    public List<Transaction> GetTransactionsByWeek(int weekNumber, bool isCredit)
+    public List<Transaction> GetTransactionsByWeek(Guid userGuid, int weekNumber, bool isIncome)
     {
-        string getTransactionsByWeekSql = isCredit
+        userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
+
+        string getTransactionsByWeekSql = isIncome
             ? """
                 SELECT * FROM transactions
                 WHERE user_id = @user_id
@@ -212,9 +216,11 @@ public class PostgresTransactionManager : ITransactionManager
         }
     }
 
-    public List<Transaction> GetTransactionsByMonth(int month, bool isCredit)
+    public List<Transaction> GetTransactionsByMonth(Guid userGuid, int month, bool isIncome)
     {
-        string getTransactionsByMonthSql = isCredit
+        userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
+
+        string getTransactionsByMonthSql = isIncome
             ? """
                 SELECT * FROM transactions
                 WHERE user_id = @user_id
@@ -258,9 +264,11 @@ public class PostgresTransactionManager : ITransactionManager
         }
     }
 
-    public List<Transaction> GetTransactionsByYear(int year, bool isCredit)
+    public List<Transaction> GetTransactionsByYear(Guid userGuid, int year, bool isIncome)
     {
-        string getTransactionsByYearSql = isCredit
+        userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
+
+        string getTransactionsByYearSql = isIncome
             ? """
                 SELECT * FROM transactions
                 WHERE user_id = @user_id
