@@ -30,7 +30,7 @@ public class CheckExpenseCommand : Command
         CheckIncomeAndExpenseMenu checkIncomeMenu = new();
         checkIncomeMenu.Display();
 
-        string userChoice = HideCursor.Execute().ToUpper();
+        string userChoice = HideCursor.Input().ToUpper();
 
         if (string.IsNullOrEmpty(userChoice))
         {

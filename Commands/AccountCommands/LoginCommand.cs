@@ -49,7 +49,7 @@ public class LoginCommand : Command
         }
 
         Console.Write("Enter password: ");
-        enteredPassword = HidePassword.Execute();
+        enteredPassword = HideCursor.Password();
 
         if (string.IsNullOrEmpty(enteredPassword))
         {

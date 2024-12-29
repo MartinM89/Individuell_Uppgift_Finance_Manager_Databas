@@ -33,7 +33,7 @@ class Program
 
         while (run)
         {
-            string? userChoice = HideCursor.Execute().ToUpper();
+            string? userChoice = HideCursor.Input().ToUpper();
 
             if (userChoice != null)
             {

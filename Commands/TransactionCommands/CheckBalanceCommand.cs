@@ -27,7 +27,7 @@ public class CheckBalanceCommand : Command
             Console.WriteLine(".");
 
             Console.WriteLine("\nSee list of all transactions? [Y/N]");
-            string? seeFullListAnswer = HideCursor.Execute().ToUpper();
+            string? seeFullListAnswer = HideCursor.Input().ToUpper();
 
             if (seeFullListAnswer == null)
             {

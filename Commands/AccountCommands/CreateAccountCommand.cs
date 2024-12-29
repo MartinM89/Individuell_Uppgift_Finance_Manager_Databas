@@ -44,7 +44,7 @@ public class CreateAccountCommand : Command
         }
 
         Console.Write("Enter password: ");
-        password = HidePassword.Execute();
+        password = HideCursor.Password();
 
         if (string.IsNullOrEmpty(password))
         {
@@ -53,7 +53,7 @@ public class CreateAccountCommand : Command
         }
 
         Console.Write("\nRetype password: ");
-        confirmPassword = HidePassword.Execute();
+        confirmPassword = HideCursor.Password();
 
         if (string.IsNullOrEmpty(confirmPassword))
         {

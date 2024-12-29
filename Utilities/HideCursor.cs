@@ -2,49 +2,33 @@ namespace Individuell_Uppgift.Utilities;
 
 public class HideCursor
 {
-    public static string Execute()
+    public static string Input()
     {
-        string input = "";
+        return Console.ReadKey(intercept: true).KeyChar.ToString();
+    }
+
+    public static string Password()
+    {
+        ConsoleKey key;
+        string password = "";
 
         do
         {
             ConsoleKeyInfo keyInfo = Console.ReadKey(intercept: true);
+            key = keyInfo.Key;
 
-            input += keyInfo.KeyChar;
-            Console.Write(" ");
-        } while (input.Length.Equals(0));
+            if (key == ConsoleKey.Backspace && password.Length > 0)
+            {
+                password = password[0..^1];
+                Console.Write("\b \b");
+            }
+            else if (!char.IsControl(keyInfo.KeyChar))
+            {
+                password += keyInfo.KeyChar;
+                Console.Write("●");
+            }
+        } while (key != ConsoleKey.Enter);
 
-        return input;
+        return password;
     }
 }
-
-
-// namespace Individuell_Uppgift.Utilities;
-
-// public class HideCursor
-// {
-//     public static string Execute()
-//     {
-//         string input = "";
-//         ConsoleKey key;
-
-//         do
-//         {
-//             ConsoleKeyInfo keyInfo = Console.ReadKey(intercept: true);
-//             key = keyInfo.Key;
-
-//             if (key == ConsoleKey.Backspace && input.Length > 0)
-//             {
-//                 input = input[0..^1];
-//                 Console.Write("\b \b");
-//             }
-//             else if (!char.IsControl(keyInfo.KeyChar))
-//             {
-//                 input += keyInfo.KeyChar;
-//                 Console.Write(" ");
-//             }
-//         } while (input.Length.Equals(0));
-
-//         return input;
-//     }
-// }

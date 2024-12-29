@@ -25,7 +25,7 @@ public class LoginAdminCommand : Command
         string username = "Admin";
 
         Console.Write("Enter password: "); // Password is '12345' in database
-        enteredPassword = HidePassword.Execute();
+        enteredPassword = HideCursor.Password();
 
         if (string.IsNullOrEmpty(enteredPassword))
         {
