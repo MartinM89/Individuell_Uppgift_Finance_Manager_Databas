@@ -24,12 +24,19 @@ public class PostgresAccountManager : IAccountManager
             VALUES (@username, @password_hash, @password_salt)
             """;
 
-        NpgsqlCommand command = new(createAccountSql, connection);
-        command.Parameters.AddWithValue("@username", user.Username);
-        command.Parameters.AddWithValue("@password_hash", Convert.ToBase64String(user.PasswordHash));
-        command.Parameters.AddWithValue("@password_salt", Convert.ToBase64String(user.PasswordSalt));
+        try
+        {
+            NpgsqlCommand command = new(createAccountSql, connection);
+            command.Parameters.AddWithValue("@username", user.Username);
+            command.Parameters.AddWithValue("@password_hash", Convert.ToBase64String(user.PasswordHash));
+            command.Parameters.AddWithValue("@password_salt", Convert.ToBase64String(user.PasswordSalt));
 
-        command.ExecuteNonQuery();
+            command.ExecuteNonQuery();
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new NpgsqlException($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to create an new account to database.", ex);
+        }
     }
 
     public void SetLoggedInUserId(string username)
@@ -59,10 +66,6 @@ public class PostgresAccountManager : IAccountManager
         catch (NpgsqlException ex)
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to set guid from database.", ex);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to set guid.", ex);
         }
     }
 
@@ -110,10 +113,6 @@ public class PostgresAccountManager : IAccountManager
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to verify log in details from database.", ex);
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to verify log in details.", ex);
-        }
     }
 
     public bool CheckIfUsernameRegistered(string username)
@@ -139,10 +138,6 @@ public class PostgresAccountManager : IAccountManager
         catch (NpgsqlException ex)
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to verify if username already exists in database.", ex);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to verify if username already exists.", ex);
         }
     }
 
@@ -198,6 +193,51 @@ public class PostgresAccountManager : IAccountManager
         catch (NpgsqlException ex)
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get username of logged in user from database.", ex);
+        }
+    }
+
+    public void CreateUserBonusReward(User user)
+    {
+        if (user.PasswordHash == null || user.PasswordSalt == null) // Correct?
+        {
+            throw new Exception("Password could not be sent to database.");
+        }
+
+        using NpgsqlTransaction transaction = connection.BeginTransaction();
+
+        string createAccountSql = """
+            INSERT INTO users (username, password_hash, password_salt)
+            VALUES (@username, @password_hash, @password_salt)
+            """;
+
+        string gainBonusSql = """
+            INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)
+            """;
+
+        try
+        {
+            NpgsqlCommand accountCommand = new(createAccountSql, connection, transaction);
+            accountCommand.Parameters.AddWithValue("@username", user.Username);
+            accountCommand.Parameters.AddWithValue("@password_hash", Convert.ToBase64String(user.PasswordHash));
+            accountCommand.Parameters.AddWithValue("@password_salt", Convert.ToBase64String(user.PasswordSalt));
+
+            accountCommand.ExecuteNonQuery();
+
+            Guid userGuid = GetUserGuid(user.Username);
+
+            NpgsqlCommand transactionCommand = new(gainBonusSql, connection, transaction);
+            transactionCommand.Parameters.AddWithValue("@name", "Bonus reward");
+            transactionCommand.Parameters.AddWithValue("@amount", 10000);
+            transactionCommand.Parameters.AddWithValue("@user_id", userGuid);
+
+            transactionCommand.ExecuteNonQuery();
+
+            transaction.Commit();
+        }
+        catch (NpgsqlException ex)
+        {
+            transaction.Rollback();
+            throw new NpgsqlException($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to create an new account to database with bonus.", ex);
         }
     }
 }

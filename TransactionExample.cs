@@ -1,5 +1,4 @@
 using Npgsql;
-using Npgsql.Replication.PgOutput.Messages;
 
 public class TransactionExample
 {

@@ -74,7 +74,18 @@ public class CreateAccountCommand : Command
 
         User user = new(username, passwordHash, passwordSalt);
 
-        GetManagers.AccountManager.CreateUser(user);
+        // Action action = DateTime.Now.Day % 2 == 0 ? () => GetManagers.AccountManager.CreateUserBonusReward(user) : () => GetManagers.AccountManager.CreateUser(user);
+
+        // action();
+
+        if (DateTime.Now.Day % 2 == 0)
+        {
+            GetManagers.AccountManager.CreateUserBonusReward(user);
+        }
+        else
+        {
+            GetManagers.AccountManager.CreateUser(user);
+        }
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Account {username} registered successfully.\n");

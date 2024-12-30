@@ -13,21 +13,21 @@ public abstract class Menu
     {
         _ = char.TryParse(userChoice, out char userChoiceChar);
 
-        try
+        // try
+        // {
+        foreach (Command command in commands)
         {
-            foreach (Command command in commands)
+            if (command.Shortcut.Equals(userChoiceChar))
             {
-                if (command.Shortcut.Equals(userChoiceChar))
-                {
-                    command.Execute();
-                    return;
-                }
+                command.Execute();
+                return;
             }
         }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Command not found. | {ex.Message}");
-        }
+        // }
+        // catch (Exception ex)
+        // {
+        //     throw new InvalidOperationException($"Command not found. | {ex.Message}");
+        // }
     }
 
     public abstract void Display();
