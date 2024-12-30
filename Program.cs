@@ -20,7 +20,7 @@ class Program
         }
         catch (NpgsqlException ex)
         {
-            throw new NpgsqlException($"Can't access database {ex.Message}");
+            throw new NpgsqlException($"PostgreSQL Error: {ex.Message}\nCouldn't access database.", ex);
         }
 
         try
@@ -35,11 +35,13 @@ class Program
 
             while (run)
             {
+                // string? userChoice = HideCursor.Input().ToUpper();
                 string? userChoice = HideCursor.Input().ToUpper();
+                _ = char.TryParse(userChoice, out char userChoiceChar);
 
                 if (userChoice != null)
                 {
-                    await userMenuManager.GetMenu().ExecuteCommand(userChoice.ToUpper());
+                    await userMenuManager.GetMenu().ExecuteCommand(userChoiceChar);
                 }
                 else
                 {
@@ -49,7 +51,7 @@ class Program
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"An error occurred: {ex.Message}");
+            Console.WriteLine($"Error: {ex.Message}\nAn error occured.", ex);
         }
         finally
         {
