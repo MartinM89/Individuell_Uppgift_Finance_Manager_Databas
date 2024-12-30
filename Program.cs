@@ -35,13 +35,13 @@ class Program
 
             while (run)
             {
-                // string? userChoice = HideCursor.Input().ToUpper();
                 string? userChoice = HideCursor.Input().ToUpper();
-                _ = char.TryParse(userChoice, out char userChoiceChar);
+                // string? userChoice = HideCursor.Input().ToUpper();
+                // _ = char.TryParse(userChoice, out char userChoiceChar);
 
                 if (userChoice != null)
                 {
-                    await userMenuManager.GetMenu().ExecuteCommand(userChoiceChar);
+                    await userMenuManager.GetMenu().ExecuteCommand(userChoice);
                 }
                 else
                 {

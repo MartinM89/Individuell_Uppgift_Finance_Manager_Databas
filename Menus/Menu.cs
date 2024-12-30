@@ -9,8 +9,10 @@ public abstract class Menu
         this.commands.Add(command);
     }
 
-    public async Task ExecuteCommand(char userChoiceChar)
+    public async Task ExecuteCommand(string userChoice)
     {
+        _ = char.TryParse(userChoice, out char userChoiceChar);
+
         try
         {
             foreach (Command command in commands)

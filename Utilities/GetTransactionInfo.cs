@@ -2,7 +2,7 @@ using Individuell_Uppgift.Utilities;
 
 public class GetTransactionInfo
 {
-    public static string? UserName()
+    public static string? TransactionName()
     {
         while (true)
         {
@@ -39,7 +39,7 @@ public class GetTransactionInfo
         }
     }
 
-    public static decimal Amount()
+    public static decimal TransactionAmount()
     {
         while (true)
         {
@@ -85,24 +85,32 @@ public class GetTransactionInfo
         }
     }
 
-    public static async Task<Guid> UserGuid(GetManagers getManagers)
+    public static async Task<Guid> TransferTargetUserGuid(GetManagers getManagers)
     {
-        Console.Write("Who do you wish to send money to? ");
-        string username = Console.ReadLine()!;
+        Console.Clear();
 
-        username = username[..1].ToUpper() + username[1..];
+        Console.Write("Who do you wish to transfer funds to? ");
+        string? targetUser = Console.ReadLine();
 
-        bool usernameExists = await getManagers.AccountManager.CheckIfUsernameRegistered(username);
+        if (string.IsNullOrEmpty(targetUser))
+        {
+            getManagers.UserMenuManager.SetMenu(new TransactionMenu(getManagers));
+            return Guid.Empty;
+        }
+
+        targetUser = targetUser[..1].ToUpper() + targetUser[1..];
+
+        bool usernameExists = await getManagers.AccountManager.CheckIfUsernameRegistered(targetUser);
 
         if (!usernameExists)
         {
             Console.Clear();
-            ChangeColor.TextColorRed("Could not find account.\n");
+            ChangeColor.TextColorRed("Invalid Input. Could not find account.\n");
             PressKeyToContinue.Execute();
             getManagers.UserMenuManager.SetMenu(new TransactionMenu(getManagers));
             return Guid.Empty;
         }
 
-        return await getManagers.AccountManager.GetUserGuid(username);
+        return await getManagers.AccountManager.GetUserGuid(targetUser);
     }
 }
