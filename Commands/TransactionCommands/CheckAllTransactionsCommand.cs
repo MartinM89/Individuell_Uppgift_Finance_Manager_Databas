@@ -8,13 +8,13 @@ public class CheckAllTransactionsCommand : Command
         return "Print a list of all transactions";
     }
 
-    public override void Execute() // Only for debuggin
+    public override async Task Execute() // Only for debuggin
     {
         Console.Clear();
 
         Console.WriteLine("List of all transactions:");
 
-        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(PostgresAccountManager.GetLoggedInUserId());
+        List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions(PostgresAccountManager.GetLoggedInUserId());
 
         if (transactions.Count.Equals(0))
         {

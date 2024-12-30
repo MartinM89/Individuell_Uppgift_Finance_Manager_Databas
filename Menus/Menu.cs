@@ -9,25 +9,25 @@ public abstract class Menu
         this.commands.Add(command);
     }
 
-    public void ExecuteCommand(string userChoice)
+    public async Task ExecuteCommand(string userChoice)
     {
         _ = char.TryParse(userChoice, out char userChoiceChar);
 
-        // try
-        // {
-        foreach (Command command in commands)
+        try
         {
-            if (command.Shortcut.Equals(userChoiceChar))
+            foreach (Command command in commands)
             {
-                command.Execute();
-                return;
+                if (command.Shortcut.Equals(userChoiceChar))
+                {
+                    await command.Execute();
+                    return;
+                }
             }
         }
-        // }
-        // catch (Exception ex)
-        // {
-        //     throw new InvalidOperationException($"Command not found. | {ex.Message}");
-        // }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Command not found. | {ex.Message}");
+        }
     }
 
     public abstract void Display();

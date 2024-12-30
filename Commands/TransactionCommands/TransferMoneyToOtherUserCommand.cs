@@ -10,7 +10,7 @@ public class TransferMoneyToOtherUserCommand : Command
         return "Transfer money to another user";
     }
 
-    public override void Execute()
+    public override async Task Execute()
     {
         Console.Clear();
 
@@ -39,7 +39,7 @@ public class TransferMoneyToOtherUserCommand : Command
             return;
         }
 
-        decimal balance = GetManagers.TransactionManager.GetBalance(PostgresAccountManager.GetLoggedInUserId());
+        decimal balance = await GetManagers.TransactionManager.GetBalance(PostgresAccountManager.GetLoggedInUserId());
 
         if (balance < amount)
         {
@@ -50,11 +50,11 @@ public class TransferMoneyToOtherUserCommand : Command
             return;
         }
 
-        Guid sendToGuid = GetTransactionInfo.UserGuid(GetManagers);
+        Guid sendToGuid = await GetTransactionInfo.UserGuid(GetManagers);
 
         Transaction transaction = new(1, name, amount, DateTime.Now, sendToGuid);
 
-        GetManagers.TransactionManager.TransferFunds(transaction);
+        await GetManagers.TransactionManager.TransferFunds(transaction);
 
         Console.Clear();
         Console.WriteLine($"The following transaction has been send to {name}:");

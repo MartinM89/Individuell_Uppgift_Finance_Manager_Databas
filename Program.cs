@@ -7,7 +7,7 @@ class Program
 {
     public static bool run = true;
 
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         Console.CursorVisible = false;
         string connectionString = Database.GetConnectionString();
@@ -16,33 +16,44 @@ class Program
         try
         {
             connection = new(connectionString);
-            connection.Open();
+            await connection.OpenAsync();
         }
         catch (NpgsqlException ex)
         {
             throw new NpgsqlException($"Can't access database {ex.Message}");
         }
 
-        Database.Initialize(connection);
-
-        ITransactionManager transactionManager = new PostgresTransactionManager(connection);
-        IAccountManager accountManager = new PostgresAccountManager(connection);
-        IMenuManager userMenuManager = new UserMenuManager();
-        GetManagers getManagers = new(connection, accountManager, transactionManager, userMenuManager);
-        userMenuManager.SetMenu(new LoginMenu(getManagers));
-
-        while (run)
+        try
         {
-            string? userChoice = HideCursor.Input().ToUpper();
+            await Database.Initialize(connection);
 
-            if (userChoice != null)
+            ITransactionManager transactionManager = new PostgresTransactionManager(connection);
+            IAccountManager accountManager = new PostgresAccountManager(connection);
+            IMenuManager userMenuManager = new UserMenuManager();
+            GetManagers getManagers = new(connection, accountManager, transactionManager, userMenuManager);
+            userMenuManager.SetMenu(new LoginMenu(getManagers));
+
+            while (run)
             {
-                userMenuManager.GetMenu().ExecuteCommand(userChoice.ToUpper());
+                string? userChoice = HideCursor.Input().ToUpper();
+
+                if (userChoice != null)
+                {
+                    await userMenuManager.GetMenu().ExecuteCommand(userChoice.ToUpper());
+                }
+                else
+                {
+                    break;
+                }
             }
-            else
-            {
-                break;
-            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+        finally
+        {
+            connection.Close();
         }
     }
 }

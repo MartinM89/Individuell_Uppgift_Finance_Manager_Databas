@@ -9,8 +9,13 @@ public class PostgresTransactionManager : ITransactionManager
         this.connection = connection;
     }
 
-    public void AddTransaction(Transaction transaction)
+    public async Task AddTransaction(Transaction transaction)
     {
+        if (transaction.Name == null)
+        {
+            throw new Exception("Error: Could not find transaction name while attempting to add transaction.");
+        }
+
         string insertTransactionSql = "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @amount, @user_id)";
 
         try
@@ -20,19 +25,15 @@ public class PostgresTransactionManager : ITransactionManager
             insertTransactionCmd.Parameters.AddWithValue("@amount", transaction.Amount);
             insertTransactionCmd.Parameters.AddWithValue("@user_id", transaction.UserId);
 
-            insertTransactionCmd.ExecuteNonQuery();
+            await insertTransactionCmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException ex)
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to add a transaction to database.", ex);
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to add a transaction.", ex);
-        }
     }
 
-    public int DeleteTransaction(Guid userGuid, int transactionToDelete)
+    public async Task<int> DeleteTransaction(Guid userGuid, int transactionToDelete)
     {
         string deleteTransactionSql = "DELETE FROM transactions WHERE user_id = @user_id AND id = @id";
 
@@ -41,19 +42,16 @@ public class PostgresTransactionManager : ITransactionManager
             using NpgsqlCommand deleteTransactionCmd = new(deleteTransactionSql, connection);
             deleteTransactionCmd.Parameters.AddWithValue("@user_id", userGuid);
             deleteTransactionCmd.Parameters.AddWithValue("@id", transactionToDelete);
-            return deleteTransactionCmd.ExecuteNonQuery();
+
+            return await deleteTransactionCmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException ex)
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to delete a transaction from database.", ex);
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to delete a transaction.", ex);
-        }
     }
 
-    public decimal GetBalance(Guid userGuid)
+    public async Task<decimal> GetBalance(Guid userGuid)
     {
         userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
 
@@ -64,11 +62,11 @@ public class PostgresTransactionManager : ITransactionManager
             using NpgsqlCommand getBalanceCmd = new(getBalanceSql, connection);
             getBalanceCmd.Parameters.AddWithValue("@user_id", userGuid);
 
-            using NpgsqlDataReader reader = getBalanceCmd.ExecuteReader();
+            using NpgsqlDataReader reader = await getBalanceCmd.ExecuteReaderAsync();
 
             decimal totalBalance = 0;
 
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
                 totalBalance += reader.GetDecimal(0);
             }
@@ -79,13 +77,9 @@ public class PostgresTransactionManager : ITransactionManager
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get balance from database.", ex);
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get balance.", ex);
-        }
     }
 
-    public List<Transaction> GetAllTransactions(Guid userGuid)
+    public async Task<List<Transaction>> GetAllTransactions(Guid userGuid)
     {
         userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
 
@@ -98,9 +92,9 @@ public class PostgresTransactionManager : ITransactionManager
 
             List<Transaction> transactions = [];
 
-            using (NpgsqlDataReader reader = getAllTransactionsCmd.ExecuteReader())
+            using (NpgsqlDataReader reader = await getAllTransactionsCmd.ExecuteReaderAsync())
             {
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.GetLoggedInUserId());
 
@@ -114,13 +108,9 @@ public class PostgresTransactionManager : ITransactionManager
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to list all transactions from database.", ex);
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to list all transactions.", ex);
-        }
     }
 
-    public List<Transaction> GetTransactionsByDay(Guid userGuid, int dayOfMonth, bool isIncome)
+    public async Task<List<Transaction>> GetTransactionsByDay(Guid userGuid, int dayOfMonth, bool isIncome)
     {
         userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
 
@@ -146,9 +136,9 @@ public class PostgresTransactionManager : ITransactionManager
 
             List<Transaction> transactions = [];
 
-            using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
+            using (NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync())
             {
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.GetLoggedInUserId());
 
@@ -162,13 +152,9 @@ public class PostgresTransactionManager : ITransactionManager
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (DAY) from database.", ex);
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (DAY).", ex);
-        }
     }
 
-    public List<Transaction> GetTransactionsByWeek(Guid userGuid, int weekNumber, bool isIncome)
+    public async Task<List<Transaction>> GetTransactionsByWeek(Guid userGuid, int weekNumber, bool isIncome)
     {
         userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
 
@@ -194,9 +180,9 @@ public class PostgresTransactionManager : ITransactionManager
 
             List<Transaction> transactions = [];
 
-            using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
+            using (NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync())
             {
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.GetLoggedInUserId());
 
@@ -210,13 +196,9 @@ public class PostgresTransactionManager : ITransactionManager
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (WEEK) from database.", ex);
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (WEEK).", ex);
-        }
     }
 
-    public List<Transaction> GetTransactionsByMonth(Guid userGuid, int month, bool isIncome)
+    public async Task<List<Transaction>> GetTransactionsByMonth(Guid userGuid, int month, bool isIncome)
     {
         userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
 
@@ -242,9 +224,9 @@ public class PostgresTransactionManager : ITransactionManager
 
             List<Transaction> transactions = [];
 
-            using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
+            using (NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync())
             {
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.GetLoggedInUserId());
 
@@ -258,13 +240,9 @@ public class PostgresTransactionManager : ITransactionManager
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (MONTH) from database.", ex);
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (MONTH).", ex);
-        }
     }
 
-    public List<Transaction> GetTransactionsByYear(Guid userGuid, int year, bool isIncome)
+    public async Task<List<Transaction>> GetTransactionsByYear(Guid userGuid, int year, bool isIncome)
     {
         userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
 
@@ -290,9 +268,9 @@ public class PostgresTransactionManager : ITransactionManager
 
             List<Transaction> transactions = [];
 
-            using (NpgsqlDataReader reader = getTransactionsByDayCmd.ExecuteReader())
+            using (NpgsqlDataReader reader = await getTransactionsByDayCmd.ExecuteReaderAsync())
             {
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     Transaction transaction = new(reader.GetInt32(0), reader.GetString(1), reader.GetDecimal(2), reader.GetDateTime(3), PostgresAccountManager.GetLoggedInUserId());
 
@@ -306,14 +284,15 @@ public class PostgresTransactionManager : ITransactionManager
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (YEAR) from database.", ex);
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to get transaction filtered by (YEAR).", ex);
-        }
     }
 
-    public void TransferFunds(Transaction transaction)
+    public async Task TransferFunds(Transaction transaction)
     {
+        if (transaction.Name == null)
+        {
+            throw new Exception("Error: Could not find transaction name while attempting to transfer funds.");
+        }
+
         string SendTransactionToOtherUserSql =
             "BEGIN;"
             + "INSERT INTO transactions (name, amount, user_id) VALUES (@name, @send_amount, @sender_user_id);"
@@ -329,15 +308,11 @@ public class PostgresTransactionManager : ITransactionManager
             SendTransactionToOtherUserCmd.Parameters.AddWithValue("@sender_user_id", PostgresAccountManager.GetLoggedInUserId());
             SendTransactionToOtherUserCmd.Parameters.AddWithValue("@reciever_user_id", transaction.UserId);
 
-            SendTransactionToOtherUserCmd.ExecuteNonQuery();
+            await SendTransactionToOtherUserCmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException ex)
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to send a transaction to another user to database.", ex);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to send a transaction to another user.", ex);
         }
     }
 }

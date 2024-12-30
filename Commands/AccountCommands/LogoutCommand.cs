@@ -8,7 +8,7 @@ public class LogoutCommand : Command
         return "Log out from current user";
     }
 
-    public override void Execute()
+    public override Task Execute()
     {
         Console.Clear();
         Console.WriteLine("Thank you for using your personal finance app.");
@@ -17,5 +17,7 @@ public class LogoutCommand : Command
         PostgresAccountManager.SetLoggedInUserIdToEmpty();
 
         GetManagers.UserMenuManager.SetMenu(new LoginMenu(GetManagers));
+
+        return Task.CompletedTask;
     }
 }

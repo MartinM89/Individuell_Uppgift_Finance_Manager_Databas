@@ -10,15 +10,15 @@ public class CheckBalanceCommand : Command
         return "Check your current balance";
     }
 
-    public override void Execute()
+    public override async Task Execute()
     {
-        var (userGuid, targetUser, adminLoggedIn) = GetGuidForAdmin.Execute(GetManagers);
+        var (userGuid, targetUser, adminLoggedIn) = await GetGuidForAdmin.Execute(GetManagers);
 
         while (true)
         {
             Console.Clear();
 
-            decimal totalAmount = GetManagers.TransactionManager.GetBalance(userGuid);
+            decimal totalAmount = await GetManagers.TransactionManager.GetBalance(userGuid);
 
             string balanceMessage = targetUser.Equals(string.Empty) ? "Your total balance is " : $"{targetUser}'s balance is ";
 
@@ -49,7 +49,7 @@ public class CheckBalanceCommand : Command
 
             Console.Clear();
 
-            List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(userGuid);
+            List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions(userGuid);
 
             TransactionTable.GetTransactionTableTop();
             TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);

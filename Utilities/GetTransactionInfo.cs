@@ -85,14 +85,14 @@ public class GetTransactionInfo
         }
     }
 
-    public static Guid UserGuid(GetManagers getManagers)
+    public static async Task<Guid> UserGuid(GetManagers getManagers)
     {
         Console.Write("Who do you wish to send money to? ");
         string username = Console.ReadLine()!;
 
         username = username[..1].ToUpper() + username[1..];
 
-        bool usernameExists = getManagers.AccountManager.CheckIfUsernameRegistered(username);
+        bool usernameExists = await getManagers.AccountManager.CheckIfUsernameRegistered(username);
 
         if (!usernameExists)
         {
@@ -103,6 +103,6 @@ public class GetTransactionInfo
             return Guid.Empty;
         }
 
-        return getManagers.AccountManager.GetUserGuid(username);
+        return await getManagers.AccountManager.GetUserGuid(username);
     }
 }

@@ -10,7 +10,7 @@ public class Database
         return Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING") ?? throw new Exception("Can't access connection string to connect to database");
     }
 
-    public static void Initialize(NpgsqlConnection connection)
+    public static async Task Initialize(NpgsqlConnection connection)
     {
         #region Database tables, functions and triggers query
         string createTablesSql = """
@@ -128,15 +128,11 @@ public class Database
         try
         {
             using NpgsqlCommand createTablesCmd = new(createTablesSql, connection);
-            createTablesCmd.ExecuteNonQuery();
+            await createTablesCmd.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException ex)
         {
             throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to create tables, functions and/or triggers in database.", ex);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}\nAn error occured while attempting to create tables, functions and/or triggers.", ex);
         }
     }
 }

@@ -10,7 +10,7 @@ public class CreateAccountCommand : Command
         return "Create a new account";
     }
 
-    public override void Execute()
+    public override async Task Execute()
     {
         Console.Clear();
 
@@ -32,7 +32,7 @@ public class CreateAccountCommand : Command
 
         username = username[..1].ToUpper() + username[1..].ToLower();
 
-        bool usernameExists = GetManagers.AccountManager.CheckIfUsernameRegistered(username);
+        bool usernameExists = await GetManagers.AccountManager.CheckIfUsernameRegistered(username);
 
         if (usernameExists)
         {
@@ -74,17 +74,13 @@ public class CreateAccountCommand : Command
 
         User user = new(username, passwordHash, passwordSalt);
 
-        // Action action = DateTime.Now.Day % 2 == 0 ? () => GetManagers.AccountManager.CreateUserBonusReward(user) : () => GetManagers.AccountManager.CreateUser(user);
-
-        // action();
-
         if (DateTime.Now.Day % 2 == 0)
         {
-            GetManagers.AccountManager.CreateUserBonusReward(user);
+            await GetManagers.AccountManager.CreateUserBonusReward(user);
         }
         else
         {
-            GetManagers.AccountManager.CreateUser(user);
+            await GetManagers.AccountManager.CreateUser(user);
         }
 
         Console.Clear();

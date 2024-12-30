@@ -12,7 +12,7 @@ public class PostgresAccountManager : IAccountManager
         this.connection = connection;
     }
 
-    public void CreateUser(User user)
+    public async Task CreateUser(User user)
     {
         if (user.PasswordHash == null || user.PasswordSalt == null) // Correct?
         {
@@ -31,7 +31,7 @@ public class PostgresAccountManager : IAccountManager
             command.Parameters.AddWithValue("@password_hash", Convert.ToBase64String(user.PasswordHash));
             command.Parameters.AddWithValue("@password_salt", Convert.ToBase64String(user.PasswordSalt));
 
-            command.ExecuteNonQuery();
+            await command.ExecuteNonQueryAsync();
         }
         catch (NpgsqlException ex)
         {
@@ -39,7 +39,7 @@ public class PostgresAccountManager : IAccountManager
         }
     }
 
-    public void SetLoggedInUserId(string username)
+    public async Task SetLoggedInUserId(string username)
     {
         string getIdSql = """
             SELECT id
@@ -52,7 +52,7 @@ public class PostgresAccountManager : IAccountManager
             NpgsqlCommand getIdCmd = new NpgsqlCommand(getIdSql, connection);
             getIdCmd.Parameters.AddWithValue("@username", username);
 
-            object? result = getIdCmd.ExecuteScalar();
+            object? result = await getIdCmd.ExecuteScalarAsync();
 
             if (result == null || result == DBNull.Value)
             {
@@ -79,7 +79,7 @@ public class PostgresAccountManager : IAccountManager
         loggedInUserId = Guid.Empty;
     }
 
-    public static bool CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
+    public static async Task<bool> CheckLoginDetailsIsCorrect(NpgsqlConnection connection, string username, string enteredPassword)
     {
         string loginSql = """
             SELECT password_hash, password_salt
@@ -95,8 +95,8 @@ public class PostgresAccountManager : IAccountManager
             byte[] storedPasswordHash = [];
             byte[] storedPasswordSalt = [];
 
-            using NpgsqlDataReader reader = command.ExecuteReader();
-            if (reader.Read())
+            using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
             {
                 string passwordHashString = reader.GetString(0);
                 string saltString = reader.GetString(1);
@@ -115,7 +115,7 @@ public class PostgresAccountManager : IAccountManager
         }
     }
 
-    public bool CheckIfUsernameRegistered(string username)
+    public async Task<bool> CheckIfUsernameRegistered(string username)
     {
         string checkUsernameSql = """
             SELECT EXISTS (
@@ -130,7 +130,7 @@ public class PostgresAccountManager : IAccountManager
             using NpgsqlCommand checkUsernameCmd = new(checkUsernameSql, connection);
             checkUsernameCmd.Parameters.AddWithValue("@username", username);
 
-            object? result = checkUsernameCmd.ExecuteScalar();
+            object? result = await checkUsernameCmd.ExecuteScalarAsync();
             bool usernameExists = result != null && (bool)result;
 
             return usernameExists;
@@ -141,7 +141,7 @@ public class PostgresAccountManager : IAccountManager
         }
     }
 
-    public Guid GetUserGuid(string username) // Change * to Id?
+    public async Task<Guid> GetUserGuid(string username) // Change * to Id?
     {
         string getUserGuidSql = """
             SELECT * FROM users
@@ -153,7 +153,7 @@ public class PostgresAccountManager : IAccountManager
             using NpgsqlCommand getUserGuidCmd = new(getUserGuidSql, connection);
             getUserGuidCmd.Parameters.AddWithValue("@username", username);
 
-            object? result = getUserGuidCmd.ExecuteScalar();
+            object? result = await getUserGuidCmd.ExecuteScalarAsync();
 
             if (result != null)
             {
@@ -168,7 +168,7 @@ public class PostgresAccountManager : IAccountManager
         }
     }
 
-    public bool GetLoggedInUsername(string username)
+    public async Task<bool> GetLoggedInUsername(string username)
     {
         string getUsernameSql = """
             SELECT username FROM users
@@ -180,7 +180,7 @@ public class PostgresAccountManager : IAccountManager
             using NpgsqlCommand getUsernameCmd = new(getUsernameSql, connection);
             getUsernameCmd.Parameters.AddWithValue("@id", loggedInUserId);
 
-            object? result = getUsernameCmd.ExecuteScalar();
+            object? result = await getUsernameCmd.ExecuteScalarAsync();
 
             if (result != null)
             {
@@ -196,14 +196,14 @@ public class PostgresAccountManager : IAccountManager
         }
     }
 
-    public void CreateUserBonusReward(User user)
+    public async Task CreateUserBonusReward(User user)
     {
         if (user.PasswordHash == null || user.PasswordSalt == null) // Correct?
         {
             throw new Exception("Password could not be sent to database.");
         }
 
-        using NpgsqlTransaction transaction = connection.BeginTransaction();
+        using NpgsqlTransaction transaction = await connection.BeginTransactionAsync();
 
         string createAccountSql = """
             INSERT INTO users (username, password_hash, password_salt)
@@ -221,22 +221,22 @@ public class PostgresAccountManager : IAccountManager
             accountCommand.Parameters.AddWithValue("@password_hash", Convert.ToBase64String(user.PasswordHash));
             accountCommand.Parameters.AddWithValue("@password_salt", Convert.ToBase64String(user.PasswordSalt));
 
-            accountCommand.ExecuteNonQuery();
+            await accountCommand.ExecuteNonQueryAsync();
 
-            Guid userGuid = GetUserGuid(user.Username);
+            Guid userGuid = await GetUserGuid(user.Username);
 
             NpgsqlCommand transactionCommand = new(gainBonusSql, connection, transaction);
             transactionCommand.Parameters.AddWithValue("@name", "Bonus reward");
             transactionCommand.Parameters.AddWithValue("@amount", 10000);
             transactionCommand.Parameters.AddWithValue("@user_id", userGuid);
 
-            transactionCommand.ExecuteNonQuery();
+            await transactionCommand.ExecuteNonQueryAsync();
 
-            transaction.Commit();
+            await transaction.CommitAsync();
         }
         catch (NpgsqlException ex)
         {
-            transaction.Rollback();
+            await transaction.RollbackAsync();
             throw new NpgsqlException($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to create an new account to database with bonus.", ex);
         }
     }

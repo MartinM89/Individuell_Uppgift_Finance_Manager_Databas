@@ -13,15 +13,15 @@ public class CheckExpenseCommand : Command
         return "Check your expenses";
     }
 
-    public override void Execute()
+    public override async Task Execute()
     {
-        var (userGuid, targetUser, adminLoggedIn) = GetGuidForAdmin.Execute(GetManagers);
+        var (userGuid, targetUser, adminLoggedIn) = await GetGuidForAdmin.Execute(GetManagers);
 
         userGuid = userGuid.Equals(Guid.Empty) ? PostgresAccountManager.GetLoggedInUserId() : userGuid;
 
         Console.Clear();
 
-        List<Transaction> transactions = GetManagers.TransactionManager.GetAllTransactions(userGuid);
+        List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions(userGuid);
 
         if (transactions.Count.Equals(0))
         {
@@ -51,7 +51,7 @@ public class CheckExpenseCommand : Command
             return;
         }
 
-        (TransactionCategory, Func<Guid, int, bool, List<Transaction>>) transactionValues = userChoice switch
+        (TransactionCategory, Func<Guid, int, bool, Task<List<Transaction>>>) transactionValues = userChoice switch
         {
             "D" => (TransactionCategory.Day, GetManagers.TransactionManager.GetTransactionsByDay),
             "W" => (TransactionCategory.Week, GetManagers.TransactionManager.GetTransactionsByWeek),
@@ -69,7 +69,7 @@ public class CheckExpenseCommand : Command
         Console.CursorVisible = false;
 
         bool isIncome = false;
-        transactions = fetchTransactions(userGuid, transactionDate, isIncome);
+        transactions = await fetchTransactions(userGuid, transactionDate, isIncome);
 
         Console.Clear();
 

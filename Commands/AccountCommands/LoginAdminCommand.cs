@@ -11,7 +11,7 @@ public class LoginAdminCommand : Command
         return "Hidden login (Admin login)";
     }
 
-    public override void Execute()
+    public override async Task Execute()
     {
         Console.Clear();
 
@@ -33,7 +33,7 @@ public class LoginAdminCommand : Command
             return;
         }
 
-        bool isPasswordCorrect = PostgresAccountManager.CheckLoginDetailsIsCorrect(connection, username, enteredPassword);
+        bool isPasswordCorrect = await PostgresAccountManager.CheckLoginDetailsIsCorrect(connection, username, enteredPassword);
 
         if (!isPasswordCorrect)
         {
@@ -41,7 +41,7 @@ public class LoginAdminCommand : Command
             return;
         }
 
-        GetManagers.AccountManager.SetLoggedInUserId(username);
+        await GetManagers.AccountManager.SetLoggedInUserId(username);
 
         Console.Clear();
         ChangeColor.TextColorGreen($"Login successful as admin.\n");

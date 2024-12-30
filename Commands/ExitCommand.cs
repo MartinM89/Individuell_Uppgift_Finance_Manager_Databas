@@ -11,12 +11,14 @@ public class ExitCommand : Command
         return "Exit the program";
     }
 
-    public override void Execute()
+    public override Task Execute()
     {
         Console.Clear();
         Console.WriteLine("Thank you for using your personal finance program.");
         PressKeyToContinue.Execute();
         Console.Clear();
         Program.run = false;
+
+        return Task.CompletedTask;
     }
 }

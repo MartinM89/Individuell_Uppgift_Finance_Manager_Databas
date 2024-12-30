@@ -10,7 +10,7 @@ public class AddTransactionCommand : Command
         return "Adds a transaction";
     }
 
-    public override void Execute()
+    public override async Task Execute()
     {
         Console.Clear();
 
@@ -30,7 +30,7 @@ public class AddTransactionCommand : Command
             return;
         }
 
-        var (userGuid, targetUser, adminLoggedIn) = GetGuidForAdmin.Execute(GetManagers);
+        var (userGuid, targetUser, adminLoggedIn) = await GetGuidForAdmin.Execute(GetManagers);
 
         if (targetUser.Equals(string.Empty))
         {
@@ -56,7 +56,7 @@ public class AddTransactionCommand : Command
             return;
         }
 
-        GetManagers.TransactionManager.AddTransaction(transaction);
+        await GetManagers.TransactionManager.AddTransaction(transaction);
 
         Console.Clear();
         Console.WriteLine($"The following transaction has been added to {targetUser}.");

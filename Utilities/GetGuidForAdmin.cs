@@ -1,11 +1,11 @@
 public class GetGuidForAdmin
 {
-    public static (Guid, string, bool) Execute(GetManagers managers)
+    public static async Task<(Guid, string, bool)> Execute(GetManagers managers)
     {
         Guid userGuid = Guid.Empty;
         string? targetUser = string.Empty;
 
-        bool adminLoggedIn = managers.AccountManager.GetLoggedInUsername("Admin");
+        bool adminLoggedIn = await managers.AccountManager.GetLoggedInUsername("Admin");
 
         if (adminLoggedIn)
         {
@@ -24,7 +24,7 @@ public class GetGuidForAdmin
 
             targetUser = targetUser[..1].ToUpper() + targetUser[1..].ToLower();
 
-            userGuid = managers.AccountManager.GetUserGuid(targetUser);
+            userGuid = await managers.AccountManager.GetUserGuid(targetUser);
 
             if (userGuid == Guid.Empty)
             {
