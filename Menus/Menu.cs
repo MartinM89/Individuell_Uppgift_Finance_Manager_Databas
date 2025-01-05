@@ -11,8 +11,6 @@ public abstract class Menu
 
     public async Task ExecuteCommand(char userChoiceChar)
     {
-        // _ = char.TryParse(userChoice, out char userChoiceChar);
-
         try
         {
             foreach (Command command in commands)
@@ -24,9 +22,10 @@ public abstract class Menu
                 }
             }
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
-            throw new InvalidOperationException($"Command not found. | {ex.Message}");
+            Console.WriteLine($"Command not found. | {ex.Message}");
+            return;
         }
     }
 

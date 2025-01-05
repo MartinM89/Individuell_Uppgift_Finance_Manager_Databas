@@ -1,4 +1,5 @@
-﻿using Individuell_Uppgift.Utilities;
+﻿using System.Data;
+using Individuell_Uppgift.Utilities;
 using Npgsql;
 
 namespace Individuell_Uppgift;
@@ -12,15 +13,48 @@ class Program
         Console.CursorVisible = false;
         string connectionString = Database.GetConnectionString();
 
-        NpgsqlConnection? connection;
-        try
+        int connectionAttempts = 1;
+
+        NpgsqlConnection? connection = null;
+
+        while (connectionAttempts <= 3)
         {
             connection = new(connectionString);
-            await connection.OpenAsync();
+
+            try
+            {
+                await connection.OpenAsync();
+            }
+            catch (NpgsqlException)
+            {
+                if (connection.State == ConnectionState.Closed)
+                {
+                    for (int i = 3; i > 0; i--)
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"Attempt: {connectionAttempts}. Couldn't access database.");
+                        Console.WriteLine($"Retrying in {i} seconds...");
+                        Thread.Sleep(1000);
+
+                        if (i == 1)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Retrying now...");
+                            Thread.Sleep(1000);
+                        }
+                    }
+
+                    connectionAttempts++;
+                    continue;
+                }
+            }
+
+            break;
         }
-        catch (NpgsqlException ex)
+
+        if (connection == null)
         {
-            throw new NpgsqlException($"PostgreSQL Error: {ex.Message}\nCouldn't access database.", ex);
+            throw new Exception("Couldn't access database.");
         }
 
         try
@@ -35,7 +69,6 @@ class Program
 
             while (run)
             {
-                // string? userChoice = HideCursor.Input().ToUpper();
                 string? userChoice = HideCursor.Input().ToUpper();
                 _ = char.TryParse(userChoice, out char userChoiceChar);
 
@@ -51,11 +84,8 @@ class Program
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}\nAn error occured.", ex);
-        }
-        finally
-        {
-            connection.Close();
+            Console.Clear();
+            Console.WriteLine($"Error: {ex.Message}");
         }
     }
 }
