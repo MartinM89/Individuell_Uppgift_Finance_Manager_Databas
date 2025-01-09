@@ -3,7 +3,7 @@ using Individuell_Uppgift.Utilities;
 public class CreateAccountCommand : Command
 {
     public CreateAccountCommand(GetManagers getManagers)
-        : base('C', "Create", getManagers) { }
+        : base('C', "Create Account", getManagers) { }
 
     public override string GetDescription()
     {

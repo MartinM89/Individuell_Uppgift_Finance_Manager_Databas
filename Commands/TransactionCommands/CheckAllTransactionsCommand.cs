@@ -1,7 +1,7 @@
 public class CheckAllTransactionsCommand : Command
 {
     public CheckAllTransactionsCommand(GetManagers getManagers)
-        : base('P', "All", getManagers) { }
+        : base('S', "Show all Transactions", getManagers) { }
 
     public override string GetDescription()
     {

@@ -3,7 +3,7 @@ using Individuell_Uppgift.Utilities;
 public class DeleteTransactionCommand : Command
 {
     public DeleteTransactionCommand(GetManagers getManagers)
-        : base('D', "Delete", getManagers) { }
+        : base('D', "Delete Transaction", getManagers) { }
 
     public override string GetDescription()
     {
@@ -61,9 +61,10 @@ public class DeleteTransactionCommand : Command
             return;
         }
 
+        // Get the transaction so I can use the table to show it for formatting.
         Console.WriteLine("The following transaction has been deleted:");
         TransactionTable.GetTransactionTableTop();
-        Console.WriteLine($"| {deletedTransaction.Id} | {deletedTransaction.Date:dd MMM yyyy} | {deletedTransaction.Name, -21} | {deletedTransaction.Amount, 13} |");
+        Console.WriteLine($"|  {deletedTransaction.Id} | {deletedTransaction.Date:dd MMM yyyy} | {deletedTransaction.Name, -21} | {deletedTransaction.Amount, 13} |");
         TransactionTable.GetTransactionsTableBottom();
 
         PressKeyToContinue.Execute();

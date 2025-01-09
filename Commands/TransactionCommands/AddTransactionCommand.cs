@@ -3,7 +3,7 @@ using Individuell_Uppgift.Utilities;
 public class AddTransactionCommand : Command
 {
     public AddTransactionCommand(GetManagers getManagers)
-        : base('A', "Add", getManagers) { }
+        : base('A', "Add Transaction", getManagers) { }
 
     public override string GetDescription()
     {

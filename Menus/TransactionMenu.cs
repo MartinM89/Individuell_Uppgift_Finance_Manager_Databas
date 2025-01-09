@@ -11,32 +11,21 @@ public class TransactionMenu : Menu
         AddCommand(new TransferMoneyToOtherUserCommand(getManagers));
         AddCommand(new CheckIncomeCommand(getManagers));
         AddCommand(new CheckExpenseCommand(getManagers));
+        AddCommand(new CheckAllTransactionsCommand(getManagers));
         AddCommand(new LogoutCommand(getManagers));
         AddCommand(new HelpCommand(getManagers));
-        AddCommand(new CheckAllTransactionsCommand(getManagers));
     }
 
     public override void Display()
     {
         Console.Clear();
 
-        Console.WriteLine("Transasction Menu:\n");
+        Console.WriteLine($"Transasction Menu:\n");
 
-        ChangeColor.TextColorGreen("[A]");
-        Console.WriteLine("dd Transaction");
-        ChangeColor.TextColorGreen("[D]");
-        Console.WriteLine("elete Transaction");
-        ChangeColor.TextColorGreen("[B]");
-        Console.WriteLine("alance");
-        ChangeColor.TextColorGreen("[T]");
-        Console.WriteLine("ransfer");
-        ChangeColor.TextColorGreen("[I]");
-        Console.WriteLine("ncome Summary");
-        ChangeColor.TextColorGreen("[E]");
-        Console.WriteLine("xpense Summary");
-        ChangeColor.TextColorGreen("[L]");
-        Console.WriteLine("og Out");
-        ChangeColor.TextColorGreen("[H]");
-        Console.WriteLine("elp Page");
+        foreach (Command command in commands)
+        {
+            ChangeColor.TextColorGreen($"[{command.Shortcut}]");
+            Console.WriteLine(command.Name[1..]);
+        }
     }
 }

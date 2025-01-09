@@ -1,8 +1,10 @@
+using Individuell_Uppgift.Utilities;
+
 namespace Individuell_Uppgift.Menus;
 
 public abstract class Menu
 {
-    private List<Command> commands = [];
+    protected List<Command> commands = [];
 
     public void AddCommand(Command command)
     {
@@ -30,4 +32,24 @@ public abstract class Menu
     }
 
     public abstract void Display();
+
+    public virtual void HelpMenu()
+    {
+        Console.Clear();
+
+        Console.WriteLine("Help Menu:\n");
+
+        foreach (Command command in commands)
+        {
+            if (command.Shortcut == 'H')
+            {
+                continue;
+            }
+
+            ChangeColor.TextColorGreen($"[{command.Name}]");
+            Console.WriteLine($" - {command.GetDescription()}");
+        }
+
+        Console.ReadKey();
+    }
 }

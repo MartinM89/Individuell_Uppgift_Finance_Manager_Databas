@@ -3,7 +3,7 @@ using Npgsql;
 public class HelpCommand : Command
 {
     public HelpCommand(GetManagers getManagers)
-        : base('H', "Help", getManagers) { }
+        : base('H', "Help Page", getManagers) { }
 
     public override string GetDescription()
     {
@@ -12,7 +12,7 @@ public class HelpCommand : Command
 
     public override Task Execute()
     {
-        Console.WriteLine("Help Menu");
+        GetManagers.UserMenuManager.GetMenu().HelpMenu();
 
         GetManagers.UserMenuManager.ReturnToSameMenu();
 

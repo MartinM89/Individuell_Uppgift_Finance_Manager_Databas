@@ -1,11 +1,11 @@
 public class LogoutCommand : Command
 {
     public LogoutCommand(GetManagers getManagers)
-        : base('L', "Logout", getManagers) { }
+        : base('L', "Log out", getManagers) { }
 
     public override string GetDescription()
     {
-        return "Log out from current user";
+        return "Logout the current user";
     }
 
     public override Task Execute()

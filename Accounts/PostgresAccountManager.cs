@@ -35,7 +35,7 @@ public class PostgresAccountManager : IAccountManager
         }
         catch (NpgsqlException ex)
         {
-            throw new NpgsqlException($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to create an new account to database.", ex);
+            throw new NpgsqlException($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to create an new account to database.");
         }
     }
 
@@ -65,7 +65,7 @@ public class PostgresAccountManager : IAccountManager
         }
         catch (NpgsqlException ex)
         {
-            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to set guid from database.", ex);
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to set guid from database.");
         }
     }
 
@@ -111,7 +111,7 @@ public class PostgresAccountManager : IAccountManager
         }
         catch (NpgsqlException ex)
         {
-            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to verify log in details from database.", ex);
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to verify log in details from database.");
         }
     }
 
@@ -137,7 +137,7 @@ public class PostgresAccountManager : IAccountManager
         }
         catch (NpgsqlException ex)
         {
-            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to verify if username already exists in database.", ex);
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to verify if username already exists in database.");
         }
     }
 
@@ -164,7 +164,7 @@ public class PostgresAccountManager : IAccountManager
         }
         catch (NpgsqlException ex)
         {
-            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get guid of logged in user from database.", ex);
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get guid of logged in user from database.");
         }
     }
 
@@ -192,13 +192,13 @@ public class PostgresAccountManager : IAccountManager
         }
         catch (NpgsqlException ex)
         {
-            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get username of logged in user from database.", ex);
+            throw new Exception($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to get username of logged in user from database.");
         }
     }
 
     public async Task CreateUserBonusReward(User user)
     {
-        if (user.PasswordHash == null || user.PasswordSalt == null) // Correct?
+        if (user.PasswordHash == null || user.PasswordSalt == null)
         {
             throw new Exception("Password could not be sent to database.");
         }
@@ -237,7 +237,7 @@ public class PostgresAccountManager : IAccountManager
         catch (NpgsqlException ex)
         {
             await transaction.RollbackAsync();
-            throw new NpgsqlException($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to create an new account to database with bonus.", ex);
+            throw new NpgsqlException($"PostgreSQL error: {ex.Message}\nAn error occured while attempting to create an new account to database with bonus.");
         }
     }
 }

@@ -6,7 +6,7 @@ public class CheckExpenseCommand : Command
     private readonly string[] availableInputs = ["D", "W", "M", "Y"];
 
     public CheckExpenseCommand(GetManagers getManagers)
-        : base('E', "Expense", getManagers) { }
+        : base('E', "Expense Summary", getManagers) { }
 
     public override string GetDescription()
     {
@@ -51,29 +51,28 @@ public class CheckExpenseCommand : Command
             return;
         }
 
-        (TransactionCategory, Func<Guid, int, bool, Task<List<Transaction>>>) transactionValues = userChoice switch
+        var transactionCategory = userChoice switch
         {
-            "D" => (TransactionCategory.Day, GetManagers.TransactionManager.GetTransactionsByDay),
-            "W" => (TransactionCategory.Week, GetManagers.TransactionManager.GetTransactionsByWeek),
-            "M" => (TransactionCategory.Month, GetManagers.TransactionManager.GetTransactionsByMonth),
-            "Y" => (TransactionCategory.Year, GetManagers.TransactionManager.GetTransactionsByYear),
-            _ => (TransactionCategory.Null, null!),
+            "D" => TransactionCategory.Day,
+            "W" => TransactionCategory.Week,
+            "M" => TransactionCategory.Month,
+            "Y" => TransactionCategory.Year,
+            _ => TransactionCategory.Null,
         };
-
-        var (transactionCategory, fetchTransactions) = transactionValues;
 
         Console.Clear();
         Console.CursorVisible = true;
         Console.Write($"What {transactionCategory} do you wish to check? ");
-        _ = int.TryParse(Console.ReadLine(), out int transactionDate);
+        _ = int.TryParse(Console.ReadLine(), out int timeValue);
         Console.CursorVisible = false;
 
-        bool isIncome = false;
-        transactions = await fetchTransactions(userGuid, transactionDate, isIncome);
+        string incomeOrExpense = "<";
+
+        transactions = await GetManagers.TransactionManager.GetTransactionsByTime(userGuid, timeValue, transactionCategory.ToString(), incomeOrExpense);
 
         Console.Clear();
 
-        Console.WriteLine($"{transactionCategory} {transactionDate}:");
+        Console.WriteLine($"{transactionCategory} {timeValue}:");
         TransactionTable.GetTransactionTableTop();
         TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
         TransactionTable.GetTransactionsTableBottom();
