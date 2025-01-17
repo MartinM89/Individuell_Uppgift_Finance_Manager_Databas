@@ -73,9 +73,9 @@ public class CheckIncomeCommand : Command
         Console.Clear();
 
         Console.WriteLine($"{transactionCategory} {timeValue}:");
-        TransactionTable.GetTransactionTableTop();
-        TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
-        TransactionTable.GetTransactionsTableBottom();
+        TransactionTable.PrintTransactionTableTop();
+        TransactionTable.PrintMultipleRowsTransactionTableCenter(transactions);
+        TransactionTable.PrintTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
 

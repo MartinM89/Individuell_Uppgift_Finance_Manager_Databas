@@ -14,7 +14,7 @@ public class PostgresAccountManager : IAccountManager
 
     public async Task CreateUser(User user)
     {
-        if (user.PasswordHash == null || user.PasswordSalt == null) // Correct?
+        if (user.PasswordHash == null || user.PasswordSalt == null)
         {
             throw new Exception("Password could not be sent to database.");
         }
@@ -60,8 +60,6 @@ public class PostgresAccountManager : IAccountManager
             }
 
             loggedInUserId = (Guid)result;
-
-            // LoggedInUserId =  getIdCmd.ExecuteScalar() as Guid? ?? throw new InvalidOperationException("User not found!");
         }
         catch (NpgsqlException ex)
         {
@@ -141,7 +139,7 @@ public class PostgresAccountManager : IAccountManager
         }
     }
 
-    public async Task<Guid> GetUserGuid(string username) // Change * to Id?
+    public async Task<Guid> GetUserGuid(string username)
     {
         string getUserGuidSql = """
             SELECT * FROM users

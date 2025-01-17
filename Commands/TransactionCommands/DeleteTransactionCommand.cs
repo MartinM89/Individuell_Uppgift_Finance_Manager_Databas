@@ -20,9 +20,9 @@ public class DeleteTransactionCommand : Command
 
         List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions(userGuid);
 
-        TransactionTable.GetTransactionTableTop();
-        TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
-        TransactionTable.GetTransactionsTableBottom();
+        TransactionTable.PrintTransactionTableTop();
+        TransactionTable.PrintMultipleRowsTransactionTableCenter(transactions);
+        TransactionTable.PrintTransactionsTableBottom();
 
         Console.CursorVisible = true;
         Console.Write("\nTransaction to delete: ");
@@ -63,9 +63,9 @@ public class DeleteTransactionCommand : Command
 
         // Get the transaction so I can use the table to show it for formatting.
         Console.WriteLine("The following transaction has been deleted:");
-        TransactionTable.GetTransactionTableTop();
+        TransactionTable.PrintTransactionTableTop();
         Console.WriteLine($"|  {deletedTransaction.Id} | {deletedTransaction.Date:dd MMM yyyy} | {deletedTransaction.Name, -21} | {deletedTransaction.Amount, 13} |");
-        TransactionTable.GetTransactionsTableBottom();
+        TransactionTable.PrintTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
 

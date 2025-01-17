@@ -60,9 +60,9 @@ public class AddTransactionCommand : Command
 
         Console.Clear();
         Console.WriteLine($"The following transaction has been added to {targetUser}.");
-        TransactionTable.GetTransactionTableTop();
-        TransactionTable.GetSingleRowTransactionTableCenter(transaction);
-        TransactionTable.GetTransactionsTableBottom();
+        TransactionTable.PrintTransactionTableTop();
+        TransactionTable.PrintSingleRowTransactionTableCenter(transaction);
+        TransactionTable.PrintTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
         GetManagers.UserMenuManager.ReturnToSameMenu();

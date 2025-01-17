@@ -7,7 +7,6 @@ public class User
 
     public User(string username, byte[] passwordHash, byte[] passwordSalt)
     {
-        // Id = id;
         Username = username;
         PasswordHash = passwordHash;
         PasswordSalt = passwordSalt;

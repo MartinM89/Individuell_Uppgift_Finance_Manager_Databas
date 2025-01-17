@@ -8,7 +8,7 @@ public class CheckAllTransactionsCommand : Command
         return "Print a list of all transactions";
     }
 
-    public override async Task Execute() // Only for debuggin
+    public override async Task Execute()
     {
         Console.Clear();
 
@@ -24,9 +24,9 @@ public class CheckAllTransactionsCommand : Command
             return;
         }
 
-        TransactionTable.GetTransactionTableTop();
-        TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
-        TransactionTable.GetTransactionsTableBottom();
+        TransactionTable.PrintTransactionTableTop();
+        TransactionTable.PrintMultipleRowsTransactionTableCenter(transactions);
+        TransactionTable.PrintTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
 

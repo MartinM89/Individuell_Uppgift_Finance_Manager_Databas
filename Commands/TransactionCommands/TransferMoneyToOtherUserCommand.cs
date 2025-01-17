@@ -64,9 +64,9 @@ public class TransferMoneyToOtherUserCommand : Command
 
         Console.Clear();
         Console.WriteLine($"The following transaction has been send to {name}:");
-        TransactionTable.GetTransactionTableTop();
-        TransactionTable.GetSingleRowTransactionTableCenter(transaction);
-        TransactionTable.GetTransactionsTableBottom();
+        TransactionTable.PrintTransactionTableTop();
+        TransactionTable.PrintSingleRowTransactionTableCenter(transaction);
+        TransactionTable.PrintTransactionsTableBottom();
 
         PressKeyToContinue.Execute();
 

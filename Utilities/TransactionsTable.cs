@@ -14,7 +14,7 @@ public class TransactionTable
     public const int columns = 4;
     public const int padding = columns * 2;
 
-    public static void GetTransactionTableTop()
+    public static void PrintTransactionTableTop()
     {
         int tableLength = idWidth + dateWidth + nameWidth + amountWidth + padding + columns;
 
@@ -23,14 +23,14 @@ public class TransactionTable
         Console.WriteLine(string.Concat(Enumerable.Repeat(" ═", tableLength / 2)));
     }
 
-    public static void GetSingleRowTransactionTableCenter(Transaction transaction)
+    public static void PrintSingleRowTransactionTableCenter(Transaction transaction)
     {
         Console.Write(transaction);
         ChangeColor.TextColorGreen($"{transaction.Amount, amountWidth:N2}");
         Console.WriteLine(" |");
     }
 
-    public static void GetMultipleRowsTransactionTableCenter(List<Transaction> transactions)
+    public static void PrintMultipleRowsTransactionTableCenter(List<Transaction> transactions)
     {
         foreach (Transaction transaction in transactions)
         {
@@ -56,7 +56,7 @@ public class TransactionTable
         }
     }
 
-    public static void GetTransactionsTableBottom()
+    public static void PrintTransactionsTableBottom()
     {
         int tableLength = idWidth + dateWidth + nameWidth + amountWidth + padding + columns;
 

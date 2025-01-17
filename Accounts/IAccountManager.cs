@@ -1,5 +1,3 @@
-using Npgsql;
-
 public interface IAccountManager
 {
     Task CreateUser(User user);

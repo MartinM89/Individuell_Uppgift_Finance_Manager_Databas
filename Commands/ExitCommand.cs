@@ -1,5 +1,4 @@
 using Individuell_Uppgift;
-using Npgsql;
 
 public class ExitCommand : Command
 {

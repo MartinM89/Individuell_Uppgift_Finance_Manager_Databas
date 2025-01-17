@@ -1,5 +1,3 @@
-using Npgsql;
-
 public class HelpCommand : Command
 {
     public HelpCommand(GetManagers getManagers)

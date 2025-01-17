@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Individuell_Uppgift.Menus;
 
 public class UserMenuManager : IMenuManager

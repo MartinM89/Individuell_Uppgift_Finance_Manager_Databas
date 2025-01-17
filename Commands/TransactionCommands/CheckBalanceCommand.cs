@@ -51,9 +51,9 @@ public class CheckBalanceCommand : Command
 
             List<Transaction> transactions = await GetManagers.TransactionManager.GetAllTransactions(userGuid);
 
-            TransactionTable.GetTransactionTableTop();
-            TransactionTable.GetMultipleRowsTransactionTableCenter(transactions);
-            TransactionTable.GetTransactionsTableBottom();
+            TransactionTable.PrintTransactionTableTop();
+            TransactionTable.PrintMultipleRowsTransactionTableCenter(transactions);
+            TransactionTable.PrintTransactionsTableBottom();
 
             PressKeyToContinue.Execute();
 

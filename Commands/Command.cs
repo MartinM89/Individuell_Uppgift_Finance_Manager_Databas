@@ -6,9 +6,9 @@ public abstract class Command
 
     public Command(char shortcut, string name, GetManagers getManagers)
     {
-        this.Shortcut = shortcut;
-        this.Name = name;
-        this.GetManagers = getManagers;
+        Shortcut = shortcut;
+        Name = name;
+        GetManagers = getManagers;
     }
 
     public abstract Task Execute();
